@@ -13,7 +13,7 @@ import 'package:rice_journey/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const RiceJourneyApp(savedReflections: []));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

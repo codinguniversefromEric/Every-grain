@@ -1,9 +1,15 @@
 enum GrowthStage {
+  fallow,
   seedling,
   tillering,
   heading,
   ripening,
   harvested,
+}
+
+enum TaiwanRegion {
+  north,
+  south,
 }
 
 enum DayPhase {

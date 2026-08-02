@@ -1,11 +1,19 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/field_state.dart';
+import 'services/agricultural_calendar.dart';
 import 'visuals.dart';
+import 'widgets/custom_status_bar.dart';
+import 'widgets/rice_plant.dart';
+import 'widgets/developer_controls.dart';
+import 'widgets/harvest_dialog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   
   // Load saved reflections
   final prefs = await SharedPreferences.getInstance();
@@ -22,7 +30,7 @@ class RiceJourneyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Rice Journey Prototype',
+      title: '粒粒皆辛苦',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
@@ -42,45 +50,38 @@ class RiceFieldScreen extends StatefulWidget {
   State<RiceFieldScreen> createState() => _RiceFieldScreenState();
 }
 
-class _RiceFieldScreenState extends State<RiceFieldScreen> with SingleTickerProviderStateMixin {
+class _RiceFieldScreenState extends State<RiceFieldScreen> {
   late FieldState _state;
+  late TaiwanRegion _region;
+  late DateTime _simulatedDate;
   final TextEditingController _reflectionController = TextEditingController();
-  late AnimationController _breathingController;
-
-  final Map<DayPhase, String> _backgrounds = {
-    DayPhase.morning: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\bg_morning_1785565644406.jpg',
-    DayPhase.afternoon: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\bg_afternoon_1785565656153.jpg',
-    DayPhase.evening: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\bg_evening_1785565667703.jpg',
-    DayPhase.night: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\bg_night_1785565678247.jpg',
-  };
-
-  final Map<GrowthStage, String> _plantImages = {
-    GrowthStage.seedling: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\rice_seedling_1785565699665.jpg',
-    GrowthStage.tillering: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\rice_tillering_1785565708389.jpg',
-    GrowthStage.heading: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\rice_heading_1785565718866.jpg',
-    GrowthStage.ripening: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\rice_ripening_1785565729076.jpg',
-    GrowthStage.harvested: r'C:\Users\ericw\.gemini\antigravity\brain\507e0024-e752-464b-87f4-16dd05fd9798\rice_harvested_1785565737748.jpg',
-  };
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _state = FieldState(
-      growthStage: GrowthStage.seedling,
-      dayPeriod: _calculateDayPhase(DateTime.now()),
-      reflections: List.from(widget.initialReflections),
-    );
+    _simulatedDate = DateTime.now();
+    _initializeState();
+  }
 
-    _breathingController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat(reverse: true);
+  Future<void> _initializeState() async {
+    _region = await AgriculturalCalendar.determineRegion();
+    
+    if (!mounted) return;
+    
+    setState(() {
+      _state = FieldState(
+        growthStage: AgriculturalCalendar.getStageForDate(_simulatedDate, _region),
+        dayPeriod: _calculateDayPhase(DateTime.now()),
+        reflections: List.from(widget.initialReflections),
+      );
+      _isLoading = false;
+    });
   }
 
   @override
   void dispose() {
     _reflectionController.dispose();
-    _breathingController.dispose();
     super.dispose();
   }
 
@@ -103,6 +104,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with SingleTickerProv
     await prefs.setStringList('reflections', _state.reflections);
     _reflectionController.clear();
     
+    if (!mounted) return;
     // Unfocus keyboard
     FocusScope.of(context).unfocus();
   }
@@ -110,55 +112,26 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with SingleTickerProv
   void _showDeveloperControls() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white.withOpacity(0.9),
+      backgroundColor: Colors.white.withValues(alpha: 0.9),
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Developer Controls', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 20),
-                  const Text('Growth Stage:'),
-                  Slider(
-                    value: _state.growthStage.index.toDouble(),
-                    min: 0,
-                    max: GrowthStage.values.length.toDouble() - 1,
-                    divisions: GrowthStage.values.length - 1,
-                    label: _state.growthStage.name,
-                    onChanged: (val) {
-                      setState(() {
-                        _state.growthStage = GrowthStage.values[val.toInt()];
-                      });
-                      setModalState(() {});
-                      
-                      if (_state.growthStage == GrowthStage.harvested) {
-                        Navigator.pop(context); 
-                        _showHarvestSequence();
-                      }
-                    },
-                  ),
-                  const Text('Time of Day:'),
-                  Slider(
-                    value: _state.dayPeriod.index.toDouble(),
-                    min: 0,
-                    max: DayPhase.values.length.toDouble() - 1,
-                    divisions: DayPhase.values.length - 1,
-                    label: _state.dayPeriod.name,
-                    onChanged: (val) {
-                      setState(() {
-                        _state.dayPeriod = DayPhase.values[val.toInt()];
-                      });
-                      setModalState(() {});
-                    },
-                  ),
-                ],
-              ),
-            );
-          }
+        return DeveloperControlsBottomSheet(
+          currentGrowthStage: _state.growthStage,
+          currentDayPhase: _state.dayPeriod,
+          onGrowthStageChanged: (stage) => setState(() => _state.growthStage = stage),
+          onDayPhaseChanged: (phase) => setState(() => _state.dayPeriod = phase),
+          onHarvestSequenceTriggered: _showHarvestSequence,
+          onSimulateNextMonth: () {
+            setState(() {
+              _simulatedDate = DateTime(_simulatedDate.year, _simulatedDate.month + 1, _simulatedDate.day);
+              _state.growthStage = AgriculturalCalendar.getStageForDate(_simulatedDate, _region);
+            });
+          },
+          onToggleRegion: () {
+            setState(() {
+              _region = _region == TaiwanRegion.north ? TaiwanRegion.south : TaiwanRegion.north;
+              _state.growthStage = AgriculturalCalendar.getStageForDate(_simulatedDate, _region);
+            });
+          },
         );
       },
     );
@@ -169,63 +142,44 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with SingleTickerProv
       context: context,
       barrierColor: Colors.black87,
       builder: (context) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.rice_bowl, size: 80, color: Colors.white),
-                const SizedBox(height: 24),
-                const Text(
-                  '一株秧苗，經過時間與人的陪伴，最後成為一碗飯。',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                if (_state.reflections.isNotEmpty) ...[
-                  const Text('Your reflections during this season:', style: TextStyle(color: Colors.white70)),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    height: 200,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: _state.reflections.map((r) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text('"$r"', style: const TextStyle(color: Colors.white, fontStyle: FontStyle.italic)),
-                        )).toList(),
-                      ),
-                    ),
-                  ),
-                ]
-              ],
-            ),
-          ),
-        );
+        return HarvestDialog(reflections: _state.reflections);
       },
     );
   }
 
+  Color _getBackgroundColor(DayPhase phase) {
+    switch (phase) {
+      case DayPhase.morning:
+        return const Color(0xFF87CEEB); // Sky blue
+      case DayPhase.afternoon:
+        return const Color(0xFF4682B4); // Steel blue
+      case DayPhase.evening:
+        return const Color(0xFFFF7F50); // Coral/Sunset
+      case DayPhase.night:
+        return const Color(0xFF191970); // Midnight blue
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bgPath = _backgrounds[_state.dayPeriod]!;
-    final plantPath = _plantImages[_state.growthStage]!;
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final promptText = AgriculturalCalendar.getPromptForStage(_state.growthStage);
+    final seasonText = AgriculturalCalendar.getSeasonText(_simulatedDate, _region);
 
     return Scaffold(
       resizeToAvoidBottomInset: false, 
       body: Stack(
         children: [
-          // 1. AI Generated Background Layer
+          // 1. Dynamic Simple Background Layer
           Positioned.fill(
-            child: AnimatedSwitcher(
+            child: AnimatedContainer(
               duration: const Duration(seconds: 2),
-              child: Image.file(
-                File(bgPath),
-                key: ValueKey(bgPath),
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
+              color: _getBackgroundColor(_state.dayPeriod),
             ),
           ),
 
@@ -238,70 +192,132 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with SingleTickerProv
             child: FloatingMemoriesLayer(reflections: _state.reflections),
           ),
 
-          // 4. AI Generated Rice Plant Layer
+          // 4. Procedural Rice Plant Layer
           Positioned(
             bottom: 50, 
             left: 0,
             right: 0,
-            child: Center(
-              child: ScaleTransition(
-                scale: Tween(begin: 0.98, end: 1.01).animate(_breathingController),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 1500),
-                  child: ColorFiltered(
-                    key: ValueKey(plantPath),
-                    // Use BlendMode.multiply so the white background of the illustration becomes transparent against the background
-                    colorFilter: const ColorFilter.mode(Colors.white, BlendMode.multiply),
-                    child: Image.file(
-                      File(plantPath),
-                      height: MediaQuery.of(context).size.height * 0.45,
-                      fit: BoxFit.contain,
+            child: RicePlantLayer(growthStage: _state.growthStage),
+          ),
+          
+          // 4.5. Custom Rustic Status Bar
+          const Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: CustomStatusBar(),
+          ),
+
+          // 5. Agricultural Season Text Overlay
+          Positioned(
+            top: 60,
+            left: 24,
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '粒粒皆辛苦',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 4),
+                  Text(
+                    seasonText,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 16,
+                    ),
+                  ),
+                  if (_region == TaiwanRegion.south)
+                    Text(
+                      '南部地區作息',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 12,
+                      ),
+                    )
+                  else
+                    Text(
+                      '中北部地區作息',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 12,
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
 
-          // 5. Daily Reflection Input Layer
-          Positioned(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 40,
-            left: 20,
-            right: 20,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white38),
-              ),
-              child: TextField(
-                controller: _reflectionController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: '今天，有什麼值得好好珍惜？',
-                  hintStyle: TextStyle(color: Colors.white70),
-                  border: InputBorder.none,
-                ),
-                onSubmitted: _saveReflection,
-              ),
-            ),
+          // 6. Daily Reflection Input Layer
+          _KeyboardInputLayer(
+            controller: _reflectionController,
+            promptText: promptText,
+            onSubmitted: _saveReflection,
           ),
 
-          // 6. Invisible Developer Controls Trigger
+          // 7. Subtle Developer Controls Trigger
           Positioned(
-            top: 40,
-            right: 20,
-            child: GestureDetector(
-              onTap: _showDeveloperControls,
-              child: Container(
-                width: 70,
-                height: 70,
-                color: Colors.transparent, 
+            top: 10,
+            right: 10,
+            child: SafeArea(
+              child: IconButton(
+                icon: Icon(Icons.settings, color: Colors.white.withValues(alpha: 0.2)),
+                onPressed: _showDeveloperControls,
+                tooltip: 'Developer Controls',
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _KeyboardInputLayer extends StatelessWidget {
+  final TextEditingController controller;
+  final String promptText;
+  final Function(String) onSubmitted;
+
+  const _KeyboardInputLayer({
+    required this.controller,
+    required this.promptText,
+    required this.onSubmitted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: MediaQuery.of(context).viewInsets.bottom,
+      left: 20,
+      right: 20,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white38),
+            ),
+            child: TextField(
+              controller: controller,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: promptText,
+                hintStyle: const TextStyle(color: Colors.white70, fontSize: 14),
+                border: InputBorder.none,
+              ),
+              onSubmitted: onSubmitted,
+            ),
+          ),
+        ),
       ),
     );
   }

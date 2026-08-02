@@ -63,7 +63,7 @@ class _FloatingMemoriesLayerState extends State<FloatingMemoriesLayer> with Sing
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.white30),
                   ),
@@ -159,7 +159,7 @@ class _FireflyPainter extends CustomPainter {
 
     for (var f in fireflies) {
       double opacity = (sin(f.phase + animationValue * pi * 2) + 1) / 2;
-      paint.color = Colors.yellowAccent.withOpacity(opacity * 0.9);
+      paint.color = Colors.yellowAccent.withValues(alpha: opacity * 0.9);
       canvas.drawCircle(
         Offset(f.x * size.width, f.y * size.height + sin(animationValue * pi * 2 + f.phase) * 15),
         2 + opacity * 2.5,

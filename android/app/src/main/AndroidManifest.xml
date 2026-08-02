@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
-        android:label="rice_journey"
+        android:label="粒粒皆辛苦"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
