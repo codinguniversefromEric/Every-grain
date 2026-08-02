@@ -22,14 +22,37 @@ class AmbientSoundService {
   Future<void> updateAmbience(DayPhase phase, GrowthStage stage) async {
     String targetSound;
 
-    if (stage == GrowthStage.fallow) {
-      targetSound = 'assets/audio/water.wav';
-    } else if (phase == DayPhase.night) {
-      targetSound = 'assets/audio/crickets.wav';
-    } else if (phase == DayPhase.evening) {
-      targetSound = 'assets/audio/evening_wind.wav';
-    } else {
-      targetSound = 'assets/audio/wind.wav';
+    // Fallow / Harvested (Winter/Late Autumn)
+    if (stage == GrowthStage.fallow || stage == GrowthStage.harvested) {
+      if (phase == DayPhase.morning || phase == DayPhase.afternoon) {
+        targetSound = 'assets/audio/winter_birds_wind.wav';
+      } else {
+        targetSound = 'assets/audio/winter_birds_wind.wav'; // Night time is quieter but we use the same base for now
+      }
+    } 
+    // Seedling / Tillering (Spring/Early Summer)
+    else if (stage == GrowthStage.seedling || stage == GrowthStage.tillering) {
+      if (phase == DayPhase.evening || phase == DayPhase.night) {
+        targetSound = 'assets/audio/spring_frogs.wav';
+      } else {
+        targetSound = 'assets/audio/winter_birds_wind.wav'; // Wind/water during day
+      }
+    }
+    // Heading (Summer)
+    else if (stage == GrowthStage.heading) {
+      if (phase == DayPhase.afternoon || phase == DayPhase.morning) {
+        targetSound = 'assets/audio/summer_cicadas.wav';
+      } else {
+        targetSound = 'assets/audio/spring_frogs.wav'; // Frogs at night
+      }
+    }
+    // Ripening (Autumn)
+    else {
+      if (phase == DayPhase.evening || phase == DayPhase.night) {
+        targetSound = 'assets/audio/autumn_crickets.wav';
+      } else {
+        targetSound = 'assets/audio/winter_birds_wind.wav'; // Wind during day
+      }
     }
 
     if (targetSound != _currentSound) {
