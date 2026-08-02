@@ -251,23 +251,28 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
             child: CloudLayer(isNight: _state.dayPeriod == DayPhase.night),
           ),
 
+          // 1.8. Egrets (Daylight only)
+          if (_state.dayPeriod != DayPhase.night)
+            const Positioned.fill(child: EgretFlockLayer()),
+
           // 2. Ambient Fireflies (only at night)
           if (_state.dayPeriod == DayPhase.night)
-            const Positioned.fill(child: FirefliesLayer()),
-            
-
-
-          // 4. Procedural Rice Plant Layer
+            const Positioned.fill(child: FirefliesLayer()),          // 4. Procedural Rice Plant Layer
           Positioned(
             bottom: 50, 
             left: 0,
             right: 0,
             child: RicePlantLayer(growthStage: _state.growthStage),
           ),
-          
 
+          // 5. Dragonflies (Daylight + Warm Seasons)
+          if (_state.dayPeriod != DayPhase.night && 
+             (_state.growthStage == GrowthStage.tillering || _state.growthStage == GrowthStage.heading || _state.growthStage == GrowthStage.ripening))
+            const Positioned.fill(child: DragonflyLayer()),
 
-
+          // 6. Water Ripples (Flooded Paddy Stages)
+          if (_state.growthStage == GrowthStage.fallow || _state.growthStage == GrowthStage.seedling)
+            const Positioned.fill(child: WaterRippleLayer()),
           // 7. Subtle Developer Controls Trigger
           Positioned(
             top: 10,

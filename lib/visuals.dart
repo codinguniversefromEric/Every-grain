@@ -267,3 +267,271 @@ class _FireflyPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
+// ============================================================
+// 5. EGRET FLOCK — Slow moving birds in the distance
+// ============================================================
+class EgretFlockLayer extends StatefulWidget {
+  const EgretFlockLayer({super.key});
+
+  @override
+  State<EgretFlockLayer> createState() => _EgretFlockLayerState();
+}
+
+class _EgretFlockLayerState extends State<EgretFlockLayer> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 40))..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _EgretPainter(_controller.value),
+          size: Size.infinite,
+        );
+      },
+    );
+  }
+}
+
+class _EgretPainter extends CustomPainter {
+  final double progress;
+  _EgretPainter(this.progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.6)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    // Move from right to left
+    double xBase = size.width + 100 - (progress * (size.width + 200));
+    double yBase = size.height * 0.25 + sin(progress * pi * 4) * 20;
+
+    // Draw a small flock (V formation)
+    final offsets = [
+      const Offset(0, 0),
+      const Offset(20, -10),
+      const Offset(15, 15),
+      const Offset(40, -5),
+      const Offset(35, 25),
+    ];
+
+    for (var i = 0; i < offsets.length; i++) {
+      var offset = offsets[i];
+      double x = xBase + offset.dx;
+      double y = yBase + offset.dy;
+      
+      // Flap wings: sin wave based on progress + offset to desync them slightly
+      double flap = sin(progress * pi * 80 + i); 
+      
+      Path path = Path();
+      // left wing
+      path.moveTo(x - 8, y - flap * 5);
+      path.quadraticBezierTo(x - 4, y - flap * 2, x, y);
+      // right wing
+      path.quadraticBezierTo(x + 4, y - flap * 2, x + 8, y - flap * 5);
+      
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+// ============================================================
+// 6. DRAGONFLIES — Fast darting insects
+// ============================================================
+class DragonflyLayer extends StatefulWidget {
+  const DragonflyLayer({super.key});
+
+  @override
+  State<DragonflyLayer> createState() => _DragonflyLayerState();
+}
+
+class _DragonflyLayerState extends State<DragonflyLayer> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 15))..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _DragonflyPainter(_controller.value),
+          size: Size.infinite,
+        );
+      },
+    );
+  }
+}
+
+class _DragonflyPainter extends CustomPainter {
+  final double progress;
+  _DragonflyPainter(this.progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final bodyPaint = Paint()..color = const Color(0xFF8D6E63).withValues(alpha: 0.8)..strokeWidth = 2..style = PaintingStyle.stroke;
+    final wingPaint = Paint()..color = Colors.white.withValues(alpha: 0.3)..style = PaintingStyle.fill;
+
+    // 3 dragonflies
+    for (int i = 0; i < 3; i++) {
+      // Darting motion: sharp curves
+      double t = (progress + i * 0.33) % 1.0;
+      double smoothT = Curves.easeInOutCubic.transform(t);
+      
+      double x = size.width * (0.2 + 0.6 * sin(smoothT * pi * 4 + i));
+      double y = size.height * (0.55 + 0.25 * cos(smoothT * pi * 6 + i));
+      
+      // fast wing blur
+      double flap = sin(progress * pi * 200);
+
+      canvas.save();
+      canvas.translate(x, y);
+      // angle based on movement direction roughly
+      canvas.rotate(sin(smoothT * pi * 4) * 0.5);
+
+      // Body (thin line)
+      canvas.drawLine(const Offset(-4, 0), const Offset(4, 0), bodyPaint);
+      
+      // Wings (blurred ovals)
+      canvas.drawOval(Rect.fromCenter(center: Offset(0, -2 - flap), width: 8, height: 3), wingPaint);
+      canvas.drawOval(Rect.fromCenter(center: Offset(0, 2 + flap), width: 8, height: 3), wingPaint);
+      
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+// ============================================================
+// 7. WATER RIPPLES — Occasional splashes in the flooded paddy
+// ============================================================
+class WaterRippleLayer extends StatefulWidget {
+  const WaterRippleLayer({super.key});
+
+  @override
+  State<WaterRippleLayer> createState() => _WaterRippleLayerState();
+}
+
+class _WaterRippleLayerState extends State<WaterRippleLayer> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  final List<_Ripple> _ripples = [];
+  final Random _rng = Random();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 10))..repeat();
+    _controller.addListener(_updateRipples);
+  }
+
+  void _updateRipples() {
+    // occasionally spawn a ripple
+    if (_rng.nextDouble() < 0.015 && _ripples.length < 4) {
+      _ripples.add(_Ripple(
+        x: 0.1 + _rng.nextDouble() * 0.8,
+        y: 0.7 + _rng.nextDouble() * 0.25,
+        startTime: DateTime.now(),
+      ));
+    }
+    
+    // remove old ripples
+    final now = DateTime.now();
+    _ripples.removeWhere((r) => now.difference(r.startTime).inSeconds > 3);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _RipplePainter(_ripples),
+          size: Size.infinite,
+        );
+      },
+    );
+  }
+}
+
+class _Ripple {
+  final double x;
+  final double y;
+  final DateTime startTime;
+  _Ripple({required this.x, required this.y, required this.startTime});
+}
+
+class _RipplePainter extends CustomPainter {
+  final List<_Ripple> ripples;
+  _RipplePainter(this.ripples);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final now = DateTime.now();
+    
+    for (var r in ripples) {
+      final elapsed = now.difference(r.startTime).inMilliseconds / 1000.0; // 0 to 3 seconds
+      if (elapsed > 3.0) continue;
+      
+      final progress = elapsed / 3.0; // 0.0 to 1.0
+      
+      final radius = progress * 40;
+      final opacity = (1.0 - progress) * 0.4;
+      
+      final paint = Paint()
+        ..color = Colors.white.withValues(alpha: opacity)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0;
+        
+      canvas.save();
+      // scale Y to make ripples oval (perspective)
+      canvas.translate(r.x * size.width, r.y * size.height);
+      canvas.scale(1.0, 0.3);
+      canvas.drawCircle(Offset.zero, radius, paint);
+      // inner ripple
+      if (progress > 0.2) {
+        canvas.drawCircle(Offset.zero, (progress - 0.2) * 40, paint);
+      }
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
