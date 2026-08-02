@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 // ============================================================
@@ -529,6 +530,292 @@ class _RipplePainter extends CustomPainter {
         canvas.drawCircle(Offset.zero, (progress - 0.2) * 40, paint);
       }
       canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+// ============================================================
+// 8. SHOOTING STARS — Occasional fast streaks at night
+// ============================================================
+class ShootingStarLayer extends StatefulWidget {
+  const ShootingStarLayer({super.key});
+
+  @override
+  State<ShootingStarLayer> createState() => _ShootingStarLayerState();
+}
+
+class _ShootingStarLayerState extends State<ShootingStarLayer> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  _Star? _currentStar;
+  final Random _rng = Random();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
+    _controller.addListener(_updateStars);
+  }
+
+  void _updateStars() {
+    if (_currentStar == null && _rng.nextDouble() < 0.005) { // very rare
+      _currentStar = _Star(
+        startX: 0.2 + _rng.nextDouble() * 0.8,
+        startY: 0.05 + _rng.nextDouble() * 0.2,
+        length: 100 + _rng.nextDouble() * 100,
+        angle: pi + pi / 4 + (_rng.nextDouble() * pi / 8), // down and left
+        startTime: DateTime.now(),
+      );
+    }
+    
+    if (_currentStar != null) {
+      final elapsed = DateTime.now().difference(_currentStar!.startTime).inMilliseconds;
+      if (elapsed > 800) { // fades fast
+        _currentStar = null;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ShootingStarPainter(_currentStar),
+          size: Size.infinite,
+        );
+      },
+    );
+  }
+}
+
+class _Star {
+  final double startX;
+  final double startY;
+  final double length;
+  final double angle;
+  final DateTime startTime;
+  _Star({required this.startX, required this.startY, required this.length, required this.angle, required this.startTime});
+}
+
+class _ShootingStarPainter extends CustomPainter {
+  final _Star? star;
+  _ShootingStarPainter(this.star);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (star == null) return;
+    
+    final elapsed = DateTime.now().difference(star!.startTime).inMilliseconds / 800.0;
+    if (elapsed > 1.0) return;
+
+    // Head of the star moves fast
+    double progress = Curves.easeOut.transform(elapsed);
+    double headX = star!.startX * size.width + cos(star!.angle) * (progress * 500);
+    double headY = star!.startY * size.height + sin(star!.angle) * (progress * 500);
+
+    // Tail follows and fades
+    double tailProgress = (elapsed - 0.2).clamp(0.0, 1.0);
+    double tailX = star!.startX * size.width + cos(star!.angle) * (tailProgress * 500);
+    double tailY = star!.startY * size.height + sin(star!.angle) * (tailProgress * 500);
+
+    final paint = Paint()
+      ..shader = ui.Gradient.linear(
+        Offset(headX, headY),
+        Offset(tailX, tailY),
+        [
+          Colors.white.withValues(alpha: (1.0 - elapsed) * 0.8), // bright head
+          Colors.white.withValues(alpha: 0.0), // faded tail
+        ],
+      )
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawLine(Offset(headX, headY), Offset(tailX, tailY), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+// ============================================================
+// 9. MIST LAYER — Low hanging morning fog
+// ============================================================
+class MistLayer extends StatefulWidget {
+  const MistLayer({super.key});
+
+  @override
+  State<MistLayer> createState() => _MistLayerState();
+}
+
+class _MistLayerState extends State<MistLayer> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 30))..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _MistPainter(_controller.value),
+          size: Size.infinite,
+        );
+      },
+    );
+  }
+}
+
+class _MistPainter extends CustomPainter {
+  final double progress;
+  _MistPainter(this.progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.15)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 50);
+
+    // Draw several wide, soft blobs drifting right
+    for (int i = 0; i < 3; i++) {
+      double speed = 0.5 + i * 0.2;
+      double xOffset = ((progress * speed + (i * 0.33)) % 1.0) * (size.width + 400) - 200;
+      double yWobble = sin(progress * pi * 2 + i) * 20;
+
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset(xOffset, size.height * 0.75 + yWobble),
+          width: size.width * 0.8,
+          height: 150,
+        ),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+// ============================================================
+// 10. WIND GUSTS — Sweeping curves of wind and dust
+// ============================================================
+class WindGustLayer extends StatefulWidget {
+  const WindGustLayer({super.key});
+
+  @override
+  State<WindGustLayer> createState() => _WindGustLayerState();
+}
+
+class _WindGustLayerState extends State<WindGustLayer> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  _Gust? _currentGust;
+  final Random _rng = Random();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
+    _controller.addListener(_updateGusts);
+  }
+
+  void _updateGusts() {
+    if (_currentGust == null && _rng.nextDouble() < 0.01) { // 1% chance per tick
+      _currentGust = _Gust(startTime: DateTime.now());
+    }
+    
+    if (_currentGust != null) {
+      final elapsed = DateTime.now().difference(_currentGust!.startTime).inMilliseconds;
+      if (elapsed > 2000) { // gust lasts 2 seconds
+        _currentGust = null;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _WindGustPainter(_currentGust),
+          size: Size.infinite,
+        );
+      },
+    );
+  }
+}
+
+class _Gust {
+  final DateTime startTime;
+  _Gust({required this.startTime});
+}
+
+class _WindGustPainter extends CustomPainter {
+  final _Gust? gust;
+  _WindGustPainter(this.gust);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (gust == null) return;
+    
+    final elapsed = DateTime.now().difference(gust!.startTime).inMilliseconds / 2000.0;
+    if (elapsed > 1.0) return;
+
+    // Fade in and out
+    double opacity = sin(elapsed * pi) * 0.4;
+    
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: opacity)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+
+    // Draw 3 swooping bezier curves moving across
+    double progress = elapsed; // 0 to 1
+    
+    for (int i = 0; i < 3; i++) {
+      double startX = size.width * 1.2 - (progress * size.width * 1.5) - (i * 50);
+      double startY = size.height * (0.6 + i * 0.1);
+      
+      Path path = Path();
+      path.moveTo(startX, startY);
+      path.quadraticBezierTo(
+        startX - 200, startY + 50 * sin(elapsed * pi * 4 + i), 
+        startX - 400, startY - 50,
+      );
+      canvas.drawPath(path, paint);
+
+      // tiny dust particles
+      final dustPaint = Paint()..color = Colors.white.withValues(alpha: opacity * 1.5);
+      canvas.drawCircle(Offset(startX - 50, startY + 10), 1.5, dustPaint);
+      canvas.drawCircle(Offset(startX - 150, startY - 20), 1.0, dustPaint);
     }
   }
 

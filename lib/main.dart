@@ -246,6 +246,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
             ),
           ),
 
+          // 1.3. Shooting Stars (Night only, behind clouds)
+          if (_state.dayPeriod == DayPhase.night)
+            const Positioned.fill(child: ShootingStarLayer()),
+
           // 1.5. Drifting Clouds
           Positioned.fill(
             child: CloudLayer(isNight: _state.dayPeriod == DayPhase.night),
@@ -257,7 +261,13 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
 
           // 2. Ambient Fireflies (only at night)
           if (_state.dayPeriod == DayPhase.night)
-            const Positioned.fill(child: FirefliesLayer()),          // 4. Procedural Rice Plant Layer
+            const Positioned.fill(child: FirefliesLayer()),
+
+          // 3. Morning/Evening Mist
+          if (_state.dayPeriod == DayPhase.morning || _state.dayPeriod == DayPhase.evening)
+            const Positioned.fill(child: MistLayer()),
+
+          // 4. Procedural Rice Plant Layer
           Positioned(
             bottom: 50, 
             left: 0,
@@ -273,6 +283,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
           // 6. Water Ripples (Flooded Paddy Stages)
           if (_state.growthStage == GrowthStage.fallow || _state.growthStage == GrowthStage.seedling)
             const Positioned.fill(child: WaterRippleLayer()),
+
+          // 6.5. Wind Gusts (Afternoon/Evening)
+          if (_state.dayPeriod == DayPhase.afternoon || _state.dayPeriod == DayPhase.evening)
+            const Positioned.fill(child: WindGustLayer()),
           // 7. Subtle Developer Controls Trigger
           Positioned(
             top: 10,
