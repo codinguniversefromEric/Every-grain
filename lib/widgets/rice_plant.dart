@@ -228,7 +228,7 @@ class _PaddyFieldPainter extends CustomPainter {
       final leafBaseX = baseX + totalSway * t * 0.5;
       final leafBaseY = baseY - stalkHeight * t;
       final isLeft = i % 2 == 0;
-      final leafSway = sin(windTime * pi * 3 + stalk.phaseOffset + i) * 8.0;
+      final leafSway = sin(windTime * pi * 4 + stalk.phaseOffset + i) * 8.0;
 
       _drawLeaf(canvas, leafBaseX, leafBaseY, isLeft, leafSway, stemColor);
     }
