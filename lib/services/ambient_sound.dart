@@ -43,6 +43,14 @@ class AmbientSoundService {
     }
   }
 
+  void pause() {
+    _ambientPlayer.pause();
+  }
+
+  void resume() {
+    _ambientPlayer.play();
+  }
+
   Future<void> dispose() async {
     await _ambientPlayer.stop();
     await _ambientPlayer.dispose();

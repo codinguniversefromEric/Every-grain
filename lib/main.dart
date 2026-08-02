@@ -52,7 +52,7 @@ class RiceFieldScreen extends StatefulWidget {
   State<RiceFieldScreen> createState() => _RiceFieldScreenState();
 }
 
-class _RiceFieldScreenState extends State<RiceFieldScreen> {
+class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingObserver {
   late FieldState _state;
   late TaiwanRegion _region;
   late DateTime _simulatedDate;
@@ -69,9 +69,19 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _simulatedDate = DateTime.now();
     _simulatedHour = DateTime.now().hour;
     _initializeState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _ambientSound.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      _ambientSound.resume();
+    }
   }
 
   Future<void> _initializeState() async {
@@ -110,6 +120,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _reflectionController.dispose();
     _ambientSound.dispose();
     super.dispose();
