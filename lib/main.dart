@@ -6,7 +6,7 @@ import 'models/field_state.dart';
 import 'services/agricultural_calendar.dart';
 import 'services/ambient_sound.dart';
 import 'visuals.dart';
-import 'widgets/custom_status_bar.dart';
+
 import 'widgets/rice_plant.dart';
 import 'widgets/developer_controls.dart';
 import 'widgets/harvest_dialog.dart';
@@ -314,13 +314,6 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
             child: RicePlantLayer(growthStage: _state.growthStage),
           ),
           
-          // 4.5. Custom Rustic Status Bar
-          const Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: CustomStatusBar(),
-          ),
 
           // 5. Agricultural Season Text Overlay
           Positioned(
@@ -339,30 +332,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                       letterSpacing: 2,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    seasonText,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                      fontSize: 16,
-                    ),
-                  ),
-                  if (_region == TaiwanRegion.south)
-                    Text(
-                      '南部地區作息',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
-                        fontSize: 12,
-                      ),
-                    )
-                  else
-                    Text(
-                      '中北部地區作息',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
-                        fontSize: 12,
-                      ),
-                    ),
+
                 ],
               ),
             ),
