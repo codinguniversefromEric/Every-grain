@@ -1,4 +1,4 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 import '../models/field_state.dart';
 
 /// Manages ambient nature sounds that shift with time of day and season.
@@ -15,7 +15,7 @@ class AmbientSoundService {
   Future<void> init() async {
     if (_isInitialized) return;
     _isInitialized = true;
-    await _ambientPlayer.setReleaseMode(ReleaseMode.loop);
+    await _ambientPlayer.setLoopMode(LoopMode.one);
     await _ambientPlayer.setVolume(0.3);
   }
 
@@ -23,20 +23,20 @@ class AmbientSoundService {
     String targetSound;
 
     if (stage == GrowthStage.fallow) {
-      targetSound = 'audio/water.wav';
+      targetSound = 'assets/audio/water.wav';
     } else if (phase == DayPhase.night) {
-      targetSound = 'audio/crickets.wav';
+      targetSound = 'assets/audio/crickets.wav';
     } else if (phase == DayPhase.evening) {
-      targetSound = 'audio/evening_wind.wav';
+      targetSound = 'assets/audio/evening_wind.wav';
     } else {
-      targetSound = 'audio/wind.wav';
+      targetSound = 'assets/audio/wind.wav';
     }
 
     if (targetSound != _currentSound) {
       _currentSound = targetSound;
       try {
-        await _ambientPlayer.stop();
-        await _ambientPlayer.play(AssetSource(targetSound));
+        await _ambientPlayer.setAsset(targetSound);
+        _ambientPlayer.play();
       } catch (e) {
         // Silently handle missing audio files
       }
@@ -48,3 +48,4 @@ class AmbientSoundService {
     await _ambientPlayer.dispose();
   }
 }
+
