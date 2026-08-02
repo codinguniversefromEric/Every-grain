@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HarvestDialog extends StatelessWidget {
-  final List<String> reflections;
   final VoidCallback onRestart;
 
-  const HarvestDialog({super.key, required this.reflections, required this.onRestart});
+  const HarvestDialog({super.key, required this.onRestart});
 
   @override
   Widget build(BuildContext context) {
