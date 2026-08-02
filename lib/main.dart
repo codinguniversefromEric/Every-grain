@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:battery_plus/battery_plus.dart';
 import 'models/field_state.dart';
 import 'services/agricultural_calendar.dart';
 import 'visuals.dart';
@@ -57,22 +58,43 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
   final TextEditingController _reflectionController = TextEditingController();
   bool _isLoading = true;
 
+  final Battery _battery = Battery();
+  int _batteryLevel = 100;
+  late int _simulatedHour;
+  bool _isSinking = false;
+
   @override
   void initState() {
     super.initState();
     _simulatedDate = DateTime.now();
+    _simulatedHour = DateTime.now().hour;
     _initializeState();
   }
 
   Future<void> _initializeState() async {
     _region = await AgriculturalCalendar.determineRegion();
     
+    try {
+      _batteryLevel = await _battery.batteryLevel;
+    } catch (e) {
+      _batteryLevel = 100;
+    }
+
+    _battery.onBatteryStateChanged.listen((BatteryState state) async {
+      if (mounted) {
+        final level = await _battery.batteryLevel;
+        setState(() {
+          _batteryLevel = level;
+        });
+      }
+    });
+    
     if (!mounted) return;
     
     setState(() {
       _state = FieldState(
         growthStage: AgriculturalCalendar.getStageForDate(_simulatedDate, _region),
-        dayPeriod: _calculateDayPhase(DateTime.now()),
+        dayPeriod: _calculateDayPhase(_simulatedHour),
         reflections: List.from(widget.initialReflections),
       );
       _isLoading = false;
@@ -85,8 +107,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
     super.dispose();
   }
 
-  DayPhase _calculateDayPhase(DateTime time) {
-    final hour = time.hour;
+  DayPhase _calculateDayPhase(int hour) {
     if (hour >= 5 && hour < 12) return DayPhase.morning;
     if (hour >= 12 && hour < 17) return DayPhase.afternoon;
     if (hour >= 17 && hour < 20) return DayPhase.evening;
@@ -96,17 +117,33 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
   Future<void> _saveReflection(String reflection) async {
     if (reflection.isEmpty) return;
 
+    FocusScope.of(context).unfocus();
+    _reflectionController.clear();
+
+    setState(() {
+      _isSinking = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    if (!mounted) return;
+
     setState(() {
       _state.reflections.add(reflection);
+      _isSinking = false;
     });
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('reflections', _state.reflections);
-    _reflectionController.clear();
-    
-    if (!mounted) return;
-    // Unfocus keyboard
-    FocusScope.of(context).unfocus();
+  }
+
+  Future<void> _clearReflections() async {
+    setState(() {
+      _state.reflections.clear();
+      _state.growthStage = GrowthStage.fallow;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('reflections');
   }
 
   void _showDeveloperControls() {
@@ -132,6 +169,19 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
               _state.growthStage = AgriculturalCalendar.getStageForDate(_simulatedDate, _region);
             });
           },
+          currentHour: _simulatedHour,
+          currentBattery: _batteryLevel,
+          onHourChanged: (hour) {
+            setState(() {
+              _simulatedHour = hour;
+              _state.dayPeriod = _calculateDayPhase(hour);
+            });
+          },
+          onBatteryChanged: (battery) {
+            setState(() {
+              _batteryLevel = battery;
+            });
+          },
         );
       },
     );
@@ -142,7 +192,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
       context: context,
       barrierColor: Colors.black87,
       builder: (context) {
-        return HarvestDialog(reflections: _state.reflections);
+        return HarvestDialog(
+          reflections: _state.reflections,
+          onRestart: _clearReflections,
+        );
       },
     );
   }
@@ -171,6 +224,17 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
     final promptText = AgriculturalCalendar.getPromptForStage(_state.growthStage);
     final seasonText = AgriculturalCalendar.getSeasonText(_simulatedDate, _region);
 
+    bool inputDisabled = false;
+    String? disableReason;
+
+    if (_batteryLevel < 20) {
+      inputDisabled = true;
+      disableReason = '體力透支，農夫該休息了';
+    } else if (_simulatedHour >= 22 || _simulatedHour < 4) {
+      inputDisabled = true;
+      disableReason = '萬物皆休，明日請早';
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false, 
       body: Stack(
@@ -187,9 +251,13 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
           if (_state.dayPeriod == DayPhase.night)
             const Positioned.fill(child: FirefliesLayer()),
             
-          // 3. Floating Memories Layer
+          // 3. Floating Memories Layer (Buried until harvest)
           Positioned.fill(
-            child: FloatingMemoriesLayer(reflections: _state.reflections),
+            child: FloatingMemoriesLayer(
+              reflections: (_state.growthStage == GrowthStage.harvested || _state.growthStage == GrowthStage.ripening)
+                  ? _state.reflections
+                  : [],
+            ),
           ),
 
           // 4. Procedural Rice Plant Layer
@@ -253,12 +321,38 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
               ),
             ),
           ),
+          // 5.5 Sinking Seed Animation Layer
+          if (_isSinking)
+            TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 1500),
+              builder: (context, value, child) {
+                // Starts at 150 from bottom, drops to -50
+                double bottomPos = 150 - (value * 200);
+                // Fades out in the last 30% of the animation
+                double opacity = value < 0.7 ? 1.0 : (1.0 - value) * 3.33;
+                
+                return Positioned(
+                  bottom: bottomPos,
+                  left: 0, 
+                  right: 0,
+                  child: Opacity(
+                    opacity: opacity.clamp(0.0, 1.0),
+                    child: const Center(
+                      child: Icon(Icons.spa, color: Color(0xFFD4AF37), size: 36), // Golden seed
+                    ),
+                  ),
+                );
+              },
+            ),
 
           // 6. Daily Reflection Input Layer
           _KeyboardInputLayer(
             controller: _reflectionController,
             promptText: promptText,
             onSubmitted: _saveReflection,
+            isDisabled: inputDisabled,
+            disabledReason: disableReason,
           ),
 
           // 7. Subtle Developer Controls Trigger
@@ -283,11 +377,15 @@ class _KeyboardInputLayer extends StatelessWidget {
   final TextEditingController controller;
   final String promptText;
   final Function(String) onSubmitted;
+  final bool isDisabled;
+  final String? disabledReason;
 
   const _KeyboardInputLayer({
     required this.controller,
     required this.promptText,
     required this.onSubmitted,
+    this.isDisabled = false,
+    this.disabledReason,
   });
 
   @override
@@ -302,16 +400,21 @@ class _KeyboardInputLayer extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.4),
+              color: isDisabled ? Colors.black.withValues(alpha: 0.8) : Colors.black.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white38),
+              border: Border.all(color: isDisabled ? Colors.red.withValues(alpha: 0.3) : Colors.white38),
             ),
             child: TextField(
               controller: controller,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: isDisabled ? Colors.grey : Colors.white),
+              enabled: !isDisabled,
               decoration: InputDecoration(
-                hintText: promptText,
-                hintStyle: const TextStyle(color: Colors.white70, fontSize: 14),
+                hintText: isDisabled ? (disabledReason ?? '無法輸入') : promptText,
+                hintStyle: TextStyle(
+                  color: isDisabled ? Colors.red.withValues(alpha: 0.5) : Colors.white70,
+                  fontSize: 14,
+                  fontWeight: isDisabled ? FontWeight.bold : FontWeight.normal,
+                ),
                 border: InputBorder.none,
               ),
               onSubmitted: onSubmitted,

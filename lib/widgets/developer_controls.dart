@@ -9,6 +9,10 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final VoidCallback onHarvestSequenceTriggered;
   final VoidCallback onSimulateNextMonth;
   final VoidCallback onToggleRegion;
+  final int currentHour;
+  final int currentBattery;
+  final ValueChanged<int> onHourChanged;
+  final ValueChanged<int> onBatteryChanged;
 
   const DeveloperControlsBottomSheet({
     super.key,
@@ -19,6 +23,10 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.onHarvestSequenceTriggered,
     required this.onSimulateNextMonth,
     required this.onToggleRegion,
+    required this.currentHour,
+    required this.currentBattery,
+    required this.onHourChanged,
+    required this.onBatteryChanged,
   });
 
   @override
@@ -28,24 +36,29 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
 class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSheet> {
   late GrowthStage _localGrowthStage;
   late DayPhase _localDayPhase;
+  late int _localHour;
+  late int _localBattery;
 
   @override
   void initState() {
     super.initState();
     _localGrowthStage = widget.currentGrowthStage;
     _localDayPhase = widget.currentDayPhase;
+    _localHour = widget.currentHour;
+    _localBattery = widget.currentBattery;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Developer Controls', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Developer Controls', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
           ElevatedButton(
             onPressed: widget.onSimulateNextMonth,
             child: const Text('Simulate Next Month (+1 month)'),
@@ -91,8 +104,38 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
               widget.onDayPhaseChanged(newPhase);
             },
           ),
+          const SizedBox(height: 20),
+          const Text('Override Hour (0-23):'),
+          Slider(
+            value: _localHour.toDouble(),
+            min: 0,
+            max: 23,
+            divisions: 23,
+            label: '$_localHour:00',
+            onChanged: (val) {
+              setState(() {
+                _localHour = val.toInt();
+              });
+              widget.onHourChanged(_localHour);
+            },
+          ),
+          const SizedBox(height: 20),
+          const Text('Override Battery (%):'),
+          Slider(
+            value: _localBattery.toDouble(),
+            min: 0,
+            max: 100,
+            divisions: 100,
+            label: '$_localBattery%',
+            onChanged: (val) {
+              setState(() {
+                _localBattery = val.toInt();
+              });
+              widget.onBatteryChanged(_localBattery);
+            },
+          ),
         ],
       ),
-    );
+    ));
   }
 }
