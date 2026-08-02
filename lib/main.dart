@@ -62,8 +62,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
   final Battery _battery = Battery();
   int _batteryLevel = 100;
   late int _simulatedHour;
-  bool _isSinking = false;
-  String _pendingReflection = '';
+
   final AmbientSoundService _ambientSound = AmbientSoundService();
 
   @override
@@ -234,19 +233,6 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
       );
     }
 
-    final promptText = AgriculturalCalendar.getPromptForStage(_state.growthStage);
-    final seasonText = AgriculturalCalendar.getSeasonText(_simulatedDate, _region);
-
-    bool inputDisabled = false;
-    String? disableReason;
-
-    if (_batteryLevel < 20) {
-      inputDisabled = true;
-      disableReason = '體力透支，農夫該休息了';
-    } else if (_simulatedHour >= 22 || _simulatedHour < 4) {
-      inputDisabled = true;
-      disableReason = '萬物皆休，明日請早';
-    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false, 
