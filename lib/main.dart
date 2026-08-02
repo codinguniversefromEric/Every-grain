@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:battery_plus/battery_plus.dart';
 import 'models/field_state.dart';
 import 'services/agricultural_calendar.dart';
+import 'services/ambient_sound.dart';
 import 'visuals.dart';
 import 'widgets/custom_status_bar.dart';
 import 'widgets/rice_plant.dart';
@@ -62,6 +63,8 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
   int _batteryLevel = 100;
   late int _simulatedHour;
   bool _isSinking = false;
+  String _pendingReflection = '';
+  final AmbientSoundService _ambientSound = AmbientSoundService();
 
   @override
   void initState() {
@@ -99,11 +102,16 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
       );
       _isLoading = false;
     });
+
+    // Initialize ambient sound
+    await _ambientSound.init();
+    _ambientSound.updateAmbience(_state.dayPeriod, _state.growthStage);
   }
 
   @override
   void dispose() {
     _reflectionController.dispose();
+    _ambientSound.dispose();
     super.dispose();
   }
 
@@ -122,19 +130,20 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
 
     setState(() {
       _isSinking = true;
+      _pendingReflection = reflection;
     });
+  }
 
-    await Future.delayed(const Duration(milliseconds: 1500));
-
+  void _onSinkingComplete() {
     if (!mounted) return;
-
     setState(() {
-      _state.reflections.add(reflection);
+      _state.reflections.add(_pendingReflection);
       _isSinking = false;
+      _pendingReflection = '';
     });
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('reflections', _state.reflections);
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setStringList('reflections', _state.reflections);
+    });
   }
 
   Future<void> _clearReflections() async {
@@ -154,8 +163,14 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
         return DeveloperControlsBottomSheet(
           currentGrowthStage: _state.growthStage,
           currentDayPhase: _state.dayPeriod,
-          onGrowthStageChanged: (stage) => setState(() => _state.growthStage = stage),
-          onDayPhaseChanged: (phase) => setState(() => _state.dayPeriod = phase),
+          onGrowthStageChanged: (stage) {
+            setState(() => _state.growthStage = stage);
+            _ambientSound.updateAmbience(_state.dayPeriod, stage);
+          },
+          onDayPhaseChanged: (phase) {
+            setState(() => _state.dayPeriod = phase);
+            _ambientSound.updateAmbience(phase, _state.growthStage);
+          },
           onHarvestSequenceTriggered: _showHarvestSequence,
           onSimulateNextMonth: () {
             setState(() {
@@ -176,6 +191,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
               _simulatedHour = hour;
               _state.dayPeriod = _calculateDayPhase(hour);
             });
+            _ambientSound.updateAmbience(_state.dayPeriod, _state.growthStage);
           },
           onBatteryChanged: (battery) {
             setState(() {
@@ -200,16 +216,30 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
     );
   }
 
-  Color _getBackgroundColor(DayPhase phase) {
+
+  Color _getSkyTopColor(DayPhase phase) {
     switch (phase) {
       case DayPhase.morning:
-        return const Color(0xFF87CEEB); // Sky blue
+        return const Color(0xFF1E88E5);
       case DayPhase.afternoon:
-        return const Color(0xFF4682B4); // Steel blue
+        return const Color(0xFF1565C0);
       case DayPhase.evening:
-        return const Color(0xFFFF7F50); // Coral/Sunset
+        return const Color(0xFFE65100);
       case DayPhase.night:
-        return const Color(0xFF191970); // Midnight blue
+        return const Color(0xFF0D0D2B);
+    }
+  }
+
+  Color _getSkyBottomColor(DayPhase phase) {
+    switch (phase) {
+      case DayPhase.morning:
+        return const Color(0xFFB3E5FC);
+      case DayPhase.afternoon:
+        return const Color(0xFF90CAF9);
+      case DayPhase.evening:
+        return const Color(0xFFFFCC80);
+      case DayPhase.night:
+        return const Color(0xFF1A1A3E);
     }
   }
 
@@ -239,12 +269,17 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
       resizeToAvoidBottomInset: false, 
       body: Stack(
         children: [
-          // 1. Dynamic Simple Background Layer
+          // 1. Living Sky Background
           Positioned.fill(
-            child: AnimatedContainer(
-              duration: const Duration(seconds: 2),
-              color: _getBackgroundColor(_state.dayPeriod),
+            child: LivingSkyBackground(
+              topColor: _getSkyTopColor(_state.dayPeriod),
+              bottomColor: _getSkyBottomColor(_state.dayPeriod),
             ),
+          ),
+
+          // 1.5. Drifting Clouds
+          Positioned.fill(
+            child: CloudLayer(isNight: _state.dayPeriod == DayPhase.night),
           ),
 
           // 2. Ambient Fireflies (only at night)
@@ -323,27 +358,8 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> {
           ),
           // 5.5 Sinking Seed Animation Layer
           if (_isSinking)
-            TweenAnimationBuilder(
-              tween: Tween<double>(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 1500),
-              builder: (context, value, child) {
-                // Starts at 150 from bottom, drops to -50
-                double bottomPos = 150 - (value * 200);
-                // Fades out in the last 30% of the animation
-                double opacity = value < 0.7 ? 1.0 : (1.0 - value) * 3.33;
-                
-                return Positioned(
-                  bottom: bottomPos,
-                  left: 0, 
-                  right: 0,
-                  child: Opacity(
-                    opacity: opacity.clamp(0.0, 1.0),
-                    child: const Center(
-                      child: Icon(Icons.spa, color: Color(0xFFD4AF37), size: 36), // Golden seed
-                    ),
-                  ),
-                );
-              },
+            Positioned.fill(
+              child: SinkingSeedAnimation(onComplete: _onSinkingComplete),
             ),
 
           // 6. Daily Reflection Input Layer
@@ -390,32 +406,56 @@ class _KeyboardInputLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Earthy, worn-wood palette
+    final bgColor = isDisabled
+        ? const Color(0xFF1A1008).withValues(alpha: 0.9)
+        : const Color(0xFF3E2723).withValues(alpha: 0.7);
+    final borderColor = isDisabled
+        ? const Color(0xFF8B0000).withValues(alpha: 0.4)
+        : const Color(0xFF8D6E63).withValues(alpha: 0.6);
+
     return Positioned(
       bottom: MediaQuery.of(context).viewInsets.bottom,
-      left: 20,
-      right: 20,
+      left: 16,
+      right: 16,
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
+          padding: const EdgeInsets.only(bottom: 16.0),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             decoration: BoxDecoration(
-              color: isDisabled ? Colors.black.withValues(alpha: 0.8) : Colors.black.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: isDisabled ? Colors.red.withValues(alpha: 0.3) : Colors.white38),
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: TextField(
               controller: controller,
-              style: TextStyle(color: isDisabled ? Colors.grey : Colors.white),
+              style: TextStyle(
+                color: isDisabled ? Colors.grey.shade600 : const Color(0xFFFFF8E7),
+                fontSize: 15,
+                height: 1.4,
+              ),
               enabled: !isDisabled,
               decoration: InputDecoration(
                 hintText: isDisabled ? (disabledReason ?? '無法輸入') : promptText,
                 hintStyle: TextStyle(
-                  color: isDisabled ? Colors.red.withValues(alpha: 0.5) : Colors.white70,
+                  color: isDisabled
+                      ? const Color(0xFF8B0000).withValues(alpha: 0.6)
+                      : const Color(0xFFFFF8E7).withValues(alpha: 0.5),
                   fontSize: 14,
                   fontWeight: isDisabled ? FontWeight.bold : FontWeight.normal,
                 ),
                 border: InputBorder.none,
+                suffixIcon: !isDisabled
+                    ? Icon(Icons.arrow_upward, color: const Color(0xFFD4AF37).withValues(alpha: 0.5), size: 20)
+                    : Icon(Icons.lock_outline, color: const Color(0xFF8B0000).withValues(alpha: 0.4), size: 20),
               ),
               onSubmitted: onSubmitted,
             ),

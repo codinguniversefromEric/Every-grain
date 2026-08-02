@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 
+/// A living, breathing paddy field — not a single lonely stem,
+/// but a sea of rice stalks, each swaying to its own rhythm.
 class RicePlantLayer extends StatefulWidget {
   final GrowthStage growthStage;
 
@@ -12,36 +14,111 @@ class RicePlantLayer extends StatefulWidget {
 }
 
 class _RicePlantLayerState extends State<RicePlantLayer> with SingleTickerProviderStateMixin {
-  late AnimationController _swayController;
+  late AnimationController _windController;
+  late List<_RiceStalk> _stalks;
+  final Random _rng = Random(42);
 
   @override
   void initState() {
     super.initState();
-    _swayController = AnimationController(
+    _windController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat(reverse: true);
+      duration: const Duration(seconds: 6),
+    )..repeat();
+    _generateField();
+  }
+
+  @override
+  void didUpdateWidget(RicePlantLayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.growthStage != widget.growthStage) {
+      _generateField();
+    }
+  }
+
+  void _generateField() {
+    if (widget.growthStage == GrowthStage.harvested) {
+      _stalks = [];
+      return;
+    }
+
+    if (widget.growthStage == GrowthStage.fallow) {
+      _stalks = [];
+      return;
+    }
+
+    // Create 15-25 stalks scattered across the bottom of the screen
+    int count;
+    switch (widget.growthStage) {
+      case GrowthStage.seedling:
+        count = 12;
+        break;
+      case GrowthStage.tillering:
+        count = 20;
+        break;
+      case GrowthStage.heading:
+      case GrowthStage.ripening:
+        count = 25;
+        break;
+      default:
+        count = 0;
+    }
+
+    _stalks = List.generate(count, (i) {
+      // Distribute across the width with some randomness
+      double xNorm = (i / count) + (_rng.nextDouble() - 0.5) * 0.08;
+      xNorm = xNorm.clamp(0.05, 0.95);
+
+      return _RiceStalk(
+        xPosition: xNorm,
+        height: 0.5 + _rng.nextDouble() * 0.5, // 50-100% of max height
+        phaseOffset: _rng.nextDouble() * pi * 2, // Each stalk sways independently
+        thickness: 2.0 + _rng.nextDouble() * 2.0,
+        leafCount: widget.growthStage == GrowthStage.seedling ? 0 : 1 + _rng.nextInt(3),
+        grainCount: (widget.growthStage == GrowthStage.heading || widget.growthStage == GrowthStage.ripening)
+            ? 3 + _rng.nextInt(5)
+            : 0,
+        grainDroop: widget.growthStage == GrowthStage.ripening ? 0.3 + _rng.nextDouble() * 0.4 : 0.0,
+      );
+    });
   }
 
   @override
   void dispose() {
-    _swayController.dispose();
+    _windController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.growthStage == GrowthStage.harvested) {
-      return const SizedBox.shrink(); // Hide plant when harvested
+      // Show stubble — short cut stems
+      return CustomPaint(
+        painter: _StubblePainter(),
+        size: const Size(double.infinity, 300),
+      );
+    }
+
+    if (widget.growthStage == GrowthStage.fallow) {
+      return AnimatedBuilder(
+        animation: _windController,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: _WaterPainter(_windController.value),
+            size: const Size(double.infinity, 300),
+          );
+        },
+      );
     }
 
     return AnimatedBuilder(
-      animation: _swayController,
+      animation: _windController,
       builder: (context, child) {
         return CustomPaint(
-          painter: _RicePlantPainter(
+          painter: _PaddyFieldPainter(
+            stalks: _stalks,
+            windTime: _windController.value,
             growthStage: widget.growthStage,
-            swayAmount: _swayController.value,
           ),
           size: const Size(double.infinity, 300),
         );
@@ -50,159 +127,245 @@ class _RicePlantLayerState extends State<RicePlantLayer> with SingleTickerProvid
   }
 }
 
-class _RicePlantPainter extends CustomPainter {
-  final GrowthStage growthStage;
-  final double swayAmount;
+class _RiceStalk {
+  final double xPosition;     // 0.0 - 1.0 normalized x
+  final double height;        // 0.0 - 1.0 normalized height
+  final double phaseOffset;   // Unique sway phase
+  final double thickness;
+  final int leafCount;
+  final int grainCount;
+  final double grainDroop;    // How much grains weigh the stalk down (ripening)
 
-  _RicePlantPainter({required this.growthStage, required this.swayAmount});
+  _RiceStalk({
+    required this.xPosition,
+    required this.height,
+    required this.phaseOffset,
+    required this.thickness,
+    required this.leafCount,
+    required this.grainCount,
+    required this.grainDroop,
+  });
+}
+
+class _PaddyFieldPainter extends CustomPainter {
+  final List<_RiceStalk> stalks;
+  final double windTime;
+  final GrowthStage growthStage;
+
+  _PaddyFieldPainter({
+    required this.stalks,
+    required this.windTime,
+    required this.growthStage,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = _getPlantColor()
-      ..strokeWidth = 6.0
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
+    // Draw muddy ground first
+    _drawGround(canvas, size);
 
-    final double width = size.width;
-    final double height = size.height;
-
-    if (growthStage == GrowthStage.harvested) {
-      return; // Handled outside, but fallback
-    }
-
-    if (growthStage == GrowthStage.fallow) {
-      _drawFloodedField(canvas, size, swayAmount);
-      return;
-    }
-
-    // Base position
-    final double baseX = width / 2;
-    final double baseY = height;
-
-    // Sway effect based on sine wave
-    final double swayOffset = sin(swayAmount * pi * 2) * 15.0;
-
-    // Draw main stem based on stage
-    double stemHeight = 0;
-    switch (growthStage) {
-      case GrowthStage.seedling:
-        stemHeight = height * 0.3;
-        break;
-      case GrowthStage.tillering:
-        stemHeight = height * 0.6;
-        break;
-      case GrowthStage.heading:
-      case GrowthStage.ripening:
-        stemHeight = height * 0.8;
-        break;
-      case GrowthStage.harvested:
-      case GrowthStage.fallow:
-        stemHeight = 0; // Handled outside, but fallback
-        break;
-    }
-
-    final topX = baseX + swayOffset;
-    final topY = baseY - stemHeight;
-
-    // Draw main stem
-    final path = Path();
-    path.moveTo(baseX, baseY);
-    path.quadraticBezierTo(
-      baseX + (swayOffset / 2),
-      baseY - (stemHeight / 2),
-      topX,
-      topY,
-    );
-
-    canvas.drawPath(path, paint);
-
-    // Draw leaves based on stage
-    if (growthStage != GrowthStage.seedling) {
-      _drawLeaf(canvas, paint, path, baseX, baseY, topX, topY, stemHeight * 0.4, true, swayOffset);
-      _drawLeaf(canvas, paint, path, baseX, baseY, topX, topY, stemHeight * 0.7, false, swayOffset);
-    }
-
-    // Draw grains for heading/ripening
-    if (growthStage == GrowthStage.heading || growthStage == GrowthStage.ripening) {
-      final grainPaint = Paint()
-        ..color = growthStage == GrowthStage.ripening ? Colors.amber : Colors.lightGreenAccent
-        ..style = PaintingStyle.fill;
-      
-      canvas.drawCircle(Offset(topX + 5, topY + 10), 6, grainPaint);
-      canvas.drawCircle(Offset(topX - 5, topY + 20), 6, grainPaint);
-      canvas.drawCircle(Offset(topX + 8, topY + 30), 6, grainPaint);
-      canvas.drawCircle(Offset(topX - 8, topY + 40), 6, grainPaint);
-      canvas.drawCircle(Offset(topX + 5, topY + 50), 6, grainPaint);
+    for (final stalk in stalks) {
+      _drawStalk(canvas, size, stalk);
     }
   }
 
-  void _drawLeaf(Canvas canvas, Paint paint, Path stemPath, double baseX, double baseY, double topX, double topY, double offset, bool isLeft, double sway) {
-    // Simple straight line for leaf
-    final startY = baseY - offset;
-    final startX = baseX + (sway / 2) * (offset / (baseY - topY)); // approximate point on stem
-    
-    final endX = isLeft ? startX - 40 : startX + 40;
-    final endY = startY - 30;
+  void _drawGround(Canvas canvas, Size size) {
+    final groundPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.brown.withValues(alpha: 0.0),
+          Colors.brown.withValues(alpha: 0.2),
+          const Color(0xFF3E2723).withValues(alpha: 0.5),
+        ],
+        stops: const [0.6, 0.85, 1.0],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
-    final leafPath = Path();
-    leafPath.moveTo(startX, startY);
-    leafPath.quadraticBezierTo(
-      startX + (isLeft ? -20 : 20),
-      startY,
-      endX,
-      endY,
-    );
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), groundPaint);
+  }
 
-    final leafPaint = Paint()
-      ..color = paint.color
-      ..strokeWidth = 4.0
+  void _drawStalk(Canvas canvas, Size size, _RiceStalk stalk) {
+    final baseX = stalk.xPosition * size.width;
+    final baseY = size.height;
+    final maxHeight = size.height * 0.85;
+    final stalkHeight = maxHeight * stalk.height;
+
+    // Multi-layered wind: a slow global breeze + a faster local flutter
+    final globalWind = sin(windTime * pi * 2 + stalk.phaseOffset) * 18.0;
+    final localFlutter = sin(windTime * pi * 4 + stalk.phaseOffset * 1.7) * 5.0;
+    final totalSway = globalWind + localFlutter;
+
+    // Stalk droops more when there are heavy grains
+    final droopX = totalSway + stalk.grainDroop * 30.0;
+    final droopY = stalk.grainDroop * 20.0;
+
+    final tipX = baseX + droopX;
+    final tipY = baseY - stalkHeight + droopY;
+
+    // --- Draw the stem ---
+    final stemColor = _getStemColor();
+    final stemPaint = Paint()
+      ..color = stemColor
+      ..strokeWidth = stalk.thickness
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
+    final stemPath = Path();
+    stemPath.moveTo(baseX, baseY);
+    // Use a cubic bezier for a more organic curve
+    final controlY1 = baseY - stalkHeight * 0.4;
+    final controlY2 = baseY - stalkHeight * 0.7;
+    stemPath.cubicTo(
+      baseX + totalSway * 0.3, controlY1,
+      baseX + totalSway * 0.7, controlY2,
+      tipX, tipY,
+    );
+    canvas.drawPath(stemPath, stemPaint);
+
+    // --- Draw leaves ---
+    for (int i = 0; i < stalk.leafCount; i++) {
+      final t = 0.3 + (i * 0.25); // Position along stem
+      final leafBaseX = baseX + totalSway * t * 0.5;
+      final leafBaseY = baseY - stalkHeight * t;
+      final isLeft = i % 2 == 0;
+      final leafSway = sin(windTime * pi * 3 + stalk.phaseOffset + i) * 8.0;
+
+      _drawLeaf(canvas, leafBaseX, leafBaseY, isLeft, leafSway, stemColor);
+    }
+
+    // --- Draw grain panicle ---
+    if (stalk.grainCount > 0) {
+      _drawGrainPanicle(canvas, tipX, tipY, stalk, totalSway);
+    }
+  }
+
+  void _drawLeaf(Canvas canvas, double x, double y, bool isLeft, double sway, Color color) {
+    final leafPaint = Paint()
+      ..color = color.withValues(alpha: 0.8)
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final dir = isLeft ? -1.0 : 1.0;
+    final leafPath = Path();
+    leafPath.moveTo(x, y);
+    leafPath.quadraticBezierTo(
+      x + dir * (25 + sway), y - 8,
+      x + dir * (40 + sway * 1.5), y + 5,
+    );
     canvas.drawPath(leafPath, leafPaint);
   }
 
-  void _drawFloodedField(Canvas canvas, Size size, double sway) {
-    final paint = Paint()
-      ..color = Colors.lightBlueAccent.withValues(alpha: 0.3)
-      ..strokeWidth = 2.0
-      ..style = PaintingStyle.stroke;
+  void _drawGrainPanicle(Canvas canvas, double tipX, double tipY, _RiceStalk stalk, double sway) {
+    final isRipening = growthStage == GrowthStage.ripening;
+    final grainColor = isRipening ? const Color(0xFFD4AF37) : const Color(0xFF8BC34A);
+    final grainPaint = Paint()
+      ..color = grainColor
+      ..style = PaintingStyle.fill;
 
-    final double width = size.width;
-    final double height = size.height;
+    // Grains hang from the tip in a panicle shape
+    for (int i = 0; i < stalk.grainCount; i++) {
+      final t = i / stalk.grainCount;
+      final grainX = tipX + sin(t * pi + sway * 0.05) * (8 + t * 6);
+      final grainY = tipY + t * 35 + sin(sway * 0.1 + i) * 2;
+      final radius = 3.0 + t * 1.5;
 
-    // Draw a few simple horizontal rippling lines representing water
-    for (int i = 0; i < 5; i++) {
-      final y = height - (i * 20) - 10;
-      final path = Path();
-      
-      // Add subtle ripple based on sway
-      double ripple = sin((sway + i * 0.2) * pi * 2) * 10;
-      
-      path.moveTo(width * 0.2, y);
-      path.quadraticBezierTo(width * 0.5, y + ripple, width * 0.8, y - ripple);
-      
-      canvas.drawPath(path, paint);
+      // Tiny oval grains
+      canvas.drawOval(
+        Rect.fromCenter(center: Offset(grainX, grainY), width: radius * 1.5, height: radius),
+        grainPaint,
+      );
     }
   }
 
-  Color _getPlantColor() {
+  Color _getStemColor() {
     switch (growthStage) {
-      case GrowthStage.fallow:
       case GrowthStage.seedling:
+        return const Color(0xFF66BB6A); // Fresh green
       case GrowthStage.tillering:
+        return const Color(0xFF43A047); // Deep green
       case GrowthStage.heading:
-        return Colors.green;
+        return const Color(0xFF558B2F); // Dark olive green
       case GrowthStage.ripening:
-        return Colors.yellow.shade700;
-      case GrowthStage.harvested:
-        return Colors.green; // Fallback
+        return const Color(0xFF9E9D24); // Yellowing
+      default:
+        return Colors.green;
     }
   }
 
   @override
-  bool shouldRepaint(covariant _RicePlantPainter oldDelegate) {
-    return oldDelegate.growthStage != growthStage || oldDelegate.swayAmount != swayAmount;
+  bool shouldRepaint(covariant _PaddyFieldPainter oldDelegate) {
+    return oldDelegate.windTime != windTime || oldDelegate.growthStage != growthStage;
   }
+}
+
+/// After harvest: short broken stubs in the mud
+class _StubblePainter extends CustomPainter {
+  final Random _rng = Random(99);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final stubPaint = Paint()
+      ..color = const Color(0xFF8D6E63)
+      ..strokeWidth = 3.0
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    for (int i = 0; i < 30; i++) {
+      final x = (i / 30) * size.width + (_rng.nextDouble() - 0.5) * 20;
+      final stubHeight = 10 + _rng.nextDouble() * 25;
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + (_rng.nextDouble() - 0.5) * 3, size.height - stubHeight),
+        stubPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// Fallow season: flooded paddy with animated ripples
+class _WaterPainter extends CustomPainter {
+  final double time;
+  _WaterPainter(this.time);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Water surface
+    final waterPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.lightBlueAccent.withValues(alpha: 0.05),
+          Colors.lightBlueAccent.withValues(alpha: 0.2),
+          Colors.blueAccent.withValues(alpha: 0.3),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    canvas.drawRect(Rect.fromLTWH(0, size.height * 0.5, size.width, size.height * 0.5), waterPaint);
+
+    // Animated ripple lines
+    final ripplePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.15)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    for (int i = 0; i < 8; i++) {
+      final y = size.height * 0.55 + i * 18;
+      final ripple = sin((time * pi * 2) + i * 0.8) * 12;
+      final path = Path();
+      path.moveTo(0, y);
+      for (double x = 0; x < size.width; x += 30) {
+        final localRipple = sin((time * pi * 2) + x * 0.01 + i * 0.5) * 6 + ripple;
+        path.lineTo(x, y + localRipple);
+      }
+      canvas.drawPath(path, ripplePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _WaterPainter oldDelegate) => true;
 }
