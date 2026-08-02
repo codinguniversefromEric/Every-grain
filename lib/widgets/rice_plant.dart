@@ -345,7 +345,7 @@ class _WaterPainter extends CustomPainter {
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
-    canvas.drawRect(Rect.fromLTWH(0, size.height * 0.5, size.width, size.height * 0.5), waterPaint);
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), waterPaint);
 
     // Animated ripple lines
     final ripplePaint = Paint()
@@ -353,8 +353,9 @@ class _WaterPainter extends CustomPainter {
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
-    for (int i = 0; i < 8; i++) {
-      final y = size.height * 0.55 + i * 18;
+    for (int i = 0; i < 12; i++) {
+      // Ripples get further apart towards the bottom (perspective)
+      final y = size.height * 0.2 + (i * i * 1.5);
       final ripple = sin((time * pi * 2) + i * 0.8) * 12;
       final path = Path();
       path.moveTo(0, y);
