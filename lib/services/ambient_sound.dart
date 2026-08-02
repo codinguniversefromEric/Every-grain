@@ -23,13 +23,13 @@ class AmbientSoundService {
     String targetSound;
 
     if (stage == GrowthStage.fallow) {
-      targetSound = 'audio/water.mp3';
+      targetSound = 'audio/water.wav';
     } else if (phase == DayPhase.night) {
-      targetSound = 'audio/crickets.mp3';
+      targetSound = 'audio/crickets.wav';
     } else if (phase == DayPhase.evening) {
-      targetSound = 'audio/evening_wind.mp3';
+      targetSound = 'audio/evening_wind.wav';
     } else {
-      targetSound = 'audio/wind.mp3';
+      targetSound = 'audio/wind.wav';
     }
 
     if (targetSound != _currentSound) {
