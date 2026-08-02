@@ -133,37 +133,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
     return DayPhase.night;
   }
 
-  Future<void> _saveReflection(String reflection) async {
-    if (reflection.isEmpty) return;
-
-    FocusScope.of(context).unfocus();
-    _reflectionController.clear();
-
+  void _resetSeason() {
     setState(() {
-      _isSinking = true;
-      _pendingReflection = reflection;
-    });
-  }
-
-  void _onSinkingComplete() {
-    if (!mounted) return;
-    setState(() {
-      _state.reflections.add(_pendingReflection);
-      _isSinking = false;
-      _pendingReflection = '';
-    });
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setStringList('reflections', _state.reflections);
-    });
-  }
-
-  Future<void> _clearReflections() async {
-    setState(() {
-      _state.reflections.clear();
       _state.growthStage = GrowthStage.fallow;
     });
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('reflections');
   }
 
   void _showDeveloperControls() {
@@ -220,8 +193,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
       barrierColor: Colors.black87,
       builder: (context) {
         return HarvestDialog(
-          reflections: _state.reflections,
-          onRestart: _clearReflections,
+          onRestart: _resetSeason,
         );
       },
     );
@@ -297,14 +269,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
           if (_state.dayPeriod == DayPhase.night)
             const Positioned.fill(child: FirefliesLayer()),
             
-          // 3. Floating Memories Layer (Buried until harvest)
-          Positioned.fill(
-            child: FloatingMemoriesLayer(
-              reflections: (_state.growthStage == GrowthStage.harvested || _state.growthStage == GrowthStage.ripening)
-                  ? _state.reflections
-                  : [],
-            ),
-          ),
+
 
           // 4. Procedural Rice Plant Layer
           Positioned(
@@ -315,42 +280,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
           ),
           
 
-          // 5. Agricultural Season Text Overlay
-          Positioned(
-            top: 60,
-            left: 24,
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '粒粒皆辛苦',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
 
-                ],
-              ),
-            ),
-          ),
-          // 5.5 Sinking Seed Animation Layer
-          if (_isSinking)
-            Positioned.fill(
-              child: SinkingSeedAnimation(onComplete: _onSinkingComplete),
-            ),
-
-          // 6. Daily Reflection Input Layer
-          _KeyboardInputLayer(
-            controller: _reflectionController,
-            promptText: promptText,
-            onSubmitted: _saveReflection,
-            isDisabled: inputDisabled,
-            disabledReason: disableReason,
-          ),
 
           // 7. Subtle Developer Controls Trigger
           Positioned(
@@ -370,79 +300,3 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
   }
 }
 
-class _KeyboardInputLayer extends StatelessWidget {
-  final TextEditingController controller;
-  final String promptText;
-  final Function(String) onSubmitted;
-  final bool isDisabled;
-  final String? disabledReason;
-
-  const _KeyboardInputLayer({
-    required this.controller,
-    required this.promptText,
-    required this.onSubmitted,
-    this.isDisabled = false,
-    this.disabledReason,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Earthy, worn-wood palette
-    final bgColor = isDisabled
-        ? const Color(0xFF1A1008).withValues(alpha: 0.9)
-        : const Color(0xFF3E2723).withValues(alpha: 0.7);
-    final borderColor = isDisabled
-        ? const Color(0xFF8B0000).withValues(alpha: 0.4)
-        : const Color(0xFF8D6E63).withValues(alpha: 0.6);
-
-    return Positioned(
-      bottom: MediaQuery.of(context).viewInsets.bottom,
-      left: 16,
-      right: 16,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderColor, width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TextField(
-              controller: controller,
-              style: TextStyle(
-                color: isDisabled ? Colors.grey.shade600 : const Color(0xFFFFF8E7),
-                fontSize: 15,
-                height: 1.4,
-              ),
-              enabled: !isDisabled,
-              decoration: InputDecoration(
-                hintText: isDisabled ? (disabledReason ?? '無法輸入') : promptText,
-                hintStyle: TextStyle(
-                  color: isDisabled
-                      ? const Color(0xFF8B0000).withValues(alpha: 0.6)
-                      : const Color(0xFFFFF8E7).withValues(alpha: 0.5),
-                  fontSize: 14,
-                  fontWeight: isDisabled ? FontWeight.bold : FontWeight.normal,
-                ),
-                border: InputBorder.none,
-                suffixIcon: !isDisabled
-                    ? Icon(Icons.arrow_upward, color: const Color(0xFFD4AF37).withValues(alpha: 0.5), size: 20)
-                    : Icon(Icons.lock_outline, color: const Color(0xFF8B0000).withValues(alpha: 0.4), size: 20),
-              ),
-              onSubmitted: onSubmitted,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
