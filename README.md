@@ -18,15 +18,15 @@
 
 ```mermaid
 graph TD
-    A[main.dart (UI 組裝)] --> B[StateManager]
+    A["main.dart (UI 組裝)"] --> B[StateManager]
     B --> C[WeatherService]
     B --> D[BatteryService]
     B --> E[AmbientSoundService]
     B --> F[AgriculturalCalendar]
     B --> G[VarietyService]
     A --> H[Visual Layers]
-    H --> I[LivingSky, Clouds, Rain, etc.]
-    A --> J[RicePlant Layer]
+    H --> I["LivingSky, Clouds, Rain, etc."]
+    A --> J["RicePlant Layer"]
 ```
 
 - **`lib/services/`**: 純業務邏輯與 API 串接，不依賴 UI。包含狀態管理、天氣、定位、節氣計算與環境音。

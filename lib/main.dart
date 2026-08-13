@@ -216,7 +216,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                 bottom: 50, 
                 left: 0,
                 right: 0,
-                child: RicePlantLayer(growthStage: state.growthStage),
+                child: RicePlantLayer(growthStage: state.growthStage, variety: state.currentVariety),
               ),
 
               // 4.5. Swipe Hint Overlay

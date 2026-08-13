@@ -1,5 +1,6 @@
 import 'package:just_audio/just_audio.dart';
 import '../models/field_state.dart';
+import 'app_logger.dart';
 
 /// Manages ambient nature sounds that shift with time of day and season.
 /// Wind during the day, crickets at night, water during fallow.
@@ -66,8 +67,8 @@ class AmbientSoundService {
       try {
         await _ambientPlayer.setAsset(targetSound);
         _ambientPlayer.play();
-      } catch (e) {
-        // Silently handle missing audio files
+      } catch (e, stackTrace) {
+        AppLogger.e('Failed to play ambient sound: $_currentSound', e, stackTrace);
       }
     }
   }
@@ -91,8 +92,8 @@ class AmbientSoundService {
           player.dispose();
         }
       });
-    } catch (e) {
-      // Silently handle
+    } catch (e, stackTrace) {
+      AppLogger.e('Failed to play harvest sound', e, stackTrace);
       player.dispose();
     }
   }

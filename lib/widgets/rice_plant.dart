@@ -1,13 +1,16 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
+import '../models/rice_variety.dart';
 
 /// A living, breathing paddy field — not a single lonely stem,
 /// but a sea of rice stalks, each swaying to its own rhythm.
+/// Now differentiates visually by rice variety.
 class RicePlantLayer extends StatefulWidget {
   final GrowthStage growthStage;
+  final RiceVariety? variety;
 
-  const RicePlantLayer({super.key, required this.growthStage});
+  const RicePlantLayer({super.key, required this.growthStage, this.variety});
 
   @override
   State<RicePlantLayer> createState() => _RicePlantLayerState();
@@ -31,48 +34,50 @@ class _RicePlantLayerState extends State<RicePlantLayer> with SingleTickerProvid
   @override
   void didUpdateWidget(RicePlantLayer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.growthStage != widget.growthStage) {
+    if (oldWidget.growthStage != widget.growthStage || oldWidget.variety != widget.variety) {
       _generateField();
     }
   }
 
+  VarietyVisualTraits get _traits =>
+      widget.variety?.visualTraits ?? RiceVariety.tainan11.visualTraits;
+
   void _generateField() {
-    if (widget.growthStage == GrowthStage.harvested) {
+    if (widget.growthStage == GrowthStage.harvested || widget.growthStage == GrowthStage.fallow) {
       _stalks = [];
       return;
     }
 
-    if (widget.growthStage == GrowthStage.fallow) {
-      _stalks = [];
-      return;
-    }
+    final traits = _traits;
 
-    // Create 15-25 stalks scattered across the bottom of the screen
+    // Base counts adjusted by variety density
     int count;
     switch (widget.growthStage) {
       case GrowthStage.seedling:
-        count = 12;
+        count = (12 * traits.maxStalksMultiplier).round();
         break;
       case GrowthStage.tillering:
-        count = 20;
+        count = (20 * traits.maxStalksMultiplier).round();
         break;
       case GrowthStage.heading:
       case GrowthStage.ripening:
-        count = 25;
+        count = (25 * traits.maxStalksMultiplier).round();
         break;
       default:
         count = 0;
     }
 
     _stalks = List.generate(count, (i) {
-      // Distribute across the width with some randomness
       double xNorm = (i / count) + (_rng.nextDouble() - 0.5) * 0.08;
       xNorm = xNorm.clamp(0.05, 0.95);
 
+      // Height variation influenced by variety
+      final baseHeight = 0.5 + _rng.nextDouble() * traits.stalkHeightRange;
+
       return _RiceStalk(
         xPosition: xNorm,
-        height: 0.5 + _rng.nextDouble() * 0.5, // 50-100% of max height
-        phaseOffset: _rng.nextDouble() * pi * 2, // Each stalk sways independently
+        height: baseHeight.clamp(0.3, 1.0),
+        phaseOffset: _rng.nextDouble() * pi * 2,
         thickness: 2.0 + _rng.nextDouble() * 2.0,
         leafCount: widget.growthStage == GrowthStage.seedling ? 0 : 1 + _rng.nextInt(3),
         grainCount: (widget.growthStage == GrowthStage.heading || widget.growthStage == GrowthStage.ripening)
@@ -92,7 +97,6 @@ class _RicePlantLayerState extends State<RicePlantLayer> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     if (widget.growthStage == GrowthStage.harvested) {
-      // Show stubble — short cut stems
       return CustomPaint(
         painter: _StubblePainter(),
         size: const Size(double.infinity, 300),
@@ -119,6 +123,7 @@ class _RicePlantLayerState extends State<RicePlantLayer> with SingleTickerProvid
             stalks: _stalks,
             windTime: _windController.value,
             growthStage: widget.growthStage,
+            traits: _traits,
           ),
           size: const Size(double.infinity, 300),
         );
@@ -128,13 +133,13 @@ class _RicePlantLayerState extends State<RicePlantLayer> with SingleTickerProvid
 }
 
 class _RiceStalk {
-  final double xPosition;     // 0.0 - 1.0 normalized x
-  final double height;        // 0.0 - 1.0 normalized height
-  final double phaseOffset;   // Unique sway phase
+  final double xPosition;
+  final double height;
+  final double phaseOffset;
   final double thickness;
   final int leafCount;
   final int grainCount;
-  final double grainDroop;    // How much grains weigh the stalk down (ripening)
+  final double grainDroop;
 
   _RiceStalk({
     required this.xPosition,
@@ -151,18 +156,18 @@ class _PaddyFieldPainter extends CustomPainter {
   final List<_RiceStalk> stalks;
   final double windTime;
   final GrowthStage growthStage;
+  final VarietyVisualTraits traits;
 
   _PaddyFieldPainter({
     required this.stalks,
     required this.windTime,
     required this.growthStage,
+    required this.traits,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Draw muddy ground first
     _drawGround(canvas, size);
-
     for (final stalk in stalks) {
       _drawStalk(canvas, size, stalk);
     }
@@ -190,19 +195,17 @@ class _PaddyFieldPainter extends CustomPainter {
     final maxHeight = size.height * 0.85;
     final stalkHeight = maxHeight * stalk.height;
 
-    // Multi-layered wind: a slow global breeze + a faster local flutter
     final globalWind = sin(windTime * pi * 2 + stalk.phaseOffset) * 18.0;
     final localFlutter = sin(windTime * pi * 4 + stalk.phaseOffset * 1.7) * 5.0;
     final totalSway = globalWind + localFlutter;
 
-    // Stalk droops more when there are heavy grains
     final droopX = totalSway + stalk.grainDroop * 30.0;
     final droopY = stalk.grainDroop * 20.0;
 
     final tipX = baseX + droopX;
     final tipY = baseY - stalkHeight + droopY;
 
-    // --- Draw the stem ---
+    // Use variety-specific stem color, adjusted by growth stage
     final stemColor = _getStemColor();
     final stemPaint = Paint()
       ..color = stemColor
@@ -212,7 +215,6 @@ class _PaddyFieldPainter extends CustomPainter {
 
     final stemPath = Path();
     stemPath.moveTo(baseX, baseY);
-    // Use a cubic bezier for a more organic curve
     final controlY1 = baseY - stalkHeight * 0.4;
     final controlY2 = baseY - stalkHeight * 0.7;
     stemPath.cubicTo(
@@ -222,18 +224,17 @@ class _PaddyFieldPainter extends CustomPainter {
     );
     canvas.drawPath(stemPath, stemPaint);
 
-    // --- Draw leaves ---
+    // Draw leaves
     for (int i = 0; i < stalk.leafCount; i++) {
-      final t = 0.3 + (i * 0.25); // Position along stem
+      final t = 0.3 + (i * 0.25);
       final leafBaseX = baseX + totalSway * t * 0.5;
       final leafBaseY = baseY - stalkHeight * t;
       final isLeft = i % 2 == 0;
       final leafSway = sin(windTime * pi * 4 + stalk.phaseOffset + i) * 8.0;
-
       _drawLeaf(canvas, leafBaseX, leafBaseY, isLeft, leafSway, stemColor);
     }
 
-    // --- Draw grain panicle ---
+    // Draw grain panicle with variety-specific traits
     if (stalk.grainCount > 0) {
       _drawGrainPanicle(canvas, tipX, tipY, stalk, totalSway);
     }
@@ -258,21 +259,28 @@ class _PaddyFieldPainter extends CustomPainter {
 
   void _drawGrainPanicle(Canvas canvas, double tipX, double tipY, _RiceStalk stalk, double sway) {
     final isRipening = growthStage == GrowthStage.ripening;
-    final grainColor = isRipening ? const Color(0xFFD4AF37) : const Color(0xFF8BC34A);
+
+    // Use variety-specific grain color
+    final grainColor = isRipening ? traits.ripeGrainColor : const Color(0xFF8BC34A);
     final grainPaint = Paint()
       ..color = grainColor
       ..style = PaintingStyle.fill;
 
-    // Grains hang from the tip in a panicle shape
     for (int i = 0; i < stalk.grainCount; i++) {
       final t = i / stalk.grainCount;
       final grainX = tipX + sin(t * pi + sway * 0.05) * (8 + t * 6);
       final grainY = tipY + t * 35 + sin(sway * 0.1 + i) * 2;
-      final radius = 3.0 + t * 1.5;
 
-      // Tiny oval grains
+      // Use variety-specific grain size and roundness
+      final baseRadius = 3.0 + t * 1.5;
+      final radius = baseRadius * traits.grainSize;
+
       canvas.drawOval(
-        Rect.fromCenter(center: Offset(grainX, grainY), width: radius * 1.5, height: radius),
+        Rect.fromCenter(
+          center: Offset(grainX, grainY),
+          width: radius * traits.grainRoundness,
+          height: radius,
+        ),
         grainPaint,
       );
     }
@@ -281,13 +289,13 @@ class _PaddyFieldPainter extends CustomPainter {
   Color _getStemColor() {
     switch (growthStage) {
       case GrowthStage.seedling:
-        return const Color(0xFF66BB6A); // Fresh green
+        return Color.lerp(const Color(0xFF66BB6A), traits.stemColor, 0.3)!;
       case GrowthStage.tillering:
-        return const Color(0xFF43A047); // Deep green
+        return Color.lerp(const Color(0xFF43A047), traits.stemColor, 0.5)!;
       case GrowthStage.heading:
-        return const Color(0xFF558B2F); // Dark olive green
+        return traits.stemColor;
       case GrowthStage.ripening:
-        return const Color(0xFF9E9D24); // Yellowing
+        return Color.lerp(traits.stemColor, const Color(0xFF9E9D24), 0.6)!;
       default:
         return Colors.green;
     }
@@ -333,7 +341,6 @@ class _WaterPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Water surface
     final waterPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
@@ -347,14 +354,12 @@ class _WaterPainter extends CustomPainter {
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), waterPaint);
 
-    // Animated ripple lines
     final ripplePaint = Paint()
       ..color = Colors.white.withValues(alpha: 0.15)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < 12; i++) {
-      // Ripples get further apart towards the bottom (perspective)
       final y = size.height * 0.2 + (i * i * 1.5);
       final ripple = sin((time * pi * 2) + i * 0.8) * 12;
       final path = Path();
