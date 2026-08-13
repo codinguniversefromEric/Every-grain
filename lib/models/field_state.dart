@@ -1,3 +1,5 @@
+import 'rice_variety.dart';
+
 enum GrowthStage {
   fallow,
   seedling,
@@ -19,14 +21,23 @@ enum DayPhase {
   night,
 }
 
+enum WeatherCondition {
+  clear,
+  cloudy,
+  rainy,
+  stormy,
+}
+
 class FieldState {
   GrowthStage growthStage;
   DayPhase dayPeriod;
-  List<String> reflections;
+  WeatherCondition weatherCondition;
+  RiceVariety? currentVariety;
 
   FieldState({
-    this.growthStage = GrowthStage.seedling,
+    this.growthStage = GrowthStage.fallow,
     this.dayPeriod = DayPhase.morning,
-    this.reflections = const [],
+    this.weatherCondition = WeatherCondition.clear,
+    this.currentVariety,
   });
 }

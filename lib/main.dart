@@ -1,141 +1,85 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:battery_plus/battery_plus.dart';
 import 'models/field_state.dart';
-import 'services/agricultural_calendar.dart';
-import 'services/ambient_sound.dart';
-import 'visuals.dart';
+import 'services/state_manager.dart';
+import 'theme/app_colors.dart';
+import 'theme/animation_constants.dart';
+import 'theme/strings.dart';
+import 'visuals/living_sky.dart';
+import 'visuals/cloud_layer.dart';
+import 'visuals/rain_layer.dart';
+import 'visuals/fireflies_layer.dart';
+import 'visuals/dragonfly_layer.dart';
+import 'visuals/water_ripple_layer.dart';
+import 'visuals/shooting_star_layer.dart';
+import 'visuals/mist_layer.dart';
+import 'visuals/wind_gust_layer.dart';
+import 'visuals/egret_flock_layer.dart';
 
 import 'widgets/rice_plant.dart';
 import 'widgets/developer_controls.dart';
 import 'widgets/harvest_dialog.dart';
+import 'widgets/about_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  
-  // Load saved reflections
-  final prefs = await SharedPreferences.getInstance();
-  final savedReflections = prefs.getStringList('reflections') ?? [];
 
-  runApp(RiceJourneyApp(savedReflections: savedReflections));
+  runApp(const RiceJourneyApp());
 }
 
 class RiceJourneyApp extends StatelessWidget {
-  final List<String> savedReflections;
-
-  const RiceJourneyApp({super.key, required this.savedReflections});
+  const RiceJourneyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '粒粒皆辛苦',
+      title: AppStrings.appTitle,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: RiceFieldScreen(initialReflections: savedReflections),
+      home: const RiceFieldScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class RiceFieldScreen extends StatefulWidget {
-  final List<String> initialReflections;
-
-  const RiceFieldScreen({super.key, required this.initialReflections});
+  const RiceFieldScreen({super.key});
 
   @override
   State<RiceFieldScreen> createState() => _RiceFieldScreenState();
 }
 
 class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingObserver {
-  late FieldState _state;
-  late TaiwanRegion _region;
-  late DateTime _simulatedDate;
-  final TextEditingController _reflectionController = TextEditingController();
-  bool _isLoading = true;
-
-  final Battery _battery = Battery();
-  int _batteryLevel = 100;
-  late int _simulatedHour;
-
-  final AmbientSoundService _ambientSound = AmbientSoundService();
+  late final StateManager _stateManager;
 
   @override
   void initState() {
     super.initState();
+    _stateManager = StateManager();
     WidgetsBinding.instance.addObserver(this);
-    _simulatedDate = DateTime.now();
-    _simulatedHour = DateTime.now().hour;
-    _initializeState();
+    _stateManager.initializeState();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-      _ambientSound.pause();
+      _stateManager.pauseApp();
     } else if (state == AppLifecycleState.resumed) {
-      _ambientSound.resume();
+      _stateManager.resumeApp();
     }
-  }
-
-  Future<void> _initializeState() async {
-    _region = await AgriculturalCalendar.determineRegion();
-    
-    try {
-      _batteryLevel = await _battery.batteryLevel;
-    } catch (e) {
-      _batteryLevel = 100;
-    }
-
-    _battery.onBatteryStateChanged.listen((BatteryState state) async {
-      if (mounted) {
-        final level = await _battery.batteryLevel;
-        setState(() {
-          _batteryLevel = level;
-        });
-      }
-    });
-    
-    if (!mounted) return;
-    
-    setState(() {
-      _state = FieldState(
-        growthStage: AgriculturalCalendar.getStageForDate(_simulatedDate, _region),
-        dayPeriod: _calculateDayPhase(_simulatedHour),
-        reflections: List.from(widget.initialReflections),
-      );
-      _isLoading = false;
-    });
-
-    // Initialize ambient sound
-    await _ambientSound.init();
-    _ambientSound.updateAmbience(_state.dayPeriod, _state.growthStage);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _reflectionController.dispose();
-    _ambientSound.dispose();
+    _stateManager.dispose();
     super.dispose();
-  }
-
-  DayPhase _calculateDayPhase(int hour) {
-    if (hour >= 5 && hour < 12) return DayPhase.morning;
-    if (hour >= 12 && hour < 17) return DayPhase.afternoon;
-    if (hour >= 17 && hour < 20) return DayPhase.evening;
-    return DayPhase.night;
-  }
-
-  void _resetSeason() {
-    setState(() {
-      _state.growthStage = GrowthStage.fallow;
-    });
   }
 
   void _showDeveloperControls() {
@@ -144,42 +88,24 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
       backgroundColor: Colors.white.withValues(alpha: 0.9),
       builder: (context) {
         return DeveloperControlsBottomSheet(
-          currentGrowthStage: _state.growthStage,
-          currentDayPhase: _state.dayPeriod,
-          onGrowthStageChanged: (stage) {
-            setState(() => _state.growthStage = stage);
-            _ambientSound.updateAmbience(_state.dayPeriod, stage);
-          },
-          onDayPhaseChanged: (phase) {
-            setState(() => _state.dayPeriod = phase);
-            _ambientSound.updateAmbience(phase, _state.growthStage);
-          },
+          currentGrowthStage: _stateManager.state!.growthStage,
+          currentDayPhase: _stateManager.state!.dayPeriod,
+          currentHour: _stateManager.simulatedHour,
+          currentBattery: _stateManager.batteryLevel,
+          currentWeather: _stateManager.state!.weatherCondition,
+          onGrowthStageChanged: _stateManager.updateGrowthStage,
+          onDayPhaseChanged: _stateManager.updateDayPhase,
+          onWeatherChanged: _stateManager.updateWeather,
           onHarvestSequenceTriggered: _showHarvestSequence,
-          onSimulateNextMonth: () {
-            setState(() {
-              _simulatedDate = DateTime(_simulatedDate.year, _simulatedDate.month + 1, _simulatedDate.day);
-              _state.growthStage = AgriculturalCalendar.getStageForDate(_simulatedDate, _region);
-            });
-          },
-          onToggleRegion: () {
-            setState(() {
-              _region = _region == TaiwanRegion.north ? TaiwanRegion.south : TaiwanRegion.north;
-              _state.growthStage = AgriculturalCalendar.getStageForDate(_simulatedDate, _region);
-            });
-          },
-          currentHour: _simulatedHour,
-          currentBattery: _batteryLevel,
-          onHourChanged: (hour) {
-            setState(() {
-              _simulatedHour = hour;
-              _state.dayPeriod = _calculateDayPhase(hour);
-            });
-            _ambientSound.updateAmbience(_state.dayPeriod, _state.growthStage);
-          },
-          onBatteryChanged: (battery) {
-            setState(() {
-              _batteryLevel = battery;
-            });
+          onSimulateNextMonth: _stateManager.simulateNextMonth,
+          onToggleRegion: _stateManager.toggleRegion,
+          onHourChanged: _stateManager.updateHour,
+          onBatteryChanged: _stateManager.overrideBattery,
+          onTeleportTo: (lat, lon) async {
+            await _stateManager.teleportTo(lat, lon);
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
           },
         );
       },
@@ -192,116 +118,201 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
       barrierColor: Colors.black87,
       builder: (context) {
         return HarvestDialog(
-          onRestart: _resetSeason,
+          variety: _stateManager.state!.currentVariety,
+          onRestart: _stateManager.resetSeason,
         );
       },
     );
   }
 
+  void _executeHarvest() {
+    _stateManager.executeHarvest(_showHarvestSequence);
+  }
 
   Color _getSkyTopColor(DayPhase phase) {
     switch (phase) {
       case DayPhase.morning:
-        return const Color(0xFF1E88E5);
+        return AppColors.skyTopMorning;
       case DayPhase.afternoon:
-        return const Color(0xFF1565C0);
+        return AppColors.skyTopAfternoon;
       case DayPhase.evening:
-        return const Color(0xFFE65100);
+        return AppColors.skyTopEvening;
       case DayPhase.night:
-        return const Color(0xFF0D0D2B);
+        return AppColors.skyTopNight;
     }
   }
 
   Color _getSkyBottomColor(DayPhase phase) {
     switch (phase) {
       case DayPhase.morning:
-        return const Color(0xFFB3E5FC);
+        return AppColors.skyBottomMorning;
       case DayPhase.afternoon:
-        return const Color(0xFF90CAF9);
+        return AppColors.skyBottomAfternoon;
       case DayPhase.evening:
-        return const Color(0xFFFFCC80);
+        return AppColors.skyBottomEvening;
       case DayPhase.night:
-        return const Color(0xFF1A1A3E);
+        return AppColors.skyBottomNight;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
+    return ListenableBuilder(
+      listenable: _stateManager,
+      builder: (context, _) {
+        if (_stateManager.isLoading || _stateManager.state == null) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
+        final state = _stateManager.state!;
+        final isHarvesting = _stateManager.isHarvesting;
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false, 
-      body: Stack(
-        children: [
-          // 1. Living Sky Background
-          Positioned.fill(
-            child: LivingSkyBackground(
-              topColor: _getSkyTopColor(_state.dayPeriod),
-              bottomColor: _getSkyBottomColor(_state.dayPeriod),
-            ),
-          ),
-
-          // 1.3. Shooting Stars (Night only, behind clouds)
-          if (_state.dayPeriod == DayPhase.night)
-            const Positioned.fill(child: ShootingStarLayer()),
-
-          // 1.5. Drifting Clouds
-          Positioned.fill(
-            child: CloudLayer(isNight: _state.dayPeriod == DayPhase.night),
-          ),
-
-          // 1.8. Egrets (Daylight only)
-          if (_state.dayPeriod != DayPhase.night)
-            const Positioned.fill(child: EgretFlockLayer()),
-
-          // 2. Ambient Fireflies (only at night)
-          if (_state.dayPeriod == DayPhase.night)
-            const Positioned.fill(child: FirefliesLayer()),
-
-          // 3. Morning/Evening Mist
-          if (_state.dayPeriod == DayPhase.morning || _state.dayPeriod == DayPhase.evening)
-            const Positioned.fill(child: MistLayer()),
-
-          // 4. Procedural Rice Plant Layer
-          Positioned(
-            bottom: 50, 
-            left: 0,
-            right: 0,
-            child: RicePlantLayer(growthStage: _state.growthStage),
-          ),
-
-          // 5. Dragonflies (Daylight + Warm Seasons)
-          if (_state.dayPeriod != DayPhase.night && 
-             (_state.growthStage == GrowthStage.tillering || _state.growthStage == GrowthStage.heading || _state.growthStage == GrowthStage.ripening))
-            const Positioned.fill(child: DragonflyLayer()),
-
-          // 6. Water Ripples (Flooded Paddy Stages)
-          if (_state.growthStage == GrowthStage.fallow || _state.growthStage == GrowthStage.seedling)
-            const Positioned.fill(child: WaterRippleLayer()),
-
-          // 6.5. Wind Gusts (Afternoon/Evening)
-          if (_state.dayPeriod == DayPhase.afternoon || _state.dayPeriod == DayPhase.evening)
-            const Positioned.fill(child: WindGustLayer()),
-          // 7. Subtle Developer Controls Trigger
-          Positioned(
-            top: 10,
-            right: 10,
-            child: SafeArea(
-              child: IconButton(
-                icon: Icon(Icons.settings, color: Colors.white.withValues(alpha: 0.2)),
-                onPressed: _showDeveloperControls,
-                tooltip: 'Developer Controls',
+        return Scaffold(
+          resizeToAvoidBottomInset: false, 
+          body: Stack(
+            children: [
+              // 1. Living Sky Background
+              Positioned.fill(
+                child: LivingSkyBackground(
+                  topColor: _getSkyTopColor(state.dayPeriod),
+                  bottomColor: _getSkyBottomColor(state.dayPeriod),
+                  weather: state.weatherCondition,
+                ),
               ),
-            ),
+
+              // 1.3. Shooting Stars (Night only, behind clouds)
+              if (state.dayPeriod == DayPhase.night)
+                const Positioned.fill(child: ShootingStarLayer()),
+
+              // 1.5. Drifting Clouds
+              Positioned.fill(
+                child: CloudLayer(
+                  isNight: state.dayPeriod == DayPhase.night,
+                  weather: state.weatherCondition,
+                ),
+              ),
+
+              // 1.6. Rain Layer
+              Positioned.fill(
+                child: RainLayer(weather: state.weatherCondition),
+              ),
+
+              // 1.8. Egrets (Daylight only)
+              if (state.dayPeriod != DayPhase.night && state.weatherCondition == WeatherCondition.clear)
+                const Positioned.fill(child: EgretFlockLayer()),
+
+              // 2. Ambient Fireflies (only at night)
+              if (state.dayPeriod == DayPhase.night)
+                const Positioned.fill(child: FirefliesLayer()),
+
+              // 3. Morning/Evening Mist
+              if (state.dayPeriod == DayPhase.morning || state.dayPeriod == DayPhase.evening)
+                const Positioned.fill(child: MistLayer()),
+
+              // 4. Procedural Rice Plant Layer
+              Positioned(
+                bottom: 50, 
+                left: 0,
+                right: 0,
+                child: RicePlantLayer(growthStage: state.growthStage),
+              ),
+
+              // 4.5. Swipe Hint Overlay
+              if (state.growthStage == GrowthStage.ripening && !isHarvesting)
+                Positioned(
+                  bottom: 250,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      duration: AnimationConstants.harvestSequence,
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: (0.5 + 0.5 * (1.0 - ((value * 2) % 1.0))), // Pulsing
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(AppStrings.swipeToHarvest, style: TextStyle(color: Colors.white, fontSize: 18, letterSpacing: 2)),
+                              SizedBox(width: 8),
+                              Icon(Icons.keyboard_double_arrow_right, color: Colors.white),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+              // 5. Dragonflies (Daylight + Warm Seasons)
+              if (state.dayPeriod != DayPhase.night && 
+                 (state.growthStage == GrowthStage.tillering || state.growthStage == GrowthStage.heading || state.growthStage == GrowthStage.ripening))
+                const Positioned.fill(child: DragonflyLayer()),
+
+              // 6. Water Ripples (Flooded Paddy Stages)
+              if (state.growthStage == GrowthStage.fallow || state.growthStage == GrowthStage.seedling)
+                const Positioned.fill(child: WaterRippleLayer()),
+
+              // 6.5. Wind Gusts (Afternoon/Evening or Stormy)
+              if (state.dayPeriod == DayPhase.afternoon || state.dayPeriod == DayPhase.evening || state.weatherCondition == WeatherCondition.stormy)
+                Positioned.fill(child: WindGustLayer(weather: state.weatherCondition)),
+
+              // 6.6. Full-screen Swipe to Harvest Detector
+              if (state.growthStage == GrowthStage.ripening && !isHarvesting)
+                Positioned.fill(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onHorizontalDragUpdate: (details) {
+                      if (details.delta.dx > 10) {
+                        _executeHarvest();
+                      }
+                    },
+                    onHorizontalDragEnd: (details) {
+                      if (details.primaryVelocity != null && details.primaryVelocity! > 50) {
+                        _executeHarvest();
+                      }
+                    },
+                    child: const SizedBox.expand(),
+                  ),
+                ),
+                
+              // 7. Subtle Developer Controls Trigger
+              if (kDebugMode)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: SafeArea(
+                    child: IconButton(
+                      icon: Icon(Icons.build, color: Colors.white.withValues(alpha: 0.2)),
+                      onPressed: _showDeveloperControls,
+                      tooltip: AppStrings.developerControls,
+                    ),
+                  ),
+                ),
+
+              // 8. Low-profile About/Tip Jar Button
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: SafeArea(
+                  child: IconButton(
+                    icon: Icon(Icons.settings, color: Colors.white.withValues(alpha: 0.3)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AboutScreen()),
+                      );
+                    },
+                    tooltip: AppStrings.aboutAndDonate,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
-

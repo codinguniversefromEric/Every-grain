@@ -5,23 +5,23 @@ class AgriculturalCalendar {
   // Approximate latitude separating North/South Taiwan farming patterns (around Taichung/Changhua)
   static const double _northSouthDividerLat = 24.0;
 
-  static Future<TaiwanRegion> determineRegion() async {
+  static Future<Position?> getPosition() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        return TaiwanRegion.north; // Default
+        return null;
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          return TaiwanRegion.north;
+          return null;
         }
       }
       
       if (permission == LocationPermission.deniedForever) {
-        return TaiwanRegion.north;
+        return null;
       }
 
       Position? position = await Geolocator.getLastKnownPosition();
@@ -30,10 +30,15 @@ class AgriculturalCalendar {
         locationSettings: const LocationSettings(timeLimit: Duration(seconds: 5)),
       );
       
-      return position.latitude >= _northSouthDividerLat ? TaiwanRegion.north : TaiwanRegion.south;
+      return position;
     } catch (e) {
-      return TaiwanRegion.north; // Fallback immediately on timeout or error
+      return null;
     }
+  }
+
+  static TaiwanRegion getRegionForPosition(Position? position) {
+    if (position == null) return TaiwanRegion.north;
+    return position.latitude >= _northSouthDividerLat ? TaiwanRegion.north : TaiwanRegion.south;
   }
 
   static GrowthStage getStageForDate(DateTime date, TaiwanRegion region) {

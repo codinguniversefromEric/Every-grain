@@ -19,10 +19,15 @@ class AmbientSoundService {
     await _ambientPlayer.setVolume(0.3);
   }
 
-  Future<void> updateAmbience(DayPhase phase, GrowthStage stage) async {
+  Future<void> updateAmbience(DayPhase phase, GrowthStage stage, {WeatherCondition weather = WeatherCondition.clear}) async {
     String targetSound;
 
-    // Fallow / Harvested (Winter/Late Autumn)
+    if (weather == WeatherCondition.rainy) {
+      targetSound = 'assets/audio/rain.wav';
+    } else if (weather == WeatherCondition.stormy) {
+      targetSound = 'assets/audio/storm.wav';
+    } else {
+      // Fallow / Harvested (Winter/Late Autumn)
     if (stage == GrowthStage.fallow || stage == GrowthStage.harvested) {
       if (phase == DayPhase.morning || phase == DayPhase.afternoon) {
         targetSound = 'assets/audio/winter_birds_wind.wav';
@@ -54,6 +59,7 @@ class AmbientSoundService {
         targetSound = 'assets/audio/winter_birds_wind.wav'; // Wind during day
       }
     }
+    }
 
     if (targetSound != _currentSound) {
       _currentSound = targetSound;
@@ -72,6 +78,23 @@ class AmbientSoundService {
 
   void resume() {
     _ambientPlayer.play();
+  }
+
+  Future<void> playHarvestSound() async {
+    final player = AudioPlayer();
+    try {
+      await player.setAsset('assets/audio/harvest_slice.wav');
+      await player.play();
+      // Dispose after playing to free resources
+      player.playerStateStream.listen((state) {
+        if (state.processingState == ProcessingState.completed) {
+          player.dispose();
+        }
+      });
+    } catch (e) {
+      // Silently handle
+      player.dispose();
+    }
   }
 
   Future<void> dispose() async {

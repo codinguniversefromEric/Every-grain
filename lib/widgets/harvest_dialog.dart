@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../models/rice_variety.dart';
 
 class HarvestDialog extends StatelessWidget {
   final VoidCallback onRestart;
+  final RiceVariety? variety;
 
-  const HarvestDialog({super.key, required this.onRestart});
+  const HarvestDialog({super.key, required this.onRestart, this.variety});
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +31,42 @@ class HarvestDialog extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
-                const SizedBox(height: 24),
+                if (variety != null) ...[
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.menu_book, color: Color(0xFFD4AF37), size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              '在地品種知識卡：${variety!.name}',
+                              style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          variety!.description,
+                          style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          variety!.funFact,
+                          style: const TextStyle(color: Colors.white, fontSize: 14, fontStyle: FontStyle.italic, height: 1.5),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 32),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD4AF37),

@@ -11,8 +11,11 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final VoidCallback onToggleRegion;
   final int currentHour;
   final int currentBattery;
+  final WeatherCondition currentWeather;
   final ValueChanged<int> onHourChanged;
   final ValueChanged<int> onBatteryChanged;
+  final ValueChanged<WeatherCondition> onWeatherChanged;
+  final void Function(double lat, double lon) onTeleportTo;
 
   const DeveloperControlsBottomSheet({
     super.key,
@@ -25,8 +28,11 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.onToggleRegion,
     required this.currentHour,
     required this.currentBattery,
+    required this.currentWeather,
     required this.onHourChanged,
     required this.onBatteryChanged,
+    required this.onWeatherChanged,
+    required this.onTeleportTo,
   });
 
   @override
@@ -38,6 +44,7 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
   late DayPhase _localDayPhase;
   late int _localHour;
   late int _localBattery;
+  late WeatherCondition _localWeather;
 
   @override
   void initState() {
@@ -46,6 +53,7 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
     _localDayPhase = widget.currentDayPhase;
     _localHour = widget.currentHour;
     _localBattery = widget.currentBattery;
+    _localWeather = widget.currentWeather;
   }
 
   @override
@@ -67,6 +75,29 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
           ElevatedButton(
             onPressed: widget.onToggleRegion,
             child: const Text('Toggle North/South Region'),
+          ),
+          const SizedBox(height: 20),
+          const Text('Teleport (Test GPS Weather):', style: TextStyle(fontWeight: FontWeight.bold)),
+          Wrap(
+            spacing: 8,
+            children: [
+              ActionChip(
+                label: const Text('📍 台北信義區'),
+                onPressed: () => widget.onTeleportTo(25.0330, 121.5654),
+              ),
+              ActionChip(
+                label: const Text('📍 高雄西子灣'),
+                onPressed: () => widget.onTeleportTo(22.6273, 120.2642),
+              ),
+              ActionChip(
+                label: const Text('📍 阿里山/玉山'),
+                onPressed: () => widget.onTeleportTo(23.4889, 120.9513),
+              ),
+              ActionChip(
+                label: const Text('📍 澎湖吉貝'),
+                onPressed: () => widget.onTeleportTo(23.7417, 119.5960),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
           const Text('Manual Growth Stage Override:'),
@@ -102,6 +133,22 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
                 _localDayPhase = newPhase;
               });
               widget.onDayPhaseChanged(newPhase);
+            },
+          ),
+          const SizedBox(height: 20),
+          const Text('Weather:'),
+          Slider(
+            value: _localWeather.index.toDouble(),
+            min: 0,
+            max: WeatherCondition.values.length.toDouble() - 1,
+            divisions: WeatherCondition.values.length - 1,
+            label: _localWeather.name,
+            onChanged: (val) {
+              final newWeather = WeatherCondition.values[val.toInt()];
+              setState(() {
+                _localWeather = newWeather;
+              });
+              widget.onWeatherChanged(newWeather);
             },
           ),
           const SizedBox(height: 20),
