@@ -84,6 +84,7 @@ class _RicePlantLayerState extends State<RicePlantLayer> with SingleTickerProvid
             ? 3 + _rng.nextInt(5)
             : 0,
         grainDroop: widget.growthStage == GrowthStage.ripening ? 0.3 + _rng.nextDouble() * 0.4 : 0.0,
+        randomSeed: _rng.nextDouble(),
       );
     });
   }
@@ -140,6 +141,7 @@ class _RiceStalk {
   final int leafCount;
   final int grainCount;
   final double grainDroop;
+  final double randomSeed;
 
   _RiceStalk({
     required this.xPosition,
@@ -149,6 +151,7 @@ class _RiceStalk {
     required this.leafCount,
     required this.grainCount,
     required this.grainDroop,
+    required this.randomSeed,
   });
 }
 
@@ -268,11 +271,13 @@ class _PaddyFieldPainter extends CustomPainter {
 
     for (int i = 0; i < stalk.grainCount; i++) {
       final t = i / stalk.grainCount;
-      final grainX = tipX + sin(t * pi + sway * 0.05) * (8 + t * 6);
-      final grainY = tipY + t * 35 + sin(sway * 0.1 + i) * 2;
+      // Add random spread using the stalk's randomSeed to make them look distinct
+      final spread = (stalk.randomSeed * 2.0 - 1.0) * 3.0; 
+      final grainX = tipX + sin(t * pi + sway * 0.05 + spread) * (8 + t * 6) + (i%2==0? spread:-spread);
+      final grainY = tipY + t * 35 + sin(sway * 0.1 + i) * 2 + (stalk.randomSeed * 5.0);
 
-      // Use variety-specific grain size and roundness
-      final baseRadius = 3.0 + t * 1.5;
+      // Use variety-specific grain size and roundness, plus minor random variation
+      final baseRadius = 3.0 + t * 1.5 + (stalk.randomSeed * 0.5);
       final radius = baseRadius * traits.grainSize;
 
       canvas.drawOval(

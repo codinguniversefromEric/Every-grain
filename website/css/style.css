@@ -1,0 +1,349 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Noto+Serif+TC:wght@300;400;600&display=swap');
+
+:root {
+  /* Zen Color Palette */
+  --color-bg-primary: #FFF8E7; /* Rice white */
+  --color-bg-secondary: #F4EFE6;
+  --color-text-main: #2C3E50;
+  --color-text-muted: #5D6D7E;
+  --color-accent: #6A8F3F; /* Matcha / Paddy Green */
+  --color-glass: rgba(255, 255, 255, 0.4);
+  --color-glass-border: rgba(255, 255, 255, 0.2);
+  
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-serif: 'Noto Serif TC', serif;
+  
+  /* Spacing & Layout */
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 4rem;
+  --spacing-xl: 8rem;
+  --container-width: 1100px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-main);
+  line-height: 1.6;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* =========================================
+   Typography & Utilities
+   ========================================= */
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--color-text-main);
+  letter-spacing: 0.05em;
+}
+
+.text-muted { color: var(--color-text-muted); }
+.text-center { text-align: center; }
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+a:hover { opacity: 0.7; }
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* =========================================
+   Header & Navigation
+   ========================================= */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-md) 0;
+  z-index: 100;
+  transition: all 0.4s ease;
+}
+
+header.scrolled {
+  background: rgba(255, 248, 231, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.nav-links a {
+  margin-left: var(--spacing-md);
+  font-size: 0.9rem;
+  color: var(--color-text-main);
+}
+
+/* =========================================
+   Hero Section
+   ========================================= */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding-top: var(--spacing-xl);
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-text h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-md);
+}
+
+.hero-text p {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  max-width: 400px;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Glassmorphism Download Badge */
+.download-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-glass-border);
+  padding: 12px 24px;
+  border-radius: 100px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  color: var(--color-text-main);
+  font-weight: 500;
+}
+
+.download-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  opacity: 1;
+}
+
+.hero-visual {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* Floating App Mockup */
+.phone-mockup {
+  width: 280px;
+  height: 570px;
+  background-color: #fff;
+  border-radius: 40px;
+  box-shadow: 
+    0 20px 40px rgba(0,0,0,0.1),
+    inset 0 0 0 8px #f8f8f8,
+    inset 0 0 0 10px #e0e0e0;
+  position: relative;
+  overflow: hidden;
+  animation: float 6s ease-in-out infinite;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #A8E6CF 0%, #DCEDC1 100%); /* Placeholder gradient */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0; left: 0;
+}
+
+.phone-screen span {
+  font-family: var(--font-serif);
+  color: var(--color-text-main);
+  opacity: 0.5;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+/* =========================================
+   Features Section
+   ========================================= */
+.features {
+  padding: var(--spacing-xl) 0;
+  background-color: var(--color-bg-secondary);
+}
+
+.feature-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.feature-row:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.feature-text {
+  flex: 1;
+}
+
+.feature-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.feature-visual {
+  flex: 1;
+  height: 400px;
+  background: var(--color-bg-primary);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.02);
+}
+
+/* =========================================
+   Privacy Policy specific
+   ========================================= */
+.policy-page {
+  padding-top: 120px;
+  padding-bottom: var(--spacing-xl);
+  max-width: 800px;
+}
+
+.policy-page h1 {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.policy-page .last-updated {
+  text-align: center;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xl);
+}
+
+.policy-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.policy-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-accent);
+}
+
+.policy-section p, .policy-section ul {
+  margin-bottom: 1rem;
+  color: var(--color-text-muted);
+}
+
+.policy-section ul {
+  padding-left: 1.5rem;
+}
+
+/* =========================================
+   Footer
+   ========================================= */
+footer {
+  padding: var(--spacing-lg) 0;
+  background-color: var(--color-bg-primary);
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-links a {
+  margin-left: var(--spacing-sm);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* =========================================
+   Animations & JS Classes
+   ========================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================
+   Responsive
+   ========================================= */
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .hero-text p {
+    margin: 0 auto var(--spacing-lg);
+  }
+  
+  .feature-row, .feature-row:nth-child(even) {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+  
+  .phone-mockup {
+    width: 240px;
+    height: 480px;
+  }
+}

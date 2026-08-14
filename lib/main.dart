@@ -55,6 +55,12 @@ class RiceFieldScreen extends StatefulWidget {
   State<RiceFieldScreen> createState() => _RiceFieldScreenState();
 }
 
+@visibleForTesting
+StateManager? globalStateManager;
+
+@visibleForTesting
+bool isTakingScreenshot = false;
+
 class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingObserver {
   late final StateManager _stateManager;
 
@@ -62,6 +68,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
   void initState() {
     super.initState();
     _stateManager = StateManager();
+    globalStateManager = _stateManager;
     WidgetsBinding.instance.addObserver(this);
     _stateManager.initializeState();
   }
@@ -278,11 +285,11 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                   ),
                 ),
                 
-              // 7. Subtle Developer Controls Trigger
-              if (kDebugMode)
+              // 7. Hidden Developer Controls (Only in Debug Mode)
+              if (kDebugMode && !isTakingScreenshot)
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: 20,
+                  right: 20,
                   child: SafeArea(
                     child: IconButton(
                       icon: Icon(Icons.build, color: Colors.white.withValues(alpha: 0.2)),
@@ -293,22 +300,23 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                 ),
 
               // 8. Low-profile About/Tip Jar Button
-              Positioned(
-                bottom: 20,
-                right: 20,
-                child: SafeArea(
-                  child: IconButton(
-                    icon: Icon(Icons.settings, color: Colors.white.withValues(alpha: 0.3)),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const AboutScreen()),
-                      );
-                    },
-                    tooltip: AppStrings.aboutAndDonate,
+              if (!isTakingScreenshot)
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: SafeArea(
+                    child: IconButton(
+                      icon: Icon(Icons.spa, color: Colors.white.withValues(alpha: 0.3)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const AboutScreen()),
+                        );
+                      },
+                      tooltip: AppStrings.aboutAndDonate,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         );

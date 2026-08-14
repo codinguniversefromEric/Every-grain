@@ -24,40 +24,40 @@ class AmbientSoundService {
     String targetSound;
 
     if (weather == WeatherCondition.rainy) {
-      targetSound = 'assets/audio/rain.wav';
+      targetSound = 'assets/audio/rain.mp3';
     } else if (weather == WeatherCondition.stormy) {
-      targetSound = 'assets/audio/storm.wav';
+      targetSound = 'assets/audio/storm.mp3';
     } else {
       // Fallow / Harvested (Winter/Late Autumn)
     if (stage == GrowthStage.fallow || stage == GrowthStage.harvested) {
       if (phase == DayPhase.morning || phase == DayPhase.afternoon) {
-        targetSound = 'assets/audio/winter_birds_wind.wav';
+        targetSound = 'assets/audio/winter_birds_wind.mp3';
       } else {
-        targetSound = 'assets/audio/winter_birds_wind.wav'; // Night time is quieter but we use the same base for now
+        targetSound = 'assets/audio/winter_birds_wind.mp3'; // Night time is quieter but we use the same base for now
       }
     } 
     // Seedling / Tillering (Spring/Early Summer)
     else if (stage == GrowthStage.seedling || stage == GrowthStage.tillering) {
       if (phase == DayPhase.evening || phase == DayPhase.night) {
-        targetSound = 'assets/audio/spring_frogs.wav';
+        targetSound = 'assets/audio/spring_frogs.mp3';
       } else {
-        targetSound = 'assets/audio/winter_birds_wind.wav'; // Wind/water during day
+        targetSound = 'assets/audio/winter_birds_wind.mp3'; // Wind/water during day
       }
     }
     // Heading (Summer)
     else if (stage == GrowthStage.heading) {
       if (phase == DayPhase.afternoon || phase == DayPhase.morning) {
-        targetSound = 'assets/audio/summer_cicadas.wav';
+        targetSound = 'assets/audio/summer_cicadas.mp3';
       } else {
-        targetSound = 'assets/audio/spring_frogs.wav'; // Frogs at night
+        targetSound = 'assets/audio/spring_frogs.mp3'; // Frogs at night
       }
     }
     // Ripening (Autumn)
     else {
       if (phase == DayPhase.evening || phase == DayPhase.night) {
-        targetSound = 'assets/audio/autumn_crickets.wav';
+        targetSound = 'assets/audio/autumn_crickets.mp3';
       } else {
-        targetSound = 'assets/audio/winter_birds_wind.wav'; // Wind during day
+        targetSound = 'assets/audio/winter_birds_wind.mp3'; // Wind during day
       }
     }
     }
@@ -84,7 +84,7 @@ class AmbientSoundService {
   Future<void> playHarvestSound() async {
     final player = AudioPlayer();
     try {
-      await player.setAsset('assets/audio/harvest_slice.wav');
+      await player.setAsset('assets/audio/harvest_slice.mp3');
       await player.play();
       // Dispose after playing to free resources
       player.playerStateStream.listen((state) {
