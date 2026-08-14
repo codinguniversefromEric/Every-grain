@@ -1,7 +1,5 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import '../models/field_state.dart';
 
 class WaterRippleLayer extends StatefulWidget {
   const WaterRippleLayer({super.key});

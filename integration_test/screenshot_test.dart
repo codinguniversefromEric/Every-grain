@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: avoid_print
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:rice_journey/main.dart' as app;
-import 'package:rice_journey/services/state_manager.dart';
 import 'package:rice_journey/models/field_state.dart';
-import 'package:rice_journey/models/rice_variety.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
