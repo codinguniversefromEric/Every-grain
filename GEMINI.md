@@ -57,3 +57,15 @@ App 會根據各種條件（例如節氣、地點、時間等）來呈現對應�
 - **在地連結**：根據 GPS 決定種植品種 (如高雄139號、台南11號)，並在收割時解鎖在地知識卡。
 - 詳細的設計理念與 MVP 規格，請參閱專屬設計手冊：
 👉 [docs/PRODUCT_VISION.md](file:///Users/giyoshimiken/Documents/Every-grain/docs/PRODUCT_VISION.md)
+
+## 自動化部署與基礎設施 (CI/CD & Infrastructure)
+1. **GitHub Pages 網站部署**:
+   - 形象網站原始碼放置於 `website/` 目錄中。
+   - 使用 `.github/workflows/deploy-pages.yml` 進行部署，任何對 `main` 分支的推播皆會自動觸發並部署至 GitHub Pages，**無需**額外維護 `gh-pages` 分支。
+2. **Android APK 自動發布 (GitHub Actions)**:
+   - 打包指令已設定於 `.github/workflows/release-apk.yml`，當推播 `v*` 開頭的標籤 (tag) 時，會自動編譯 Release APK 並建立 GitHub Release。
+   - **金鑰安全規範**：`upload-keystore.jks` 與 `key.properties` **必須**加入 `.gitignore`，嚴禁提交至 Git。自動打包時是透過 GitHub Secrets (`KEYSTORE_BASE64`, `KEY_PROPERTIES`) 進行動態解密還原。
+3. **App Store 宣傳截圖自動化生成**:
+   - 截圖生成一律採用 Flutter Integration Test 自動化進行，禁止手動截圖 (以避免解析度錯誤或截到不必要的 Debug UI)。
+   - 執行指令：`flutter drive --driver=test_driver/integration_test.dart --target=integration_test/screenshot_test.dart`
+   - 產出的截圖會自動儲存於根目錄的 `screenshots/` 中，並可複製至 `website/assets/screenshots/` 供網頁使用。
