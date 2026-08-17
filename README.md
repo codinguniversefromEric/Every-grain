@@ -1,7 +1,7 @@
 # 粒粒皆辛苦 (Rice Journey)
 
 「一年一田、一季一冊」—— 這是一個真實、安靜、陪伴的台灣在地水稻文化 App。沒有廣告，沒有體力值，只有隨時間與真實天氣變化的稻田。
-
+https://codinguniversefromeric.bobaboba.me
 ## 技術棧 (Tech Stack)
 
 - **Framework**: Flutter
