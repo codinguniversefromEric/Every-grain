@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import '../services/iap_service.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  void _showMockIAPDialog(BuildContext context, String itemName) {
+  void _showComingSoonDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
@@ -16,9 +14,9 @@ class AboutScreen extends StatelessWidget {
             side: const BorderSide(color: Color(0xFFD4AF37), width: 1),
           ),
           title: const Text('感謝您的心意', style: TextStyle(color: Color(0xFFD4AF37))),
-          content: Text(
-            '目前尚未連線至商店或找不到商品：\n$itemName\n\n等上架後就能正式運作囉！',
-            style: const TextStyle(color: Colors.white70, height: 1.5),
+          content: const Text(
+            '贊助功能目前還在努力建置中！\n\n等一切就緒後，非常歡迎您再來支持農夫，讓這片田能持續運轉。',
+            style: TextStyle(color: Colors.white70, height: 1.5),
           ),
           actions: [
             TextButton(
@@ -29,15 +27,6 @@ class AboutScreen extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _getTitleForProduct(String id) {
-    switch (id) {
-      case 'tip_jar_small': return '🍵 請農夫喝杯青草茶';
-      case 'tip_jar_medium': return '🍱 請農夫吃個排骨便當';
-      case 'tip_jar_large': return '🌾 贊助一包有機肥料';
-      default: return '贊助支持';
-    }
   }
 
   @override
@@ -106,62 +95,23 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 48),
 
-              // Tip Jar
+              // Tip Jar (Mock)
               const Text(
                 '支持農夫 (Tip Jar)',
                 style: TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               const Text(
-                '如果您享受這片寧靜的田地，歡迎隨喜贊助，讓這片田能持續運轉。',
+                '如果您享受這片寧靜的田地，未來歡迎隨喜贊助。',
                 style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
               ),
               const SizedBox(height: 16),
 
-              ListenableBuilder(
-                listenable: IAPService.instance,
-                builder: (context, child) {
-                  final iap = IAPService.instance;
-                  if (iap.isLoading) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: CircularProgressIndicator(color: Color(0xFFD4AF37)),
-                      ),
-                    );
-                  }
-
-                  if (!iap.isAvailable || iap.products.isEmpty) {
-                    // Fallback to mock UI if store is unavailable
-                    return Column(
-                      children: [
-                        _buildDonateButton('🍵 請農夫喝杯青草茶', 'US\$ 0.99', () => _showMockIAPDialog(context, 'tip_jar_small')),
-                        const SizedBox(height: 12),
-                        _buildDonateButton('🍱 請農夫吃個排骨便當', 'US\$ 2.99', () => _showMockIAPDialog(context, 'tip_jar_medium')),
-                        const SizedBox(height: 12),
-                        _buildDonateButton('🌾 贊助一包有機肥料', 'US\$ 4.99', () => _showMockIAPDialog(context, 'tip_jar_large')),
-                      ],
-                    );
-                  }
-
-                  // Sort products by price roughly by ID length or predefined order to ensure small is first
-                  final sortedProducts = List<ProductDetails>.from(iap.products);
-                  sortedProducts.sort((a, b) => a.id.length.compareTo(b.id.length));
-
-                  return Column(
-                    children: sortedProducts.map((product) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: _buildDonateButton(
-                          _getTitleForProduct(product.id),
-                          product.price, // This is the localized price from Google Play (e.g. NT$ 30)
-                          () => iap.buyProduct(product),
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
+              _buildMockButton('🍵 請農夫喝杯青草茶', () => _showComingSoonDialog(context)),
+              const SizedBox(height: 12),
+              _buildMockButton('🍱 請農夫吃個排骨便當', () => _showComingSoonDialog(context)),
+              const SizedBox(height: 12),
+              _buildMockButton('🌾 贊助一包有機肥料', () => _showComingSoonDialog(context)),
               
               const SizedBox(height: 48),
             ],
@@ -171,7 +121,7 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDonateButton(String title, String price, VoidCallback onTap) {
+  Widget _buildMockButton(String title, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -186,7 +136,7 @@ class AboutScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
-            Text(price, style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold)),
+            const Icon(Icons.favorite_border, color: Color(0xFFD4AF37), size: 20),
           ],
         ),
       ),

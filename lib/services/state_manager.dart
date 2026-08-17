@@ -6,7 +6,6 @@ import 'ambient_sound.dart';
 import 'weather_service.dart';
 import 'variety_service.dart';
 import 'battery_service.dart';
-import 'iap_service.dart';
 
 class StateManager extends ChangeNotifier {
   FieldState? _state;
@@ -31,7 +30,6 @@ class StateManager extends ChangeNotifier {
 
   StateManager() {
     _initBattery();
-    IAPService.instance.initialize();
   }
 
   void _initBattery() {
