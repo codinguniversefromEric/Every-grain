@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import '../services/iap_service.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -15,7 +17,7 @@ class AboutScreen extends StatelessWidget {
           ),
           title: const Text('感謝您的心意', style: TextStyle(color: Color(0xFFD4AF37))),
           content: Text(
-            '您點擊了贊助「$itemName」。\n\n目前開發者正在與銀行連線中 (Mock IAP)，敬請期待未來的更新！',
+            '目前尚未連線至商店或找不到商品：\n$itemName\n\n等上架後就能正式運作囉！',
             style: const TextStyle(color: Colors.white70, height: 1.5),
           ),
           actions: [
@@ -27,6 +29,15 @@ class AboutScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _getTitleForProduct(String id) {
+    switch (id) {
+      case 'tip_jar_small': return '🍵 請農夫喝杯青草茶';
+      case 'tip_jar_medium': return '🍱 請農夫吃個排骨便當';
+      case 'tip_jar_large': return '🌾 贊助一包有機肥料';
+      default: return '贊助支持';
+    }
   }
 
   @override
@@ -67,7 +78,7 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 48),
 
-              // Data Sources (Requested by user)
+              // Data Sources
               const Text(
                 '資料來源與鳴謝',
                 style: TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
@@ -107,11 +118,50 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              _buildDonateButton(context, '🍵 請農夫喝杯青草茶', 'US\$ 0.99'),
-              const SizedBox(height: 12),
-              _buildDonateButton(context, '🍱 請農夫吃個排骨便當', 'US\$ 2.99'),
-              const SizedBox(height: 12),
-              _buildDonateButton(context, '🌾 贊助一包有機肥料', 'US\$ 4.99'),
+              ListenableBuilder(
+                listenable: IAPService.instance,
+                builder: (context, child) {
+                  final iap = IAPService.instance;
+                  if (iap.isLoading) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(color: Color(0xFFD4AF37)),
+                      ),
+                    );
+                  }
+
+                  if (!iap.isAvailable || iap.products.isEmpty) {
+                    // Fallback to mock UI if store is unavailable
+                    return Column(
+                      children: [
+                        _buildDonateButton('🍵 請農夫喝杯青草茶', 'US\$ 0.99', () => _showMockIAPDialog(context, 'tip_jar_small')),
+                        const SizedBox(height: 12),
+                        _buildDonateButton('🍱 請農夫吃個排骨便當', 'US\$ 2.99', () => _showMockIAPDialog(context, 'tip_jar_medium')),
+                        const SizedBox(height: 12),
+                        _buildDonateButton('🌾 贊助一包有機肥料', 'US\$ 4.99', () => _showMockIAPDialog(context, 'tip_jar_large')),
+                      ],
+                    );
+                  }
+
+                  // Sort products by price roughly by ID length or predefined order to ensure small is first
+                  final sortedProducts = List<ProductDetails>.from(iap.products);
+                  sortedProducts.sort((a, b) => a.id.length.compareTo(b.id.length));
+
+                  return Column(
+                    children: sortedProducts.map((product) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: _buildDonateButton(
+                          _getTitleForProduct(product.id),
+                          product.price, // This is the localized price from Google Play (e.g. NT$ 30)
+                          () => iap.buyProduct(product),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
               
               const SizedBox(height: 48),
             ],
@@ -121,9 +171,9 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDonateButton(BuildContext context, String title, String price) {
+  Widget _buildDonateButton(String title, String price, VoidCallback onTap) {
     return InkWell(
-      onTap: () => _showMockIAPDialog(context, title),
+      onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

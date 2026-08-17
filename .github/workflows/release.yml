@@ -1,12 +1,12 @@
-name: Release Android APK
+name: Release Android App
 
 on:
   push:
     tags:
-      - 'v*' # 當您 push v1.0.0 這樣的 tag 時就會觸發
+      - 'v*' # Trigger when a tag like v1.0.0 is pushed
 
 permissions:
-  contents: write # 允許發布 Release
+  contents: write # Required for creating GitHub Releases
 
 jobs:
   build-and-release:
@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -46,10 +46,15 @@ jobs:
           CWA_API_KEY: ${{ secrets.CWA_API_KEY }}
         run: flutter build apk --release --dart-define=CWA_API_KEY=$CWA_API_KEY
 
-      - name: Publish to GitHub Releases
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/app/outputs/flutter-apk/app-release.apk
-          generate_release_notes: true
+      - name: Build Android App Bundle (AAB)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CWA_API_KEY: ${{ secrets.CWA_API_KEY }}
+        run: flutter build appbundle --release --dart-define=CWA_API_KEY=$CWA_API_KEY
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+          generate_release_notes: true
