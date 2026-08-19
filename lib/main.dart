@@ -98,7 +98,6 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
           currentGrowthStage: _stateManager.state!.growthStage,
           currentDayPhase: _stateManager.state!.dayPeriod,
           currentHour: _stateManager.simulatedHour,
-          currentBattery: _stateManager.batteryLevel,
           currentWeather: _stateManager.state!.weatherCondition,
           onGrowthStageChanged: _stateManager.updateGrowthStage,
           onDayPhaseChanged: _stateManager.updateDayPhase,
@@ -107,7 +106,6 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
           onSimulateNextMonth: _stateManager.simulateNextMonth,
           onToggleRegion: _stateManager.toggleRegion,
           onHourChanged: _stateManager.updateHour,
-          onBatteryChanged: _stateManager.overrideBattery,
           onTeleportTo: (lat, lon) async {
             await _stateManager.teleportTo(lat, lon);
             if (context.mounted) {

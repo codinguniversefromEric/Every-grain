@@ -8,9 +8,8 @@
 - **State Management**: 原生 `setState` + `ChangeNotifier` (於 `StateManager` 協調)
 - **硬體與外部服務**:
   - `geolocator`: 獲取定位以判斷南北部節氣與品種
-  - `battery_plus`: 電量監控與日夜循環互動
   - `just_audio`: 環境音效播放
-  - **天氣 API**: 台灣中央氣象署 (CWA) Open Data API，即時連動全台測站天氣
+  - **天氣 API**: 雙軌制自動切換（台灣境內使用 CWA Open Data，海外使用 Open-Meteo），具備全域快取與靜默降級保護。
 
 ## 專案架構 (Architecture)
 
@@ -20,7 +19,6 @@
 graph TD
     A["main.dart (UI 組裝)"] --> B[StateManager]
     B --> C[WeatherService]
-    B --> D[BatteryService]
     B --> E[AmbientSoundService]
     B --> F[AgriculturalCalendar]
     B --> G[VarietyService]
@@ -37,13 +35,13 @@ graph TD
 
 ## 開發環境與編譯指令
 
-本專案將 CWA API Key 作為編譯期環境變數注入，以確保原始碼安全。
+本專案已實作完善的氣象 API 雙軌制與防呆機制，可直接執行而無需配置額外的金鑰。
 
 ### 執行開發版 (Debug)
 ```bash
-flutter run --dart-define=CWA_API_KEY=YOUR_API_KEY
+flutter run
 ```
-*(若未提供 API Key，App 依然可以運作，天氣將預設為晴天)*
+*(在開發模式下，如果沒有提供 CWA API Key，天氣模組會自動靜默降級為預設的晴天)*
 
 ### 執行測試 (Tests)
 專案內含 `services/` 層的單元測試。

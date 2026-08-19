@@ -10,10 +10,8 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final VoidCallback onSimulateNextMonth;
   final VoidCallback onToggleRegion;
   final int currentHour;
-  final int currentBattery;
   final WeatherCondition currentWeather;
   final ValueChanged<int> onHourChanged;
-  final ValueChanged<int> onBatteryChanged;
   final ValueChanged<WeatherCondition> onWeatherChanged;
   final void Function(double lat, double lon) onTeleportTo;
 
@@ -27,10 +25,8 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.onSimulateNextMonth,
     required this.onToggleRegion,
     required this.currentHour,
-    required this.currentBattery,
     required this.currentWeather,
     required this.onHourChanged,
-    required this.onBatteryChanged,
     required this.onWeatherChanged,
     required this.onTeleportTo,
   });
@@ -43,7 +39,6 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
   late GrowthStage _localGrowthStage;
   late DayPhase _localDayPhase;
   late int _localHour;
-  late int _localBattery;
   late WeatherCondition _localWeather;
 
   @override
@@ -52,7 +47,6 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
     _localGrowthStage = widget.currentGrowthStage;
     _localDayPhase = widget.currentDayPhase;
     _localHour = widget.currentHour;
-    _localBattery = widget.currentBattery;
     _localWeather = widget.currentWeather;
   }
 
@@ -164,21 +158,6 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
                 _localHour = val.toInt();
               });
               widget.onHourChanged(_localHour);
-            },
-          ),
-          const SizedBox(height: 20),
-          const Text('Override Battery (%):'),
-          Slider(
-            value: _localBattery.toDouble(),
-            min: 0,
-            max: 100,
-            divisions: 100,
-            label: '$_localBattery%',
-            onChanged: (val) {
-              setState(() {
-                _localBattery = val.toInt();
-              });
-              widget.onBatteryChanged(_localBattery);
             },
           ),
         ],

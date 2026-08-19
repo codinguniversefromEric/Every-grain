@@ -1,33 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
-
-  void _showComingSoonDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF2C2214),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Color(0xFFD4AF37), width: 1),
-          ),
-          title: const Text('感謝您的心意', style: TextStyle(color: Color(0xFFD4AF37))),
-          content: const Text(
-            '贊助功能目前還在努力建置中！\n\n等一切就緒後，非常歡迎您再來支持農夫，讓這片田能持續運轉。',
-            style: TextStyle(color: Colors.white70, height: 1.5),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('返回田裡', style: TextStyle(color: Color(0xFFD4AF37))),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +60,7 @@ class AboutScreen extends StatelessWidget {
                   children: [
                     Text('⛅️ 即時氣象連動資料', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     SizedBox(height: 4),
-                    Text('交通部中央氣象署 (CWA) 開放資料平台', style: TextStyle(color: Colors.white60, fontSize: 14)),
+                    Text('台灣交通部中央氣象署 (CWA)\nGlobal weather data by Open-Meteo.com', style: TextStyle(color: Colors.white60, fontSize: 14, height: 1.5)),
                     SizedBox(height: 16),
                     Text('🌾 在地稻米品種知識', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     SizedBox(height: 4),
@@ -95,23 +70,19 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 48),
 
-              // Tip Jar (Mock)
+              // Open Source
               const Text(
-                '支持農夫 (Tip Jar)',
+                '開源與程式碼',
                 style: TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               const Text(
-                '如果您享受這片寧靜的田地，未來歡迎隨喜贊助。',
+                '本專案為完全免費之開源軟體，您可以隨時檢視、學習或貢獻程式碼。',
                 style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
               ),
               const SizedBox(height: 16),
 
-              _buildMockButton('🍵 請農夫喝杯青草茶', () => _showComingSoonDialog(context)),
-              const SizedBox(height: 12),
-              _buildMockButton('🍱 請農夫吃個排骨便當', () => _showComingSoonDialog(context)),
-              const SizedBox(height: 12),
-              _buildMockButton('🌾 贊助一包有機肥料', () => _showComingSoonDialog(context)),
+              _buildGithubButton(context),
               
               const SizedBox(height: 48),
             ],
@@ -121,9 +92,14 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMockButton(String title, VoidCallback onTap) {
+  Widget _buildGithubButton(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: () async {
+        final url = Uri.parse('https://github.com/codinguniversefromEric/Every-grain');
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
+      },
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -132,11 +108,11 @@ class AboutScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.5)),
         ),
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
-            const Icon(Icons.favorite_border, color: Color(0xFFD4AF37), size: 20),
+            Text('💻 前往 GitHub 檢視專案', style: TextStyle(color: Colors.white, fontSize: 16)),
+            Icon(Icons.open_in_new, color: Color(0xFFD4AF37), size: 20),
           ],
         ),
       ),

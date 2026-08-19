@@ -5,7 +5,6 @@ import 'agricultural_calendar.dart';
 import 'ambient_sound.dart';
 import 'weather_service.dart';
 import 'variety_service.dart';
-import 'battery_service.dart';
 
 class StateManager extends ChangeNotifier {
   FieldState? _state;
@@ -13,10 +12,8 @@ class StateManager extends ChangeNotifier {
   DateTime _simulatedDate = DateTime.now();
   int _simulatedHour = DateTime.now().hour;
   bool _isLoading = true;
-  int _batteryLevel = 100;
   bool _isHarvesting = false;
 
-  final BatteryService _batteryService = BatteryService();
   final AmbientSoundService _ambientSound = AmbientSoundService();
 
   FieldState? get state => _state;
@@ -24,20 +21,10 @@ class StateManager extends ChangeNotifier {
   DateTime get simulatedDate => _simulatedDate;
   int get simulatedHour => _simulatedHour;
   bool get isLoading => _isLoading;
-  int get batteryLevel => _batteryLevel;
   bool get isHarvesting => _isHarvesting;
   AmbientSoundService get ambientSound => _ambientSound;
 
-  StateManager() {
-    _initBattery();
-  }
-
-  void _initBattery() {
-    _batteryService.onBatteryStateChanged.listen((_) async {
-      _batteryLevel = await _batteryService.batteryLevel;
-      notifyListeners();
-    });
-  }
+  StateManager();
 
   Future<void> initializeState() async {
     _isLoading = true;
@@ -47,8 +34,6 @@ class StateManager extends ChangeNotifier {
     _region = AgriculturalCalendar.getRegionForPosition(position);
     final weather = await WeatherService.getCurrentWeather(position);
     final variety = VarietyService.getVarietyForPosition(position);
-    
-    _batteryLevel = await _batteryService.batteryLevel;
     
     _state = FieldState(
       growthStage: AgriculturalCalendar.getStageForDate(_simulatedDate, _region),
@@ -159,11 +144,6 @@ class StateManager extends ChangeNotifier {
       _updateAmbience();
       notifyListeners();
     }
-  }
-
-  void overrideBattery(int battery) {
-    _batteryLevel = battery;
-    notifyListeners();
   }
 
   Future<void> teleportTo(double lat, double lon) async {
