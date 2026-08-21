@@ -120,6 +120,7 @@ header.scrolled {
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-lg);
+  width: 100%;
 }
 
 .hero-text {
@@ -303,10 +304,20 @@ footer {
   align-items: center;
 }
 
+.footer-links {
+  display: flex;
+  align-items: center;
+}
+
 .footer-links a {
   margin-left: var(--spacing-sm);
   font-size: 0.9rem;
   color: var(--color-text-muted);
+}
+
+.visitor-badge {
+  margin-left: var(--spacing-sm);
+  height: 20px;
 }
 
 /* =========================================
@@ -327,9 +338,23 @@ footer {
    Responsive
    ========================================= */
 @media (max-width: 768px) {
+  .hero {
+    min-height: auto;
+    padding-top: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+  }
+
   .hero-content {
     flex-direction: column;
     text-align: center;
+  }
+  
+  .hero-text h1 {
+    font-size: 2.2rem;
+  }
+
+  .features {
+    padding: var(--spacing-lg) 0;
   }
   
   .hero-text p {
@@ -345,5 +370,19 @@ footer {
   .phone-mockup {
     width: 240px;
     height: 480px;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-links a, .visitor-badge {
+    margin-left: 0;
   }
 }
