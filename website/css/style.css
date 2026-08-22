@@ -148,7 +148,8 @@ header.scrolled {
   opacity: 1;
 }
 
-.lang-switcher:hover .lang-dropdown {
+.lang-switcher:hover .lang-dropdown,
+.lang-switcher.active .lang-dropdown {
   display: block;
 }
 

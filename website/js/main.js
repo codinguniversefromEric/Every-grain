@@ -31,4 +31,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // Trigger on scroll
   window.addEventListener('scroll', revealOnScroll);
 
+  // 3. Mobile Language Switcher Support
+  const langSwitcher = document.querySelector('.lang-switcher');
+  if (langSwitcher) {
+    const langBtn = langSwitcher.querySelector('a');
+    langBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      langSwitcher.classList.toggle('active');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!langSwitcher.contains(e.target)) {
+        langSwitcher.classList.remove('active');
+      }
+    });
+  }
+
 });
