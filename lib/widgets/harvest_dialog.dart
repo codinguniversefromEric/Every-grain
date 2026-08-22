@@ -11,33 +11,48 @@ class HarvestDialog extends StatelessWidget {
   String _getVarietyName(BuildContext context, RiceVariety v) {
     final loc = AppLocalizations.of(context)!;
     switch (v.id) {
-      case 'tainan_11': return loc.varietyTainan11Name;
-      case 'kaohsiung_139': return loc.varietyKaohsiung139Name;
-      case 'tainung_71': return loc.varietyTainung71Name;
-      case 'taikeng_9': return loc.varietyTaikeng9Name;
-      default: return v.name;
+      case 'tainan_11':
+        return loc.varietyTainan11Name;
+      case 'kaohsiung_139':
+        return loc.varietyKaohsiung139Name;
+      case 'tainung_71':
+        return loc.varietyTainung71Name;
+      case 'taikeng_9':
+        return loc.varietyTaikeng9Name;
+      default:
+        return v.name;
     }
   }
 
   String _getVarietyDesc(BuildContext context, RiceVariety v) {
     final loc = AppLocalizations.of(context)!;
     switch (v.id) {
-      case 'tainan_11': return loc.varietyTainan11Desc;
-      case 'kaohsiung_139': return loc.varietyKaohsiung139Desc;
-      case 'tainung_71': return loc.varietyTainung71Desc;
-      case 'taikeng_9': return loc.varietyTaikeng9Desc;
-      default: return v.description;
+      case 'tainan_11':
+        return loc.varietyTainan11Desc;
+      case 'kaohsiung_139':
+        return loc.varietyKaohsiung139Desc;
+      case 'tainung_71':
+        return loc.varietyTainung71Desc;
+      case 'taikeng_9':
+        return loc.varietyTaikeng9Desc;
+      default:
+        return v.description;
     }
   }
 
   String _getVarietyFact(BuildContext context, RiceVariety v) {
     final loc = AppLocalizations.of(context)!;
     switch (v.id) {
-      case 'tainan_11': return loc.varietyTainan11Fact;
-      case 'kaohsiung_139': return loc.varietyKaohsiung139Fact;
-      case 'tainung_71': return loc.varietyTainung71Fact;
-      case 'taikeng_9': return loc.varietyTaikeng9Fact;
-      default: return v.funFact;
+      case 'tainan_11':
+        return loc.varietyTainan11Fact;
+      case 'kaohsiung_139':
+        return loc.varietyKaohsiung139Fact;
+      case 'tainung_71':
+        return loc.varietyTainung71Fact;
+      case 'taikeng_9':
+        return loc.varietyTaikeng9Fact;
+      default:
+        return v.funFact;
     }
   }
 
@@ -54,7 +69,10 @@ class HarvestDialog extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF2C2214), // Dark earthy brown
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFD4AF37), width: 2), // Golden border
+              border: Border.all(
+                color: const Color(0xFFD4AF37),
+                width: 2,
+              ), // Golden border
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -63,7 +81,11 @@ class HarvestDialog extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   loc.harvestDialogMessage,
-                  style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    height: 1.5,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 if (variety != null) ...[
@@ -79,12 +101,20 @@ class HarvestDialog extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.menu_book, color: Color(0xFFD4AF37), size: 20),
+                            const Icon(
+                              Icons.menu_book,
+                              color: Color(0xFFD4AF37),
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 '${loc.varietyKnowledgeCardPrefix}${_getVarietyName(context, variety!)}',
-                                style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold, fontSize: 16),
+                                style: const TextStyle(
+                                  color: Color(0xFFD4AF37),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ],
@@ -92,12 +122,21 @@ class HarvestDialog extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           _getVarietyDesc(context, variety!),
-                          style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           _getVarietyFact(context, variety!),
-                          style: const TextStyle(color: Colors.white, fontSize: 14, fontStyle: FontStyle.italic, height: 1.5),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            height: 1.5,
+                          ),
                         ),
                       ],
                     ),
@@ -109,14 +148,22 @@ class HarvestDialog extends StatelessWidget {
                     backgroundColor: const Color(0xFFD4AF37),
                     foregroundColor: Colors.black87,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 12,
+                    ),
                   ),
                   onPressed: () {
                     Navigator.of(context).pop();
                     onRestart();
                   },
-                  child: Text(loc.harvestDialogReplant, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    loc.harvestDialogReplant,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),

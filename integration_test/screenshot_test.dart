@@ -29,10 +29,10 @@ void main() {
     stateManager.updateGrowthStage(GrowthStage.seedling);
     stateManager.updateDayPhase(DayPhase.morning);
     stateManager.updateWeather(WeatherCondition.clear);
-    
+
     // Pump animation frames (let ripples/clouds start)
     await tester.pump(const Duration(seconds: 2));
-    
+
     // Take screenshot
     await binding.takeScreenshot('screenshot_1_seedling');
     print('✅ Screenshot 1 taken: seedling');
@@ -44,9 +44,9 @@ void main() {
     stateManager.updateGrowthStage(GrowthStage.heading);
     stateManager.updateDayPhase(DayPhase.evening);
     stateManager.updateWeather(WeatherCondition.stormy);
-    
+
     await tester.pump(const Duration(seconds: 2));
-    
+
     await binding.takeScreenshot('screenshot_2_stormy');
     print('✅ Screenshot 2 taken: stormy heading');
 
@@ -57,13 +57,13 @@ void main() {
     // Use teleport to trigger variety change
     await stateManager.teleportTo(23.0, 121.0); // South/East (Kaohsiung 139)
     await tester.pump(const Duration(seconds: 1));
-    
+
     stateManager.updateGrowthStage(GrowthStage.ripening);
     stateManager.updateDayPhase(DayPhase.afternoon);
     stateManager.updateWeather(WeatherCondition.clear);
-    
+
     await tester.pump(const Duration(seconds: 2));
-    
+
     await binding.takeScreenshot('screenshot_3_local_variety');
     print('✅ Screenshot 3 taken: kaohsiung 139 ripening');
 
@@ -74,9 +74,9 @@ void main() {
     stateManager.updateGrowthStage(GrowthStage.tillering);
     stateManager.updateDayPhase(DayPhase.night);
     stateManager.updateWeather(WeatherCondition.clear);
-    
+
     await tester.pump(const Duration(seconds: 2));
-    
+
     await binding.takeScreenshot('screenshot_4_night_time');
     print('✅ Screenshot 4 taken: night tillering');
 
@@ -86,17 +86,17 @@ void main() {
     // -------------------------------------------------------------------------
     stateManager.updateGrowthStage(GrowthStage.ripening);
     stateManager.updateDayPhase(DayPhase.afternoon);
-    
+
     // Trigger harvest
     stateManager.executeHarvest(() {
       // Callback after harvest
     });
-    
+
     // Wait for the harvest animation (2 seconds)
     await tester.pump(const Duration(seconds: 2));
     // Pump one more time to let the dialog render
     await tester.pump(const Duration(milliseconds: 500));
-    
+
     await binding.takeScreenshot('screenshot_5_harvest_card');
     print('✅ Screenshot 5 taken: harvest card');
   });

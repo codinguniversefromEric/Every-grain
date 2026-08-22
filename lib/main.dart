@@ -27,19 +27,19 @@ import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(const RiceJourneyApp());
 }
 
-
 class RiceJourneyApp extends StatefulWidget {
   const RiceJourneyApp({super.key});
 
   static void setLocale(BuildContext context, Locale? newLocale) {
-    _RiceJourneyAppState? state = context.findAncestorStateOfType<_RiceJourneyAppState>();
+    _RiceJourneyAppState? state = context
+        .findAncestorStateOfType<_RiceJourneyAppState>();
     state?.setLocale(newLocale);
   }
 
@@ -81,7 +81,7 @@ class _RiceJourneyAppState extends State<RiceJourneyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Every Grain', 
+      title: 'Every Grain',
       locale: _locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -120,7 +120,8 @@ bool isTakingScreenshot = false;
 // ⚠️ 測試期間設為 true，正式上架生產環境前請改為 false
 const bool isBetaTestMode = true;
 
-class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingObserver {
+class _RiceFieldScreenState extends State<RiceFieldScreen>
+    with WidgetsBindingObserver {
   late final StateManager _stateManager;
 
   @override
@@ -134,7 +135,8 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
       _stateManager.pauseApp();
     } else if (state == AppLifecycleState.resumed) {
       _stateManager.resumeApp();
@@ -231,7 +233,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
         final isHarvesting = _stateManager.isHarvesting;
 
         return Scaffold(
-          resizeToAvoidBottomInset: false, 
+          resizeToAvoidBottomInset: false,
           body: Stack(
             children: [
               // 1. Living Sky Background
@@ -261,7 +263,8 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
               ),
 
               // 1.8. Egrets (Daylight only)
-              if (state.dayPeriod != DayPhase.night && state.weatherCondition == WeatherCondition.clear)
+              if (state.dayPeriod != DayPhase.night &&
+                  state.weatherCondition == WeatherCondition.clear)
                 const Positioned.fill(child: EgretFlockLayer()),
 
               // 2. Ambient Fireflies (only at night)
@@ -269,15 +272,19 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                 const Positioned.fill(child: FirefliesLayer()),
 
               // 3. Morning/Evening Mist
-              if (state.dayPeriod == DayPhase.morning || state.dayPeriod == DayPhase.evening)
+              if (state.dayPeriod == DayPhase.morning ||
+                  state.dayPeriod == DayPhase.evening)
                 const Positioned.fill(child: MistLayer()),
 
               // 4. Procedural Rice Plant Layer
               Positioned(
-                bottom: 50, 
+                bottom: 50,
                 left: 0,
                 right: 0,
-                child: RicePlantLayer(growthStage: state.growthStage, variety: state.currentVariety),
+                child: RicePlantLayer(
+                  growthStage: state.growthStage,
+                  variety: state.currentVariety,
+                ),
               ),
 
               // 4.5. Swipe Hint Overlay
@@ -292,13 +299,25 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                       duration: AnimationConstants.harvestSequence,
                       builder: (context, value, child) {
                         return Opacity(
-                          opacity: (0.5 + 0.5 * (1.0 - ((value * 2) % 1.0))), // Pulsing
+                          opacity:
+                              (0.5 +
+                              0.5 * (1.0 - ((value * 2) % 1.0))), // Pulsing
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(AppLocalizations.of(context)!.swipeToHarvest, style: const TextStyle(color: Colors.white, fontSize: 18, letterSpacing: 2)),
+                              Text(
+                                AppLocalizations.of(context)!.swipeToHarvest,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  letterSpacing: 2,
+                                ),
+                              ),
                               const SizedBox(width: 8),
-                              const Icon(Icons.keyboard_double_arrow_right, color: Colors.white),
+                              const Icon(
+                                Icons.keyboard_double_arrow_right,
+                                color: Colors.white,
+                              ),
                             ],
                           ),
                         );
@@ -308,17 +327,24 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                 ),
 
               // 5. Dragonflies (Daylight + Warm Seasons)
-              if (state.dayPeriod != DayPhase.night && 
-                 (state.growthStage == GrowthStage.tillering || state.growthStage == GrowthStage.heading || state.growthStage == GrowthStage.ripening))
+              if (state.dayPeriod != DayPhase.night &&
+                  (state.growthStage == GrowthStage.tillering ||
+                      state.growthStage == GrowthStage.heading ||
+                      state.growthStage == GrowthStage.ripening))
                 const Positioned.fill(child: DragonflyLayer()),
 
               // 6. Water Ripples (Flooded Paddy Stages)
-              if (state.growthStage == GrowthStage.fallow || state.growthStage == GrowthStage.seedling)
+              if (state.growthStage == GrowthStage.fallow ||
+                  state.growthStage == GrowthStage.seedling)
                 const Positioned.fill(child: WaterRippleLayer()),
 
               // 6.5. Wind Gusts (Afternoon/Evening or Stormy)
-              if (state.dayPeriod == DayPhase.afternoon || state.dayPeriod == DayPhase.evening || state.weatherCondition == WeatherCondition.stormy)
-                Positioned.fill(child: WindGustLayer(weather: state.weatherCondition)),
+              if (state.dayPeriod == DayPhase.afternoon ||
+                  state.dayPeriod == DayPhase.evening ||
+                  state.weatherCondition == WeatherCondition.stormy)
+                Positioned.fill(
+                  child: WindGustLayer(weather: state.weatherCondition),
+                ),
 
               // 6.6. Full-screen Swipe to Harvest Detector
               if (state.growthStage == GrowthStage.ripening && !isHarvesting)
@@ -331,14 +357,15 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                       }
                     },
                     onHorizontalDragEnd: (details) {
-                      if (details.primaryVelocity != null && details.primaryVelocity! > 50) {
+                      if (details.primaryVelocity != null &&
+                          details.primaryVelocity! > 50) {
                         _executeHarvest();
                       }
                     },
                     child: const SizedBox.expand(),
                   ),
                 ),
-                
+
               // 7. Developer Controls (Beta Test Mode or Debug Mode)
               if ((kDebugMode || isBetaTestMode) && !isTakingScreenshot)
                 Positioned(
@@ -346,7 +373,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                   right: 20,
                   child: SafeArea(
                     child: IconButton(
-                      icon: Icon(Icons.build, color: Colors.white.withValues(alpha: 0.2)),
+                      icon: Icon(
+                        Icons.build,
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
                       onPressed: _showDeveloperControls,
                       tooltip: AppLocalizations.of(context)!.developerControls,
                     ),
@@ -360,11 +390,18 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                   right: 20,
                   child: SafeArea(
                     child: IconButton(
-                      icon: Icon(Icons.spa, color: Colors.white.withValues(alpha: 0.3)),
+                      icon: Icon(
+                        Icons.spa,
+                        color: Colors.white.withValues(alpha: 0.3),
+                      ),
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => AboutScreen(isInTaiwan: _stateManager.isInTaiwan)),
+                          MaterialPageRoute(
+                            builder: (context) => AboutScreen(
+                              isInTaiwan: _stateManager.isInTaiwan,
+                            ),
+                          ),
                         );
                       },
                       tooltip: AppLocalizations.of(context)!.aboutUs,

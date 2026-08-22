@@ -27,10 +27,12 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<DeveloperControlsBottomSheet> createState() => _DeveloperControlsBottomSheetState();
+  State<DeveloperControlsBottomSheet> createState() =>
+      _DeveloperControlsBottomSheetState();
 }
 
-class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSheet> {
+class _DeveloperControlsBottomSheetState
+    extends State<DeveloperControlsBottomSheet> {
   late DayPhase _localDayPhase;
   late WeatherCondition _localWeather;
 
@@ -52,15 +54,27 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(loc.testerControlsTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              loc.testerControlsTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
-            Text(loc.testerControlsDesc, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+            Text(
+              loc.testerControlsDesc,
+              style: const TextStyle(color: Colors.grey, fontSize: 13),
+            ),
             const SizedBox(height: 24),
-            
+
             // 1. Location (Taiwan)
-            Text(loc.testerLocationTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              loc.testerLocationTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 8),
-            Text(loc.testerLocationDesc, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            Text(
+              loc.testerLocationDesc,
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -89,9 +103,12 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // 2. Location (Global)
-            Text(loc.testerGlobalTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              loc.testerGlobalTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -120,24 +137,32 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
                 ActionChip(
                   backgroundColor: Colors.teal.withValues(alpha: 0.1),
                   label: Text(loc.testerLocSydney),
-                  onPressed: () => widget.onTeleportTo(-33.8688, 151.2093), // South hemisphere!
+                  onPressed: () => widget.onTeleportTo(
+                    -33.8688,
+                    151.2093,
+                  ), // South hemisphere!
                 ),
                 ActionChip(
                   backgroundColor: Colors.amber.withValues(alpha: 0.1),
                   label: Text(loc.testerLocCairo),
-                  onPressed: () => widget.onTeleportTo(30.0444, 31.2357), // Desert
+                  onPressed: () =>
+                      widget.onTeleportTo(30.0444, 31.2357), // Desert
                 ),
                 ActionChip(
                   backgroundColor: Colors.greenAccent.withValues(alpha: 0.1),
                   label: Text(loc.testerLocRio),
-                  onPressed: () => widget.onTeleportTo(-22.9068, -43.1729), // Tropical
+                  onPressed: () =>
+                      widget.onTeleportTo(-22.9068, -43.1729), // Tropical
                 ),
               ],
             ),
             const Divider(height: 32),
-            
+
             // 2. Time
-            Text(loc.testerTimeTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              loc.testerTimeTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -155,10 +180,20 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    icon: Icon(_localDayPhase == DayPhase.morning ? Icons.dark_mode : Icons.light_mode),
-                    label: Text(_localDayPhase == DayPhase.morning ? loc.testerToNight : loc.testerToDay),
+                    icon: Icon(
+                      _localDayPhase == DayPhase.morning
+                          ? Icons.dark_mode
+                          : Icons.light_mode,
+                    ),
+                    label: Text(
+                      _localDayPhase == DayPhase.morning
+                          ? loc.testerToNight
+                          : loc.testerToDay,
+                    ),
                     onPressed: () {
-                      final newPhase = _localDayPhase == DayPhase.morning ? DayPhase.night : DayPhase.morning;
+                      final newPhase = _localDayPhase == DayPhase.morning
+                          ? DayPhase.night
+                          : DayPhase.morning;
                       setState(() => _localDayPhase = newPhase);
                       widget.onDayPhaseChanged(newPhase);
                     },
@@ -167,9 +202,12 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
               ],
             ),
             const Divider(height: 32),
-            
+
             // 3. Events
-            Text(loc.testerEventsTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+              loc.testerEventsTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -178,28 +216,40 @@ class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSh
                   label: const Text('Clear'),
                   selected: _localWeather == WeatherCondition.clear,
                   onSelected: (s) {
-                    if(s) { setState(() => _localWeather = WeatherCondition.clear); widget.onWeatherChanged(WeatherCondition.clear); }
+                    if (s) {
+                      setState(() => _localWeather = WeatherCondition.clear);
+                      widget.onWeatherChanged(WeatherCondition.clear);
+                    }
                   },
                 ),
                 ChoiceChip(
                   label: const Text('Cloudy'),
                   selected: _localWeather == WeatherCondition.cloudy,
                   onSelected: (s) {
-                    if(s) { setState(() => _localWeather = WeatherCondition.cloudy); widget.onWeatherChanged(WeatherCondition.cloudy); }
+                    if (s) {
+                      setState(() => _localWeather = WeatherCondition.cloudy);
+                      widget.onWeatherChanged(WeatherCondition.cloudy);
+                    }
                   },
                 ),
                 ChoiceChip(
                   label: const Text('Rainy'),
                   selected: _localWeather == WeatherCondition.rainy,
                   onSelected: (s) {
-                    if(s) { setState(() => _localWeather = WeatherCondition.rainy); widget.onWeatherChanged(WeatherCondition.rainy); }
+                    if (s) {
+                      setState(() => _localWeather = WeatherCondition.rainy);
+                      widget.onWeatherChanged(WeatherCondition.rainy);
+                    }
                   },
                 ),
                 ChoiceChip(
                   label: const Text('Stormy'),
                   selected: _localWeather == WeatherCondition.stormy,
                   onSelected: (s) {
-                    if(s) { setState(() => _localWeather = WeatherCondition.stormy); widget.onWeatherChanged(WeatherCondition.stormy); }
+                    if (s) {
+                      setState(() => _localWeather = WeatherCondition.stormy);
+                      widget.onWeatherChanged(WeatherCondition.stormy);
+                    }
                   },
                 ),
               ],

@@ -5,7 +5,10 @@ import 'package:rice_journey/models/field_state.dart';
 void main() {
   group('AgriculturalCalendar', () {
     test('getRegionForPosition returns north when position is null', () {
-      expect(AgriculturalCalendar.getRegionForPosition(null), TaiwanRegion.north);
+      expect(
+        AgriculturalCalendar.getRegionForPosition(null),
+        TaiwanRegion.north,
+      );
     });
   });
 }

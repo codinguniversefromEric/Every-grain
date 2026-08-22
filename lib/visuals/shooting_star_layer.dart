@@ -9,7 +9,8 @@ class ShootingStarLayer extends StatefulWidget {
   State<ShootingStarLayer> createState() => _ShootingStarLayerState();
 }
 
-class _ShootingStarLayerState extends State<ShootingStarLayer> with SingleTickerProviderStateMixin {
+class _ShootingStarLayerState extends State<ShootingStarLayer>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   _Star? _currentStar;
   final Random _rng = Random();
@@ -17,12 +18,16 @@ class _ShootingStarLayerState extends State<ShootingStarLayer> with SingleTicker
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat();
     _controller.addListener(_updateStars);
   }
 
   void _updateStars() {
-    if (_currentStar == null && _rng.nextDouble() < 0.005) { // very rare
+    if (_currentStar == null && _rng.nextDouble() < 0.005) {
+      // very rare
       _currentStar = _Star(
         startX: 0.2 + _rng.nextDouble() * 0.8,
         startY: 0.05 + _rng.nextDouble() * 0.2,
@@ -31,10 +36,13 @@ class _ShootingStarLayerState extends State<ShootingStarLayer> with SingleTicker
         startTime: DateTime.now(),
       );
     }
-    
+
     if (_currentStar != null) {
-      final elapsed = DateTime.now().difference(_currentStar!.startTime).inMilliseconds;
-      if (elapsed > 800) { // fades fast
+      final elapsed = DateTime.now()
+          .difference(_currentStar!.startTime)
+          .inMilliseconds;
+      if (elapsed > 800) {
+        // fades fast
         _currentStar = null;
       }
     }
@@ -66,7 +74,13 @@ class _Star {
   final double length;
   final double angle;
   final DateTime startTime;
-  _Star({required this.startX, required this.startY, required this.length, required this.angle, required this.startTime});
+  _Star({
+    required this.startX,
+    required this.startY,
+    required this.length,
+    required this.angle,
+    required this.startTime,
+  });
 }
 
 class _ShootingStarPainter extends CustomPainter {
@@ -76,19 +90,24 @@ class _ShootingStarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (star == null) return;
-    
-    final elapsed = DateTime.now().difference(star!.startTime).inMilliseconds / 800.0;
+
+    final elapsed =
+        DateTime.now().difference(star!.startTime).inMilliseconds / 800.0;
     if (elapsed > 1.0) return;
 
     // Head of the star moves fast
     double progress = Curves.easeOut.transform(elapsed);
-    double headX = star!.startX * size.width + cos(star!.angle) * (progress * 500);
-    double headY = star!.startY * size.height + sin(star!.angle) * (progress * 500);
+    double headX =
+        star!.startX * size.width + cos(star!.angle) * (progress * 500);
+    double headY =
+        star!.startY * size.height + sin(star!.angle) * (progress * 500);
 
     // Tail follows and fades
     double tailProgress = (elapsed - 0.2).clamp(0.0, 1.0);
-    double tailX = star!.startX * size.width + cos(star!.angle) * (tailProgress * 500);
-    double tailY = star!.startY * size.height + sin(star!.angle) * (tailProgress * 500);
+    double tailX =
+        star!.startX * size.width + cos(star!.angle) * (tailProgress * 500);
+    double tailY =
+        star!.startY * size.height + sin(star!.angle) * (tailProgress * 500);
 
     final paint = Paint()
       ..shader = ui.Gradient.linear(
@@ -108,4 +127,3 @@ class _ShootingStarPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-

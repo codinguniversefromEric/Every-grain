@@ -33,10 +33,13 @@ class StateManager extends ChangeNotifier {
     notifyListeners();
 
     Position? position = await AgriculturalCalendar.getPosition();
-    
+
     if (position != null) {
-      _isInTaiwan = position.latitude >= 21.0 && position.latitude <= 26.0 &&
-                    position.longitude >= 119.0 && position.longitude <= 122.0;
+      _isInTaiwan =
+          position.latitude >= 21.0 &&
+          position.latitude <= 26.0 &&
+          position.longitude >= 119.0 &&
+          position.longitude <= 122.0;
     } else {
       _isInTaiwan = true; // default to CWA
     }
@@ -44,9 +47,12 @@ class StateManager extends ChangeNotifier {
     _region = AgriculturalCalendar.getRegionForPosition(position);
     final weather = await WeatherService.getCurrentWeather(position);
     final variety = VarietyService.getVarietyForPosition(position);
-    
+
     _state = FieldState(
-      growthStage: AgriculturalCalendar.getStageForDate(_simulatedDate, _region),
+      growthStage: AgriculturalCalendar.getStageForDate(
+        _simulatedDate,
+        _region,
+      ),
       dayPeriod: _calculateDayPhase(_simulatedHour),
       weatherCondition: weather,
       currentVariety: variety,
@@ -60,7 +66,7 @@ class StateManager extends ChangeNotifier {
 
   void pauseApp() => _ambientSound.pause();
   void resumeApp() => _ambientSound.resume();
-  
+
   @override
   void dispose() {
     _ambientSound.dispose();
@@ -76,7 +82,11 @@ class StateManager extends ChangeNotifier {
 
   void _updateAmbience() {
     if (_state != null) {
-      _ambientSound.updateAmbience(_state!.dayPeriod, _state!.growthStage, weather: _state!.weatherCondition);
+      _ambientSound.updateAmbience(
+        _state!.dayPeriod,
+        _state!.growthStage,
+        weather: _state!.weatherCondition,
+      );
     }
   }
 
@@ -93,14 +103,14 @@ class StateManager extends ChangeNotifier {
     if (_isHarvesting || _state == null) return;
     _isHarvesting = true;
     notifyListeners();
-    
+
     _ambientSound.playHarvestSound();
-    
+
     _state!.growthStage = GrowthStage.harvested;
     notifyListeners();
-    
+
     await Future.delayed(const Duration(seconds: 2));
-    
+
     onHarvestComplete();
     _isHarvesting = false;
     notifyListeners();
@@ -133,16 +143,28 @@ class StateManager extends ChangeNotifier {
 
   void simulateNextMonth() {
     if (_state != null) {
-      _simulatedDate = DateTime(_simulatedDate.year, _simulatedDate.month + 1, _simulatedDate.day);
-      _state!.growthStage = AgriculturalCalendar.getStageForDate(_simulatedDate, _region);
+      _simulatedDate = DateTime(
+        _simulatedDate.year,
+        _simulatedDate.month + 1,
+        _simulatedDate.day,
+      );
+      _state!.growthStage = AgriculturalCalendar.getStageForDate(
+        _simulatedDate,
+        _region,
+      );
       notifyListeners();
     }
   }
 
   void toggleRegion() {
     if (_state != null) {
-      _region = _region == TaiwanRegion.north ? TaiwanRegion.south : TaiwanRegion.north;
-      _state!.growthStage = AgriculturalCalendar.getStageForDate(_simulatedDate, _region);
+      _region = _region == TaiwanRegion.north
+          ? TaiwanRegion.south
+          : TaiwanRegion.north;
+      _state!.growthStage = AgriculturalCalendar.getStageForDate(
+        _simulatedDate,
+        _region,
+      );
       notifyListeners();
     }
   }
@@ -158,7 +180,7 @@ class StateManager extends ChangeNotifier {
 
   Future<void> teleportTo(double lat, double lon) async {
     if (_state == null) return;
-    
+
     final mockPos = Position(
       latitude: lat,
       longitude: lon,
@@ -171,17 +193,20 @@ class StateManager extends ChangeNotifier {
       altitudeAccuracy: 0.0,
       headingAccuracy: 0.0,
     );
-    
+
     _isInTaiwan = lat >= 21.0 && lat <= 26.0 && lon >= 119.0 && lon <= 122.0;
-    
+
     _region = AgriculturalCalendar.getRegionForPosition(mockPos);
     final weather = await WeatherService.getCurrentWeather(mockPos);
     final variety = VarietyService.getVarietyForPosition(mockPos);
-    
-    _state!.growthStage = AgriculturalCalendar.getStageForDate(_simulatedDate, _region);
+
+    _state!.growthStage = AgriculturalCalendar.getStageForDate(
+      _simulatedDate,
+      _region,
+    );
     _state!.weatherCondition = weather;
     _state!.currentVariety = variety;
-    
+
     _updateAmbience();
     notifyListeners();
   }

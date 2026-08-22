@@ -8,13 +8,17 @@ class MistLayer extends StatefulWidget {
   State<MistLayer> createState() => _MistLayerState();
 }
 
-class _MistLayerState extends State<MistLayer> with SingleTickerProviderStateMixin {
+class _MistLayerState extends State<MistLayer>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 30))..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 30),
+    )..repeat();
   }
 
   @override
@@ -50,7 +54,8 @@ class _MistPainter extends CustomPainter {
     // Draw several wide, soft blobs drifting right
     for (int i = 0; i < 3; i++) {
       double speed = 0.5 + i * 0.2;
-      double xOffset = ((progress * speed + (i * 0.33)) % 1.0) * (size.width + 400) - 200;
+      double xOffset =
+          ((progress * speed + (i * 0.33)) % 1.0) * (size.width + 400) - 200;
       double yWobble = sin(progress * pi * 2 + i) * 20;
 
       canvas.drawOval(
@@ -67,4 +72,3 @@ class _MistPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-

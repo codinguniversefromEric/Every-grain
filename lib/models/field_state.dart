@@ -1,32 +1,12 @@
 import 'rice_variety.dart';
 
-enum GrowthStage {
-  fallow,
-  seedling,
-  tillering,
-  heading,
-  ripening,
-  harvested,
-}
+enum GrowthStage { fallow, seedling, tillering, heading, ripening, harvested }
 
-enum TaiwanRegion {
-  north,
-  south,
-}
+enum TaiwanRegion { north, south }
 
-enum DayPhase {
-  morning,
-  afternoon,
-  evening,
-  night,
-}
+enum DayPhase { morning, afternoon, evening, night }
 
-enum WeatherCondition {
-  clear,
-  cloudy,
-  rainy,
-  stormy,
-}
+enum WeatherCondition { clear, cloudy, rainy, stormy }
 
 class FieldState {
   GrowthStage growthStage;

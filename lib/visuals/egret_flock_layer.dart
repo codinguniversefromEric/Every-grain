@@ -8,13 +8,17 @@ class EgretFlockLayer extends StatefulWidget {
   State<EgretFlockLayer> createState() => _EgretFlockLayerState();
 }
 
-class _EgretFlockLayerState extends State<EgretFlockLayer> with SingleTickerProviderStateMixin {
+class _EgretFlockLayerState extends State<EgretFlockLayer>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 40))..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 40),
+    )..repeat();
   }
 
   @override
@@ -65,17 +69,17 @@ class _EgretPainter extends CustomPainter {
       var offset = offsets[i];
       double x = xBase + offset.dx;
       double y = yBase + offset.dy;
-      
+
       // Flap wings: sin wave based on progress + offset to desync them slightly
-      double flap = sin(progress * pi * 80 + i); 
-      
+      double flap = sin(progress * pi * 80 + i);
+
       Path path = Path();
       // left wing
       path.moveTo(x - 8, y - flap * 5);
       path.quadraticBezierTo(x - 4, y - flap * 2, x, y);
       // right wing
       path.quadraticBezierTo(x + 4, y - flap * 2, x + 8, y - flap * 5);
-      
+
       canvas.drawPath(path, paint);
     }
   }
@@ -83,4 +87,3 @@ class _EgretPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-

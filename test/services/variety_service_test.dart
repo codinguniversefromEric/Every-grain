@@ -12,9 +12,16 @@ void main() {
 
     test('returns Kaohsiung 139 for East Taiwan', () {
       final pos = Position(
-        latitude: 23.0, longitude: 121.5, timestamp: DateTime.now(),
-        accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0,
-        altitudeAccuracy: 0, headingAccuracy: 0,
+        latitude: 23.0,
+        longitude: 121.5,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        heading: 0,
+        speed: 0,
+        speedAccuracy: 0,
+        altitudeAccuracy: 0,
+        headingAccuracy: 0,
       );
       final variety = VarietyService.getVarietyForPosition(pos);
       expect(variety, RiceVariety.kaohsiung139);
@@ -22,9 +29,16 @@ void main() {
 
     test('returns Taikeng 9 for North Taiwan', () {
       final pos = Position(
-        latitude: 25.0, longitude: 121.5, timestamp: DateTime.now(),
-        accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0,
-        altitudeAccuracy: 0, headingAccuracy: 0,
+        latitude: 25.0,
+        longitude: 121.5,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        heading: 0,
+        speed: 0,
+        speedAccuracy: 0,
+        altitudeAccuracy: 0,
+        headingAccuracy: 0,
       );
       final variety = VarietyService.getVarietyForPosition(pos);
       expect(variety, RiceVariety.taikeng9);
@@ -32,9 +46,16 @@ void main() {
 
     test('returns Tainung 71 for Central Taiwan', () {
       final pos = Position(
-        latitude: 24.0, longitude: 120.5, timestamp: DateTime.now(),
-        accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0,
-        altitudeAccuracy: 0, headingAccuracy: 0,
+        latitude: 24.0,
+        longitude: 120.5,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        heading: 0,
+        speed: 0,
+        speedAccuracy: 0,
+        altitudeAccuracy: 0,
+        headingAccuracy: 0,
       );
       final variety = VarietyService.getVarietyForPosition(pos);
       expect(variety, RiceVariety.tainung71);
@@ -42,9 +63,16 @@ void main() {
 
     test('returns Tainan 11 for South Taiwan', () {
       final pos = Position(
-        latitude: 22.0, longitude: 120.5, timestamp: DateTime.now(),
-        accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0,
-        altitudeAccuracy: 0, headingAccuracy: 0,
+        latitude: 22.0,
+        longitude: 120.5,
+        timestamp: DateTime.now(),
+        accuracy: 0,
+        altitude: 0,
+        heading: 0,
+        speed: 0,
+        speedAccuracy: 0,
+        altitudeAccuracy: 0,
+        headingAccuracy: 0,
       );
       final variety = VarietyService.getVarietyForPosition(pos);
       expect(variety, RiceVariety.tainan11);

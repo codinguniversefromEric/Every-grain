@@ -5,13 +5,18 @@ import '../models/field_state.dart';
 class CloudLayer extends StatefulWidget {
   final bool isNight;
   final WeatherCondition weather;
-  const CloudLayer({super.key, this.isNight = false, this.weather = WeatherCondition.clear});
+  const CloudLayer({
+    super.key,
+    this.isNight = false,
+    this.weather = WeatherCondition.clear,
+  });
 
   @override
   State<CloudLayer> createState() => _CloudLayerState();
 }
 
-class _CloudLayerState extends State<CloudLayer> with SingleTickerProviderStateMixin {
+class _CloudLayerState extends State<CloudLayer>
+    with SingleTickerProviderStateMixin {
   late AnimationController _driftController;
   late List<_Cloud> _clouds;
   final Random _rng = Random(7);
@@ -26,7 +31,7 @@ class _CloudLayerState extends State<CloudLayer> with SingleTickerProviderStateM
     int cloudCount = 5;
     double opacityMultiplier = 1.0;
     double speedMultiplier = 1.0;
-    
+
     if (widget.weather == WeatherCondition.cloudy) {
       cloudCount = 10;
       opacityMultiplier = 2.5;
@@ -40,14 +45,17 @@ class _CloudLayerState extends State<CloudLayer> with SingleTickerProviderStateM
       speedMultiplier = 3.0;
     }
 
-    _clouds = List.generate(cloudCount, (i) => _Cloud(
-      xStart: _rng.nextDouble() * 1.5 - 0.25,
-      yPosition: 0.05 + _rng.nextDouble() * 0.25,
-      speed: (0.15 + _rng.nextDouble() * 0.3) * speedMultiplier,
-      width: 80 + _rng.nextDouble() * 120,
-      height: 25 + _rng.nextDouble() * 30,
-      opacity: (0.15 + _rng.nextDouble() * 0.25) * opacityMultiplier,
-    ));
+    _clouds = List.generate(
+      cloudCount,
+      (i) => _Cloud(
+        xStart: _rng.nextDouble() * 1.5 - 0.25,
+        yPosition: 0.05 + _rng.nextDouble() * 0.25,
+        speed: (0.15 + _rng.nextDouble() * 0.3) * speedMultiplier,
+        width: 80 + _rng.nextDouble() * 120,
+        height: 25 + _rng.nextDouble() * 30,
+        opacity: (0.15 + _rng.nextDouble() * 0.25) * opacityMultiplier,
+      ),
+    );
   }
 
   @override
@@ -79,7 +87,14 @@ class _Cloud {
   final double width;
   final double height;
   final double opacity;
-  _Cloud({required this.xStart, required this.yPosition, required this.speed, required this.width, required this.height, required this.opacity});
+  _Cloud({
+    required this.xStart,
+    required this.yPosition,
+    required this.speed,
+    required this.width,
+    required this.height,
+    required this.opacity,
+  });
 }
 
 class _CloudPainter extends CustomPainter {
@@ -92,9 +107,12 @@ class _CloudPainter extends CustomPainter {
     for (final c in clouds) {
       final xPos = ((c.xStart + time * c.speed) % 1.4) - 0.2; // Wraps around
       final paint = Paint()
-        ..color = (time > 0 ? const Color(0xFF90A4AE) : Colors.white).withValues(alpha: c.opacity.clamp(0.0, 0.95)) // Darker if opacity is high
+        ..color = (time > 0 ? const Color(0xFF90A4AE) : Colors.white)
+            .withValues(
+              alpha: c.opacity.clamp(0.0, 0.95),
+            ) // Darker if opacity is high
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15);
-      
+
       final rect = RRect.fromRectAndRadius(
         Rect.fromCenter(
           center: Offset(xPos * size.width, c.yPosition * size.height),
@@ -110,5 +128,3 @@ class _CloudPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _CloudPainter oldDelegate) => true;
 }
-
-

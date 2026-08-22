@@ -15,19 +15,28 @@ class AboutScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF2C2214),
-          title: Text(loc.languageName, style: const TextStyle(color: Colors.white)),
+          title: Text(
+            loc.languageName,
+            style: const TextStyle(color: Colors.white),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: const Text('English', style: TextStyle(color: Colors.white)),
+                title: const Text(
+                  'English',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onTap: () {
                   RiceJourneyApp.setLocale(context, const Locale('en', ''));
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: const Text('繁體中文', style: TextStyle(color: Colors.white)),
+                title: const Text(
+                  '繁體中文',
+                  style: TextStyle(color: Colors.white),
+                ),
                 onTap: () {
                   RiceJourneyApp.setLocale(context, const Locale('zh', 'TW'));
                   Navigator.pop(context);
@@ -41,7 +50,10 @@ class AboutScreen extends StatelessWidget {
                 },
               ),
               ListTile(
-                title: Text(loc.languageSystem, style: const TextStyle(color: Colors.white54)),
+                title: Text(
+                  loc.languageSystem,
+                  style: const TextStyle(color: Colors.white54),
+                ),
                 onTap: () {
                   RiceJourneyApp.setLocale(context, null);
                   Navigator.pop(context);
@@ -57,7 +69,7 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFF1E1915), // Deep earthy dark
       appBar: AppBar(
@@ -96,7 +108,11 @@ class AboutScreen extends StatelessWidget {
               // Description
               Text(
                 loc.aboutSubtitle,
-                style: const TextStyle(color: Colors.white70, fontSize: 16, height: 1.6),
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                  height: 1.6,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
@@ -104,7 +120,11 @@ class AboutScreen extends StatelessWidget {
               // Data Sources
               Text(
                 loc.aboutDataSourceTitle,
-                style: const TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Color(0xFFD4AF37),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
               Container(
@@ -112,18 +132,45 @@ class AboutScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(loc.aboutDataWeatherTitle, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text(
+                      loc.aboutDataWeatherTitle,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text(loc.aboutDataWeatherDesc, style: const TextStyle(color: Colors.white60, fontSize: 14, height: 1.5)),
+                    Text(
+                      loc.aboutDataWeatherDesc,
+                      style: const TextStyle(
+                        color: Colors.white60,
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
+                    ),
                     const SizedBox(height: 16),
-                    Text(loc.aboutDataRiceTitle, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text(
+                      loc.aboutDataRiceTitle,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text(loc.aboutDataRiceDesc, style: const TextStyle(color: Colors.white60, fontSize: 14)),
+                    Text(
+                      loc.aboutDataRiceDesc,
+                      style: const TextStyle(
+                        color: Colors.white60,
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -132,23 +179,37 @@ class AboutScreen extends StatelessWidget {
               // Open Source
               Text(
                 loc.aboutOpenSourceTitle,
-                style: const TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Color(0xFFD4AF37),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
               Text(
                 loc.aboutOpenSourceDesc,
-                style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 16),
 
               _buildGithubButton(context, loc.aboutGithubButton),
-              
+
               const SizedBox(height: 64),
               Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFF9E2A2B), width: 1.5),
+                    border: Border.all(
+                      color: const Color(0xFF9E2A2B),
+                      width: 1.5,
+                    ),
                     borderRadius: BorderRadius.circular(2),
                   ),
                   child: const Text(
@@ -185,7 +246,9 @@ class AboutScreen extends StatelessWidget {
   Widget _buildGithubButton(BuildContext context, String text) {
     return InkWell(
       onTap: () async {
-        final url = Uri.parse('https://github.com/codinguniversefromEric/Every-grain');
+        final url = Uri.parse(
+          'https://github.com/codinguniversefromEric/Every-grain',
+        );
         if (await canLaunchUrl(url)) {
           await launchUrl(url, mode: LaunchMode.externalApplication);
         }
@@ -196,12 +259,17 @@ class AboutScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.5)),
+          border: Border.all(
+            color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(text, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            Text(
+              text,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
             const Icon(Icons.open_in_new, color: Color(0xFFD4AF37), size: 20),
           ],
         ),

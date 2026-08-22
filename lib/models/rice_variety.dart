@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 /// Visual traits that differentiate each rice variety on screen.
 class VarietyVisualTraits {
-  final Color stemColor;         // Base stem color
-  final Color ripeGrainColor;    // Color when ripening
-  final double grainSize;        // Relative size multiplier (1.0 = normal)
-  final double grainRoundness;   // width/height ratio of grain ovals (higher = rounder)
+  final Color stemColor; // Base stem color
+  final Color ripeGrainColor; // Color when ripening
+  final double grainSize; // Relative size multiplier (1.0 = normal)
+  final double
+  grainRoundness; // width/height ratio of grain ovals (higher = rounder)
   final double maxStalksMultiplier; // How dense the field is
   final double stalkHeightRange; // Height variation factor
 

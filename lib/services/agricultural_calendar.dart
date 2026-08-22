@@ -19,17 +19,19 @@ class AgriculturalCalendar {
           return null;
         }
       }
-      
+
       if (permission == LocationPermission.deniedForever) {
         return null;
       }
 
       Position? position = await Geolocator.getLastKnownPosition();
-      
+
       position ??= await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(timeLimit: Duration(seconds: 5)),
+        locationSettings: const LocationSettings(
+          timeLimit: Duration(seconds: 5),
+        ),
       );
-      
+
       return position;
     } catch (e) {
       return null;
@@ -38,7 +40,9 @@ class AgriculturalCalendar {
 
   static TaiwanRegion getRegionForPosition(Position? position) {
     if (position == null) return TaiwanRegion.north;
-    return position.latitude >= _northSouthDividerLat ? TaiwanRegion.north : TaiwanRegion.south;
+    return position.latitude >= _northSouthDividerLat
+        ? TaiwanRegion.north
+        : TaiwanRegion.south;
   }
 
   static GrowthStage getStageForDate(DateTime date, TaiwanRegion region) {
