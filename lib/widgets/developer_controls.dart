@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 import '../l10n/app_localizations.dart';
-import '../theme/app_colors.dart';
 
 class DeveloperControlsBottomSheet extends StatefulWidget {
   final GrowthStage currentGrowthStage;

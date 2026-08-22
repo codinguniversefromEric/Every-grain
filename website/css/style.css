@@ -404,10 +404,30 @@ footer {
    Responsive
    ========================================= */
 @media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .nav-links a, .lang-switcher {
+    margin-left: 0;
+  }
+
   .hero {
     min-height: auto;
-    padding-top: var(--spacing-lg);
+    padding-top: 160px;
     padding-bottom: var(--spacing-lg);
+  }
+  
+  .policy-page {
+    padding-top: 160px;
   }
 
   .hero-content {
