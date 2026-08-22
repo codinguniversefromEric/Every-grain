@@ -129,7 +129,8 @@ header.scrolled {
   border-radius: 8px;
   z-index: 1000;
   overflow: hidden;
-  margin-top: 8px;
+  border-top: 8px solid transparent;
+  background-clip: padding-box;
 }
 
 .lang-dropdown a {
@@ -215,6 +216,17 @@ header.scrolled {
   opacity: 0.6;
   cursor: not-allowed;
   background: rgba(255, 255, 255, 0.2);
+}
+
+.download-buttons {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.download-buttons .download-badge {
+  flex: 1;
+  justify-content: center;
 }
 
 .hero-visual {
@@ -413,6 +425,10 @@ footer {
   
   .hero-text p {
     margin: 0 auto var(--spacing-lg);
+  }
+  
+  .download-buttons {
+    flex-direction: column;
   }
   
   .feature-row, .feature-row:nth-child(even) {
