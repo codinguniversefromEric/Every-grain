@@ -156,7 +156,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get testerLocationTitle => '🇹🇼 1. 台湾 (品種テスト)';
 
   @override
-  String get testerLocationDesc => 'テレポートすると、その地域の天気と品種が自動的に更新されます。';
+  String get testerLocationDesc => 'テレポートすると、その地域の天候と品種が自動的に更新されます。';
+
+  @override
+  String get testerLocCurrent => '📍 現在地に戻る';
 
   @override
   String get testerLocTaipei => '📍 台北 (北部 - 台稉9号)';

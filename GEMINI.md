@@ -34,6 +34,7 @@ App 會根據各種條件（例如節氣、地點、時間等）來呈現對應�
 1. **封測工具與除錯 UI (Tester Controls & Debug UI)**: 
    - 專案中有專門給測試者使用的控制按鈕與選單（如 Developer Controls）。
    - **重要防呆**：Developer Controls 是開放給所有封測員的核心體驗工具（透過 `isBetaTestMode` 控制），因此設計上必須維持「地點 (瞬間移動)、時間快轉、天氣事件切換」的巨集按鈕分類。**嚴禁**使用或改回會導致品種與氣候狀態衝突的細部數值滑桿。
+   - **UX 閉環防呆**：任何涉及「虛擬傳送」的功能，都**必須**在介面最醒目處伴隨一個「恢復真實定位 (Reset to Real Location)」的按鈕，絕對不能讓測試員迷失在虛擬時空而無法回到真實體驗。
 
 2. **金鑰與機密資訊 (Secrets & API Keys)**:
    - 絕對禁止將 API Key (例如 `CWA_API_KEY`) 寫死在程式碼中。
@@ -75,3 +76,7 @@ App 會根據各種條件（例如節氣、地點、時間等）來呈現對應�
    - 截圖生成一律採用 Flutter Integration Test 自動化進行，禁止手動截圖 (以避免解析度錯誤或截到不必要的 Debug UI)。
    - 執行指令：`flutter drive --driver=test_driver/integration_test.dart --target=integration_test/screenshot_test.dart`
    - 產出的截圖會自動儲存於根目錄的 `screenshots/` 中，並可複製至 `website/assets/screenshots/` 供網頁使用。
+4. **Git 多帳號推播防呆 (Credential Conflict Prevention)**:
+   - 由於開發者本機環境存在多個 GitHub 帳號的憑證衝突，AI 在提供推播指令給使用者時，**絕對禁止**只提供單純的 `git push`。
+   - **強制格式**：一律必須在 URL 中帶入指定的帳號名稱 `codinguniversefromEric`，以強制喚起正確的權限認證。指令範例如下：
+     `git push https://codinguniversefromEric@github.com/codinguniversefromEric/Every-grain.git main`

@@ -166,6 +166,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Teleporting will automatically update the weather and rice variety for that region.';
 
   @override
+  String get testerLocCurrent => '📍 Reset to Real Location';
+
+  @override
   String get testerLocTaipei => '📍 Taipei (North - Taikeng 9)';
 
   @override

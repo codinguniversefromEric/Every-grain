@@ -382,6 +382,12 @@ abstract class AppLocalizations {
   /// **'瞬間移動會自動更新該地區的天氣與在地品種。'**
   String get testerLocationDesc;
 
+  /// No description provided for @testerLocCurrent.
+  ///
+  /// In zh, this message translates to:
+  /// **'📍 回到目前真實位置'**
+  String get testerLocCurrent;
+
   /// No description provided for @testerLocTaipei.
   ///
   /// In zh, this message translates to:

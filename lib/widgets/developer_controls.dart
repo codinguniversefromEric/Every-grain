@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 import '../l10n/app_localizations.dart';
+import '../theme/app_colors.dart';
 
 class DeveloperControlsBottomSheet extends StatefulWidget {
   final GrowthStage currentGrowthStage;
@@ -83,7 +84,7 @@ class _DeveloperControlsBottomSheetState
               icon: const Icon(Icons.my_location, size: 18),
               label: Text(loc.testerLocCurrent),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.riceGreen,
+                backgroundColor: Colors.teal.shade700,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),

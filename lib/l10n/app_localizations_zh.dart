@@ -155,6 +155,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get testerLocationDesc => '瞬間移動會自動更新該地區的天氣與在地品種。';
 
   @override
+  String get testerLocCurrent => '📍 回到目前真實位置';
+
+  @override
   String get testerLocTaipei => '📍 台北 (北部 - 台稉9號)';
 
   @override
