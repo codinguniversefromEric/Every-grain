@@ -12,6 +12,7 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final WeatherCondition currentWeather;
   final ValueChanged<WeatherCondition> onWeatherChanged;
   final void Function(double lat, double lon) onTeleportTo;
+  final VoidCallback onResetLocation;
 
   const DeveloperControlsBottomSheet({
     super.key,
@@ -24,6 +25,7 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.currentWeather,
     required this.onWeatherChanged,
     required this.onTeleportTo,
+    required this.onResetLocation,
   });
 
   @override
@@ -76,6 +78,17 @@ class _DeveloperControlsBottomSheetState
               style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
             const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: widget.onResetLocation,
+              icon: const Icon(Icons.my_location, size: 18),
+              label: Text(loc.testerLocCurrent),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.riceGreen,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+            const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,

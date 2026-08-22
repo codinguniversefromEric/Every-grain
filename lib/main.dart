@@ -170,6 +170,12 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
               Navigator.pop(context);
             }
           },
+          onResetLocation: () async {
+            await _stateManager.initializeState();
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
+          },
         );
       },
     );

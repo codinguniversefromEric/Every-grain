@@ -47,6 +47,7 @@
   "testerControlsDesc": "Quickly jump through time and space to experience the full Rice Journey.",
   "testerLocationTitle": "🇹🇼 1. Taiwan (Variety Test)",
   "testerLocationDesc": "Teleporting will automatically update the weather and rice variety for that region.",
+  "testerLocCurrent": "📍 Reset to Real Location",
   "testerLocTaipei": "📍 Taipei (North - Taikeng 9)",
   "testerLocTaichung": "📍 Taichung (Central - Tainung 71)",
   "testerLocKaohsiung": "📍 Kaohsiung (South - Tainan 11)",
