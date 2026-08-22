@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'models/field_state.dart';
 import 'services/state_manager.dart';
 import 'theme/app_colors.dart';
 import 'theme/animation_constants.dart';
-import 'theme/strings.dart';
 import 'visuals/living_sky.dart';
 import 'visuals/cloud_layer.dart';
 import 'visuals/rain_layer.dart';
@@ -22,6 +22,9 @@ import 'widgets/developer_controls.dart';
 import 'widgets/harvest_dialog.dart';
 import 'widgets/about_screen.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -31,13 +34,66 @@ void main() async {
   runApp(const RiceJourneyApp());
 }
 
-class RiceJourneyApp extends StatelessWidget {
+
+class RiceJourneyApp extends StatefulWidget {
   const RiceJourneyApp({super.key});
+
+  static void setLocale(BuildContext context, Locale? newLocale) {
+    _RiceJourneyAppState? state = context.findAncestorStateOfType<_RiceJourneyAppState>();
+    state?.setLocale(newLocale);
+  }
+
+  @override
+  State<RiceJourneyApp> createState() => _RiceJourneyAppState();
+}
+
+class _RiceJourneyAppState extends State<RiceJourneyApp> {
+  Locale? _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLocale();
+  }
+
+  Future<void> _loadLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final langCode = prefs.getString('pref_locale');
+    if (langCode != null && langCode.isNotEmpty) {
+      setState(() {
+        _locale = Locale(langCode);
+      });
+    }
+  }
+
+  void setLocale(Locale? locale) async {
+    setState(() {
+      _locale = locale;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    if (locale == null) {
+      await prefs.remove('pref_locale');
+    } else {
+      await prefs.setString('pref_locale', locale.languageCode);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: AppStrings.appTitle,
+      title: 'Every Grain', 
+      locale: _locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('zh', 'TW'),
+        Locale('en', ''),
+        Locale('ja', 'JP'),
+      ],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
@@ -60,6 +116,9 @@ StateManager? globalStateManager;
 
 @visibleForTesting
 bool isTakingScreenshot = false;
+
+// ⚠️ 測試期間設為 true，正式上架生產環境前請改為 false
+const bool isBetaTestMode = true;
 
 class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingObserver {
   late final StateManager _stateManager;
@@ -97,15 +156,12 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
         return DeveloperControlsBottomSheet(
           currentGrowthStage: _stateManager.state!.growthStage,
           currentDayPhase: _stateManager.state!.dayPeriod,
-          currentHour: _stateManager.simulatedHour,
           currentWeather: _stateManager.state!.weatherCondition,
           onGrowthStageChanged: _stateManager.updateGrowthStage,
           onDayPhaseChanged: _stateManager.updateDayPhase,
           onWeatherChanged: _stateManager.updateWeather,
           onHarvestSequenceTriggered: _showHarvestSequence,
           onSimulateNextMonth: _stateManager.simulateNextMonth,
-          onToggleRegion: _stateManager.toggleRegion,
-          onHourChanged: _stateManager.updateHour,
           onTeleportTo: (lat, lon) async {
             await _stateManager.teleportTo(lat, lon);
             if (context.mounted) {
@@ -237,12 +293,12 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                       builder: (context, value, child) {
                         return Opacity(
                           opacity: (0.5 + 0.5 * (1.0 - ((value * 2) % 1.0))), // Pulsing
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(AppStrings.swipeToHarvest, style: TextStyle(color: Colors.white, fontSize: 18, letterSpacing: 2)),
-                              SizedBox(width: 8),
-                              Icon(Icons.keyboard_double_arrow_right, color: Colors.white),
+                              Text(AppLocalizations.of(context)!.swipeToHarvest, style: const TextStyle(color: Colors.white, fontSize: 18, letterSpacing: 2)),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.keyboard_double_arrow_right, color: Colors.white),
                             ],
                           ),
                         );
@@ -283,8 +339,8 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                   ),
                 ),
                 
-              // 7. Hidden Developer Controls (Only in Debug Mode)
-              if (kDebugMode && !isTakingScreenshot)
+              // 7. Developer Controls (Beta Test Mode or Debug Mode)
+              if ((kDebugMode || isBetaTestMode) && !isTakingScreenshot)
                 Positioned(
                   top: 20,
                   right: 20,
@@ -292,7 +348,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                     child: IconButton(
                       icon: Icon(Icons.build, color: Colors.white.withValues(alpha: 0.2)),
                       onPressed: _showDeveloperControls,
-                      tooltip: AppStrings.developerControls,
+                      tooltip: AppLocalizations.of(context)!.developerControls,
                     ),
                   ),
                 ),
@@ -308,10 +364,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen> with WidgetsBindingOb
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const AboutScreen()),
+                          MaterialPageRoute(builder: (context) => AboutScreen(isInTaiwan: _stateManager.isInTaiwan)),
                         );
                       },
-                      tooltip: AppStrings.aboutAndDonate,
+                      tooltip: AppLocalizations.of(context)!.aboutUs,
                     ),
                   ),
                 ),

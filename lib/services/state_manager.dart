@@ -13,6 +13,7 @@ class StateManager extends ChangeNotifier {
   int _simulatedHour = DateTime.now().hour;
   bool _isLoading = true;
   bool _isHarvesting = false;
+  bool _isInTaiwan = true;
 
   final AmbientSoundService _ambientSound = AmbientSoundService();
 
@@ -22,6 +23,7 @@ class StateManager extends ChangeNotifier {
   int get simulatedHour => _simulatedHour;
   bool get isLoading => _isLoading;
   bool get isHarvesting => _isHarvesting;
+  bool get isInTaiwan => _isInTaiwan;
   AmbientSoundService get ambientSound => _ambientSound;
 
   StateManager();
@@ -30,7 +32,15 @@ class StateManager extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final position = await AgriculturalCalendar.getPosition();
+    Position? position = await AgriculturalCalendar.getPosition();
+    
+    if (position != null) {
+      _isInTaiwan = position.latitude >= 21.0 && position.latitude <= 26.0 &&
+                    position.longitude >= 119.0 && position.longitude <= 122.0;
+    } else {
+      _isInTaiwan = true; // default to CWA
+    }
+
     _region = AgriculturalCalendar.getRegionForPosition(position);
     final weather = await WeatherService.getCurrentWeather(position);
     final variety = VarietyService.getVarietyForPosition(position);
@@ -161,6 +171,8 @@ class StateManager extends ChangeNotifier {
       altitudeAccuracy: 0.0,
       headingAccuracy: 0.0,
     );
+    
+    _isInTaiwan = lat >= 21.0 && lat <= 26.0 && lon >= 119.0 && lon <= 122.0;
     
     _region = AgriculturalCalendar.getRegionForPosition(mockPos);
     final weather = await WeatherService.getCurrentWeather(mockPos);

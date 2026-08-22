@@ -1,17 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
+import '../main.dart'; // For RiceJourneyApp.setLocale
 
 class AboutScreen extends StatelessWidget {
-  const AboutScreen({super.key});
+  final bool isInTaiwan;
+
+  const AboutScreen({super.key, this.isInTaiwan = true});
+
+  void _showLanguageDialog(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF2C2214),
+          title: Text(loc.languageName, style: const TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text('English', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  RiceJourneyApp.setLocale(context, const Locale('en', ''));
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('繁體中文', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  RiceJourneyApp.setLocale(context, const Locale('zh', 'TW'));
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('日本語', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  RiceJourneyApp.setLocale(context, const Locale('ja', 'JP'));
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text(loc.languageSystem, style: const TextStyle(color: Colors.white54)),
+                onTap: () {
+                  RiceJourneyApp.setLocale(context, null);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: const Color(0xFF1E1915), // Deep earthy dark
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white54),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: () => _showLanguageDialog(context),
+            tooltip: 'Language',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -22,9 +81,9 @@ class AboutScreen extends StatelessWidget {
               // Logo or Title
               const Icon(Icons.spa, size: 48, color: Color(0xFFD4AF37)),
               const SizedBox(height: 16),
-              const Text(
-                '粒粒皆辛苦\nRice Journey',
-                style: TextStyle(
+              Text(
+                loc.aboutTitle,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -35,17 +94,17 @@ class AboutScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               // Description
-              const Text(
-                '這不是教人種田的遊戲，\n而是一個重新感受時間、食物與土地的陪伴。',
-                style: TextStyle(color: Colors.white70, fontSize: 16, height: 1.6),
+              Text(
+                loc.aboutSubtitle,
+                style: const TextStyle(color: Colors.white70, fontSize: 16, height: 1.6),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
 
               // Data Sources
-              const Text(
-                '資料來源與鳴謝',
-                style: TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                loc.aboutDataSourceTitle,
+                style: const TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Container(
@@ -55,35 +114,66 @@ class AboutScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('⛅️ 即時氣象連動資料', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('台灣交通部中央氣象署 (CWA)\nGlobal weather data by Open-Meteo.com', style: TextStyle(color: Colors.white60, fontSize: 14, height: 1.5)),
-                    SizedBox(height: 16),
-                    Text('🌾 在地稻米品種知識', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('農業部各區農業改良場 (TARI) 及台灣米食推廣資料', style: TextStyle(color: Colors.white60, fontSize: 14)),
+                    Text(loc.aboutDataWeatherTitle, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(loc.aboutDataWeatherDesc, style: const TextStyle(color: Colors.white60, fontSize: 14, height: 1.5)),
+                    const SizedBox(height: 16),
+                    Text(loc.aboutDataRiceTitle, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(loc.aboutDataRiceDesc, style: const TextStyle(color: Colors.white60, fontSize: 14)),
                   ],
                 ),
               ),
               const SizedBox(height: 48),
 
               // Open Source
-              const Text(
-                '開源與程式碼',
-                style: TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                loc.aboutOpenSourceTitle,
+                style: const TextStyle(color: Color(0xFFD4AF37), fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              const Text(
-                '本專案為完全免費之開源軟體，您可以隨時檢視、學習或貢獻程式碼。',
-                style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+              Text(
+                loc.aboutOpenSourceDesc,
+                style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
               ),
               const SizedBox(height: 16),
 
-              _buildGithubButton(context),
+              _buildGithubButton(context, loc.aboutGithubButton),
               
+              const SizedBox(height: 64),
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color(0xFF9E2A2B), width: 1.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: const Text(
+                    '臺\n灣',
+                    style: TextStyle(
+                      color: Color(0xFF9E2A2B), // Traditional seal red
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      height: 1.1,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: Text(
+                  loc.aboutCraftedWith,
+                  style: const TextStyle(
+                    color: Colors.white30,
+                    fontSize: 12,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ),
               const SizedBox(height: 48),
             ],
           ),
@@ -92,7 +182,7 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGithubButton(BuildContext context) {
+  Widget _buildGithubButton(BuildContext context, String text) {
     return InkWell(
       onTap: () async {
         final url = Uri.parse('https://github.com/codinguniversefromEric/Every-grain');
@@ -108,11 +198,11 @@ class AboutScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.5)),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('💻 前往 GitHub 檢視專案', style: TextStyle(color: Colors.white, fontSize: 16)),
-            Icon(Icons.open_in_new, color: Color(0xFFD4AF37), size: 20),
+            Text(text, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            const Icon(Icons.open_in_new, color: Color(0xFFD4AF37), size: 20),
           ],
         ),
       ),

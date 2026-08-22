@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
+import '../l10n/app_localizations.dart';
 
 class DeveloperControlsBottomSheet extends StatefulWidget {
   final GrowthStage currentGrowthStage;
@@ -8,10 +9,7 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final ValueChanged<DayPhase> onDayPhaseChanged;
   final VoidCallback onHarvestSequenceTriggered;
   final VoidCallback onSimulateNextMonth;
-  final VoidCallback onToggleRegion;
-  final int currentHour;
   final WeatherCondition currentWeather;
-  final ValueChanged<int> onHourChanged;
   final ValueChanged<WeatherCondition> onWeatherChanged;
   final void Function(double lat, double lon) onTeleportTo;
 
@@ -23,10 +21,7 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.onDayPhaseChanged,
     required this.onHarvestSequenceTriggered,
     required this.onSimulateNextMonth,
-    required this.onToggleRegion,
-    required this.currentHour,
     required this.currentWeather,
-    required this.onHourChanged,
     required this.onWeatherChanged,
     required this.onTeleportTo,
   });
@@ -36,132 +31,197 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
 }
 
 class _DeveloperControlsBottomSheetState extends State<DeveloperControlsBottomSheet> {
-  late GrowthStage _localGrowthStage;
   late DayPhase _localDayPhase;
-  late int _localHour;
   late WeatherCondition _localWeather;
 
   @override
   void initState() {
     super.initState();
-    _localGrowthStage = widget.currentGrowthStage;
     _localDayPhase = widget.currentDayPhase;
-    _localHour = widget.currentHour;
     _localWeather = widget.currentWeather;
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Developer Controls', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: widget.onSimulateNextMonth,
-            child: const Text('Simulate Next Month (+1 month)'),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: widget.onToggleRegion,
-            child: const Text('Toggle North/South Region'),
-          ),
-          const SizedBox(height: 20),
-          const Text('Teleport (Test GPS Weather):', style: TextStyle(fontWeight: FontWeight.bold)),
-          Wrap(
-            spacing: 8,
-            children: [
-              ActionChip(
-                label: const Text('📍 台北信義區'),
-                onPressed: () => widget.onTeleportTo(25.0330, 121.5654),
+            Text(loc.testerControlsTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text(loc.testerControlsDesc, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+            const SizedBox(height: 24),
+            
+            // 1. Location (Taiwan)
+            Text(loc.testerLocationTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            Text(loc.testerLocationDesc, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ActionChip(
+                  backgroundColor: Colors.blue.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocTaipei),
+                  onPressed: () => widget.onTeleportTo(25.0330, 121.5654),
+                ),
+                ActionChip(
+                  backgroundColor: Colors.green.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocTaichung),
+                  onPressed: () => widget.onTeleportTo(24.1477, 120.6736),
+                ),
+                ActionChip(
+                  backgroundColor: Colors.orange.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocKaohsiung),
+                  onPressed: () => widget.onTeleportTo(22.6273, 120.2642),
+                ),
+                ActionChip(
+                  backgroundColor: Colors.purple.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocTaitung),
+                  onPressed: () => widget.onTeleportTo(23.1235, 121.2064),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            
+            // 2. Location (Global)
+            Text(loc.testerGlobalTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ActionChip(
+                  backgroundColor: Colors.red.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocNewYork),
+                  onPressed: () => widget.onTeleportTo(40.7128, -74.0060),
+                ),
+                ActionChip(
+                  backgroundColor: Colors.pink.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocTokyo),
+                  onPressed: () => widget.onTeleportTo(35.6762, 139.6503),
+                ),
+                ActionChip(
+                  backgroundColor: Colors.indigo.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocParis),
+                  onPressed: () => widget.onTeleportTo(48.8566, 2.3522),
+                ),
+                ActionChip(
+                  backgroundColor: Colors.lightBlue.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocLondon),
+                  onPressed: () => widget.onTeleportTo(51.5074, -0.1278),
+                ),
+                ActionChip(
+                  backgroundColor: Colors.teal.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocSydney),
+                  onPressed: () => widget.onTeleportTo(-33.8688, 151.2093), // South hemisphere!
+                ),
+                ActionChip(
+                  backgroundColor: Colors.amber.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocCairo),
+                  onPressed: () => widget.onTeleportTo(30.0444, 31.2357), // Desert
+                ),
+                ActionChip(
+                  backgroundColor: Colors.greenAccent.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocRio),
+                  onPressed: () => widget.onTeleportTo(-22.9068, -43.1729), // Tropical
+                ),
+              ],
+            ),
+            const Divider(height: 32),
+            
+            // 2. Time
+            Text(loc.testerTimeTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.fast_forward),
+                    label: Text(loc.testerNextMonth),
+                    onPressed: () {
+                      widget.onSimulateNextMonth();
+                      // Update local state to match the simulation roughly (just force refresh)
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: Icon(_localDayPhase == DayPhase.morning ? Icons.dark_mode : Icons.light_mode),
+                    label: Text(_localDayPhase == DayPhase.morning ? loc.testerToNight : loc.testerToDay),
+                    onPressed: () {
+                      final newPhase = _localDayPhase == DayPhase.morning ? DayPhase.night : DayPhase.morning;
+                      setState(() => _localDayPhase = newPhase);
+                      widget.onDayPhaseChanged(newPhase);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 32),
+            
+            // 3. Events
+            Text(loc.testerEventsTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: [
+                ChoiceChip(
+                  label: const Text('Clear'),
+                  selected: _localWeather == WeatherCondition.clear,
+                  onSelected: (s) {
+                    if(s) { setState(() => _localWeather = WeatherCondition.clear); widget.onWeatherChanged(WeatherCondition.clear); }
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('Cloudy'),
+                  selected: _localWeather == WeatherCondition.cloudy,
+                  onSelected: (s) {
+                    if(s) { setState(() => _localWeather = WeatherCondition.cloudy); widget.onWeatherChanged(WeatherCondition.cloudy); }
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('Rainy'),
+                  selected: _localWeather == WeatherCondition.rainy,
+                  onSelected: (s) {
+                    if(s) { setState(() => _localWeather = WeatherCondition.rainy); widget.onWeatherChanged(WeatherCondition.rainy); }
+                  },
+                ),
+                ChoiceChip(
+                  label: const Text('Stormy'),
+                  selected: _localWeather == WeatherCondition.stormy,
+                  onSelected: (s) {
+                    if(s) { setState(() => _localWeather = WeatherCondition.stormy); widget.onWeatherChanged(WeatherCondition.stormy); }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD4AF37),
+                foregroundColor: Colors.black87,
               ),
-              ActionChip(
-                label: const Text('📍 高雄西子灣'),
-                onPressed: () => widget.onTeleportTo(22.6273, 120.2642),
-              ),
-              ActionChip(
-                label: const Text('📍 阿里山/玉山'),
-                onPressed: () => widget.onTeleportTo(23.4889, 120.9513),
-              ),
-              ActionChip(
-                label: const Text('📍 澎湖吉貝'),
-                onPressed: () => widget.onTeleportTo(23.7417, 119.5960),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Text('Manual Growth Stage Override:'),
-          Slider(
-            value: _localGrowthStage.index.toDouble(),
-            min: 0,
-            max: GrowthStage.values.length.toDouble() - 1,
-            divisions: GrowthStage.values.length - 1,
-            label: _localGrowthStage.name,
-            onChanged: (val) {
-              final newStage = GrowthStage.values[val.toInt()];
-              setState(() {
-                _localGrowthStage = newStage;
-              });
-              widget.onGrowthStageChanged(newStage);
-              
-              if (newStage == GrowthStage.harvested) {
-                Navigator.pop(context); 
+              icon: const Icon(Icons.rice_bowl),
+              label: Text(loc.testerForceHarvest),
+              onPressed: () {
+                widget.onGrowthStageChanged(GrowthStage.harvested);
+                Navigator.pop(context);
                 widget.onHarvestSequenceTriggered();
-              }
-            },
-          ),
-          const Text('Time of Day:'),
-          Slider(
-            value: _localDayPhase.index.toDouble(),
-            min: 0,
-            max: DayPhase.values.length.toDouble() - 1,
-            divisions: DayPhase.values.length - 1,
-            label: _localDayPhase.name,
-            onChanged: (val) {
-              final newPhase = DayPhase.values[val.toInt()];
-              setState(() {
-                _localDayPhase = newPhase;
-              });
-              widget.onDayPhaseChanged(newPhase);
-            },
-          ),
-          const SizedBox(height: 20),
-          const Text('Weather:'),
-          Slider(
-            value: _localWeather.index.toDouble(),
-            min: 0,
-            max: WeatherCondition.values.length.toDouble() - 1,
-            divisions: WeatherCondition.values.length - 1,
-            label: _localWeather.name,
-            onChanged: (val) {
-              final newWeather = WeatherCondition.values[val.toInt()];
-              setState(() {
-                _localWeather = newWeather;
-              });
-              widget.onWeatherChanged(newWeather);
-            },
-          ),
-          const SizedBox(height: 20),
-          const Text('Override Hour (0-23):'),
-          Slider(
-            value: _localHour.toDouble(),
-            min: 0,
-            max: 23,
-            divisions: 23,
-            label: '$_localHour:00',
-            onChanged: (val) {
-              setState(() {
-                _localHour = val.toInt();
-              });
-              widget.onHourChanged(_localHour);
-            },
-          ),
-        ],
+              },
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }

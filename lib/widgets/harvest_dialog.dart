@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/rice_variety.dart';
+import '../l10n/app_localizations.dart';
 
 class HarvestDialog extends StatelessWidget {
   final VoidCallback onRestart;
@@ -7,8 +8,42 @@ class HarvestDialog extends StatelessWidget {
 
   const HarvestDialog({super.key, required this.onRestart, this.variety});
 
+  String _getVarietyName(BuildContext context, RiceVariety v) {
+    final loc = AppLocalizations.of(context)!;
+    switch (v.id) {
+      case 'tainan_11': return loc.varietyTainan11Name;
+      case 'kaohsiung_139': return loc.varietyKaohsiung139Name;
+      case 'tainung_71': return loc.varietyTainung71Name;
+      case 'taikeng_9': return loc.varietyTaikeng9Name;
+      default: return v.name;
+    }
+  }
+
+  String _getVarietyDesc(BuildContext context, RiceVariety v) {
+    final loc = AppLocalizations.of(context)!;
+    switch (v.id) {
+      case 'tainan_11': return loc.varietyTainan11Desc;
+      case 'kaohsiung_139': return loc.varietyKaohsiung139Desc;
+      case 'tainung_71': return loc.varietyTainung71Desc;
+      case 'taikeng_9': return loc.varietyTaikeng9Desc;
+      default: return v.description;
+    }
+  }
+
+  String _getVarietyFact(BuildContext context, RiceVariety v) {
+    final loc = AppLocalizations.of(context)!;
+    switch (v.id) {
+      case 'tainan_11': return loc.varietyTainan11Fact;
+      case 'kaohsiung_139': return loc.varietyKaohsiung139Fact;
+      case 'tainung_71': return loc.varietyTainung71Fact;
+      case 'taikeng_9': return loc.varietyTaikeng9Fact;
+      default: return v.funFact;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
@@ -26,9 +61,9 @@ class HarvestDialog extends StatelessWidget {
               children: [
                 const Icon(Icons.rice_bowl, size: 60, color: Color(0xFFD4AF37)),
                 const SizedBox(height: 16),
-                const Text(
-                  '一株秧苗，經過時間與人的陪伴\n最後成為一碗飯。',
-                  style: TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
+                Text(
+                  loc.harvestDialogMessage,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.5),
                   textAlign: TextAlign.center,
                 ),
                 if (variety != null) ...[
@@ -46,20 +81,22 @@ class HarvestDialog extends StatelessWidget {
                           children: [
                             const Icon(Icons.menu_book, color: Color(0xFFD4AF37), size: 20),
                             const SizedBox(width: 8),
-                            Text(
-                              '在地品種知識卡：${variety!.name}',
-                              style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold, fontSize: 16),
+                            Expanded(
+                              child: Text(
+                                '${loc.varietyKnowledgeCardPrefix}${_getVarietyName(context, variety!)}',
+                                style: const TextStyle(color: Color(0xFFD4AF37), fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          variety!.description,
+                          _getVarietyDesc(context, variety!),
                           style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          variety!.funFact,
+                          _getVarietyFact(context, variety!),
                           style: const TextStyle(color: Colors.white, fontSize: 14, fontStyle: FontStyle.italic, height: 1.5),
                         ),
                       ],
@@ -79,7 +116,7 @@ class HarvestDialog extends StatelessWidget {
                     Navigator.of(context).pop();
                     onRestart();
                   },
-                  child: const Text('重新播種', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(loc.harvestDialogReplant, style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
