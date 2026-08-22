@@ -193,14 +193,21 @@ class WeatherService {
 
   static WeatherCondition _mapWMOToCondition(int code) {
     // 0: Clear sky, 1: Mainly clear
-    if (code == 0 || code == 1) return WeatherCondition.clear;
+    if (code == 0 || code == 1) {
+      return WeatherCondition.clear;
+    }
     // 2: partly cloudy, 3: overcast, 45, 48: fog
-    if (code == 2 || code == 3 || code == 45 || code == 48)
+    if (code == 2 || code == 3 || code == 45 || code == 48) {
       return WeatherCondition.cloudy;
+    }
     // 51-86: Drizzle, Rain, Snow, Showers
-    if (code >= 51 && code <= 86) return WeatherCondition.rainy;
+    if (code >= 51 && code <= 86) {
+      return WeatherCondition.rainy;
+    }
     // 95-99: Thunderstorm
-    if (code >= 95 && code <= 99) return WeatherCondition.stormy;
+    if (code >= 95 && code <= 99) {
+      return WeatherCondition.stormy;
+    }
 
     return WeatherCondition.clear;
   }
