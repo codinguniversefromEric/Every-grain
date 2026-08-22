@@ -48,4 +48,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 4. Mobile Sticky Download Buttons
+  const downloadButtons = document.querySelector('.download-buttons');
+  const heroVisual = document.querySelector('.hero-visual');
+  
+  if (downloadButtons && heroVisual) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        // If the top of the image goes above the viewport, show buttons
+        if (entry.boundingClientRect.top < window.innerHeight / 2) {
+          downloadButtons.classList.add('floating');
+        } else {
+          downloadButtons.classList.remove('floating');
+        }
+      });
+    }, {
+      threshold: [0, 0.5, 1]
+    });
+    
+    observer.observe(heroVisual);
+  }
+
 });
