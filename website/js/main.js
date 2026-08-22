@@ -53,20 +53,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroVisual = document.querySelector('.hero-visual');
   
   if (downloadButtons && heroVisual) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        // If the top of the image goes above the viewport, show buttons
-        if (entry.boundingClientRect.top < window.innerHeight / 2) {
-          downloadButtons.classList.add('floating');
-        } else {
-          downloadButtons.classList.remove('floating');
-        }
-      });
-    }, {
-      threshold: [0, 0.5, 1]
-    });
-    
-    observer.observe(heroVisual);
+    const toggleButtons = () => {
+      const visualRect = heroVisual.getBoundingClientRect();
+      // Show buttons when the top of the visual scrolls above 70% of viewport height
+      if (visualRect.top < window.innerHeight * 0.7) {
+        downloadButtons.classList.add('floating');
+      } else {
+        downloadButtons.classList.remove('floating');
+      }
+    };
+
+    window.addEventListener('scroll', toggleButtons);
+    // Initial check
+    toggleButtons();
   }
 
 });

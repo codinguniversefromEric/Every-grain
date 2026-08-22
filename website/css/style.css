@@ -481,6 +481,7 @@ footer {
   
   .download-buttons.floating {
     bottom: 0;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 16px));
   }
   
   .feature-row, .feature-row:nth-child(even) {
