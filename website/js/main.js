@@ -48,24 +48,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Mobile Sticky Download Buttons
-  const downloadButtons = document.querySelector('.download-buttons');
-  const heroVisual = document.querySelector('.hero-visual');
-  
-  if (downloadButtons && heroVisual) {
-    const toggleButtons = () => {
-      const visualRect = heroVisual.getBoundingClientRect();
-      // Show buttons when the top of the visual scrolls above 70% of viewport height
-      if (visualRect.top < window.innerHeight * 0.7) {
-        downloadButtons.classList.add('floating');
-      } else {
-        downloadButtons.classList.remove('floating');
-      }
-    };
-
-    window.addEventListener('scroll', toggleButtons);
-    // Initial check
-    toggleButtons();
-  }
-
+  // End of scroll listener
 });
