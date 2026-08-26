@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>我們需要您的位置來獲取當地的真實天氣與對應的稻米品種。</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>我們需要您的位置來獲取當地的真實天氣與對應的稻米品種。</string>
 </dict>
 </plist>
