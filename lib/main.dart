@@ -357,7 +357,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                     child: IconButton(
                       icon: Icon(
                         Icons.build,
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                       onPressed: _showDeveloperControls,
                       tooltip: AppLocalizations.of(context)!.developerControls,
