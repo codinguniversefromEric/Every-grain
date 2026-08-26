@@ -13,6 +13,8 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final ValueChanged<WeatherCondition> onWeatherChanged;
   final void Function(double lat, double lon) onTeleportTo;
   final VoidCallback onResetLocation;
+  final bool isTimeLapseActive;
+  final VoidCallback onToggleTimeLapse;
 
   const DeveloperControlsBottomSheet({
     super.key,
@@ -26,6 +28,8 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.onWeatherChanged,
     required this.onTeleportTo,
     required this.onResetLocation,
+    required this.isTimeLapseActive,
+    required this.onToggleTimeLapse,
   });
 
   @override
@@ -213,6 +217,20 @@ class _DeveloperControlsBottomSheetState
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              icon: Icon(widget.isTimeLapseActive ? Icons.stop : Icons.play_arrow),
+              label: Text(widget.isTimeLapseActive ? '停止縮時 (Stop Time-lapse)' : '一日縮時 (24h Time-lapse)'),
+              onPressed: () {
+                widget.onToggleTimeLapse();
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: widget.isTimeLapseActive ? Colors.red.shade100 : Colors.indigo.shade100,
+                foregroundColor: widget.isTimeLapseActive ? Colors.red.shade900 : Colors.indigo.shade900,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
             ),
             const Divider(height: 32),
 

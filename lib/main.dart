@@ -176,6 +176,8 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
             }
             await _stateManager.initializeState(forceRefreshWeather: true);
           },
+          isTimeLapseActive: _stateManager.isTimeLapseMode,
+          onToggleTimeLapse: _stateManager.toggleTimeLapse,
         );
       },
     );
@@ -198,31 +200,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     _stateManager.executeHarvest(_showHarvestSequence);
   }
 
-  Color _getSkyTopColor(DayPhase phase) {
-    switch (phase) {
-      case DayPhase.morning:
-        return AppColors.skyTopMorning;
-      case DayPhase.afternoon:
-        return AppColors.skyTopAfternoon;
-      case DayPhase.evening:
-        return AppColors.skyTopEvening;
-      case DayPhase.night:
-        return AppColors.skyTopNight;
-    }
-  }
 
-  Color _getSkyBottomColor(DayPhase phase) {
-    switch (phase) {
-      case DayPhase.morning:
-        return AppColors.skyBottomMorning;
-      case DayPhase.afternoon:
-        return AppColors.skyBottomAfternoon;
-      case DayPhase.evening:
-        return AppColors.skyBottomEvening;
-      case DayPhase.night:
-        return AppColors.skyBottomNight;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,9 +223,8 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
               // 1. Living Sky Background
               Positioned.fill(
                 child: LivingSkyBackground(
-                  topColor: _getSkyTopColor(state.dayPeriod),
-                  bottomColor: _getSkyBottomColor(state.dayPeriod),
-                  weather: state.weatherCondition,
+                  sunElevation: state.sunElevation,
+                  weatherMetrics: state.weatherMetrics,
                 ),
               ),
 

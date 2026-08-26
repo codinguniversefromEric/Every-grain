@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:async';
 import '../models/field_state.dart';
 import 'agricultural_calendar.dart';
 import 'ambient_sound.dart';
 import 'weather_service.dart';
 import 'variety_service.dart';
+import 'solar_calculator.dart';
 
 class StateManager extends ChangeNotifier {
   FieldState? _state;
@@ -14,6 +16,11 @@ class StateManager extends ChangeNotifier {
   bool _isLoading = true;
   bool _isHarvesting = false;
   bool _isInTaiwan = true;
+  Position? _lastPosition;
+  Timer? _simulationTimer;
+  Timer? _timeLapseTimer;
+  bool _isTimeLapseMode = false;
+  DateTime _timeLapseClock = DateTime.now();
 
   final AmbientSoundService _ambientSound = AmbientSoundService();
 
@@ -24,6 +31,7 @@ class StateManager extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isHarvesting => _isHarvesting;
   bool get isInTaiwan => _isInTaiwan;
+  bool get isTimeLapseMode => _isTimeLapseMode;
   AmbientSoundService get ambientSound => _ambientSound;
 
   StateManager();
@@ -33,6 +41,7 @@ class StateManager extends ChangeNotifier {
     notifyListeners();
 
     Position? position = await AgriculturalCalendar.getPosition();
+    _lastPosition = position;
 
     if (position != null) {
       _isInTaiwan =
@@ -45,7 +54,7 @@ class StateManager extends ChangeNotifier {
     }
 
     _region = AgriculturalCalendar.getRegionForPosition(position);
-    final weather = await WeatherService.getCurrentWeather(position, forceRefresh: forceRefreshWeather);
+    final weatherMetrics = await WeatherService.getCurrentWeather(position, forceRefresh: forceRefreshWeather);
     final variety = VarietyService.getVarietyForPosition(position);
 
     _state = FieldState(
@@ -53,12 +62,19 @@ class StateManager extends ChangeNotifier {
         _simulatedDate,
         _region,
       ),
-      dayPeriod: _calculateDayPhase(_simulatedHour),
-      weatherCondition: weather,
+      weatherMetrics: weatherMetrics,
       currentVariety: variety,
     );
+    
+    final pos = _lastPosition ?? Position(
+        latitude: 24.5602, longitude: 120.8214, timestamp: DateTime.now(),
+        accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0, altitudeAccuracy: 0, headingAccuracy: 0);
+    _state!.sunElevation = SolarCalculator.getSunElevation(pos.latitude, pos.longitude, DateTime.now());
+
     _isLoading = false;
     notifyListeners();
+
+    _startSimulationTimer();
 
     await _ambientSound.init();
     _updateAmbience();
@@ -69,23 +85,70 @@ class StateManager extends ChangeNotifier {
 
   @override
   void dispose() {
+    _simulationTimer?.cancel();
+    _timeLapseTimer?.cancel();
     _ambientSound.dispose();
     super.dispose();
   }
 
-  DayPhase _calculateDayPhase(int hour) {
-    if (hour >= 5 && hour < 12) return DayPhase.morning;
-    if (hour >= 12 && hour < 17) return DayPhase.afternoon;
-    if (hour >= 17 && hour < 20) return DayPhase.evening;
-    return DayPhase.night;
+  void _startSimulationTimer() {
+    if (_isTimeLapseMode) return;
+    _simulationTimer?.cancel();
+    _simulationTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (_state != null) {
+        final pos = _lastPosition ?? Position(
+            latitude: 24.5602, longitude: 120.8214, timestamp: DateTime.now(),
+            accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0, altitudeAccuracy: 0, headingAccuracy: 0);
+        
+        _state!.sunElevation = SolarCalculator.getSunElevation(
+          pos.latitude, 
+          pos.longitude, 
+          DateTime.now()
+        );
+        _updateAmbience();
+        notifyListeners();
+      }
+    });
   }
+
+  void toggleTimeLapse() {
+    _isTimeLapseMode = !_isTimeLapseMode;
+    if (_isTimeLapseMode) {
+      _simulationTimer?.cancel();
+      _timeLapseClock = DateTime.now();
+      _timeLapseTimer?.cancel();
+      _timeLapseTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+        if (_state != null) {
+          // Advance clock by 6 mins every 100ms (1 real sec = 1 virtual hour)
+          _timeLapseClock = _timeLapseClock.add(const Duration(minutes: 6));
+          final pos = _lastPosition ?? Position(
+              latitude: 24.5602, longitude: 120.8214, timestamp: DateTime.now(),
+              accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0, altitudeAccuracy: 0, headingAccuracy: 0);
+          
+          _state!.sunElevation = SolarCalculator.getSunElevation(
+            pos.latitude, 
+            pos.longitude, 
+            _timeLapseClock
+          );
+          _updateAmbience();
+          notifyListeners();
+        }
+      });
+    } else {
+      _timeLapseTimer?.cancel();
+      _startSimulationTimer();
+    }
+    notifyListeners();
+  }
+
+
 
   void _updateAmbience() {
     if (_state != null) {
       _ambientSound.updateAmbience(
         _state!.dayPeriod,
         _state!.growthStage,
-        weather: _state!.weatherCondition,
+        _state!.weatherMetrics,
       );
     }
   }
@@ -172,7 +235,10 @@ class StateManager extends ChangeNotifier {
   void updateHour(int hour) {
     if (_state != null) {
       _simulatedHour = hour;
-      _state!.dayPeriod = _calculateDayPhase(hour);
+      // Using arbitrary logic for developer control hour overriding
+      _state!.sunElevation = hour > 6 && hour < 18 ? 45.0 : -45.0; 
+      if (hour == 17 || hour == 18) _state!.sunElevation = 0.0;
+      if (hour == 5 || hour == 6) _state!.sunElevation = 0.0;
       _updateAmbience();
       notifyListeners();
     }
@@ -201,15 +267,17 @@ class StateManager extends ChangeNotifier {
       _isInTaiwan = lat >= 21.0 && lat <= 26.0 && lon >= 119.0 && lon <= 122.0;
 
       _region = AgriculturalCalendar.getRegionForPosition(mockPos);
-      final weather = await WeatherService.getCurrentWeather(mockPos, forceRefresh: true);
+      final weatherMetrics = await WeatherService.getCurrentWeather(mockPos, forceRefresh: true);
       final variety = VarietyService.getVarietyForPosition(mockPos);
 
       _state!.growthStage = AgriculturalCalendar.getStageForDate(
         _simulatedDate,
         _region,
       );
-      _state!.weatherCondition = weather;
+      _state!.weatherMetrics = weatherMetrics;
       _state!.currentVariety = variety;
+      _state!.sunElevation = SolarCalculator.getSunElevation(lat, lon, DateTime.now());
+      _lastPosition = mockPos;
 
       _updateAmbience();
     } finally {

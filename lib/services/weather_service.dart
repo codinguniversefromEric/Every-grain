@@ -11,9 +11,9 @@ class WeatherService {
       'https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0003-001';
 
   static DateTime? _lastFetchTime;
-  static WeatherCondition? _cachedWeather;
+  static WeatherMetrics? _cachedWeather;
 
-  static Future<WeatherCondition> getCurrentWeather(Position? position, {bool forceRefresh = false}) async {
+  static Future<WeatherMetrics> getCurrentWeather(Position? position, {bool forceRefresh = false}) async {
     // 1小時快取機制
     if (!forceRefresh && _lastFetchTime != null && _cachedWeather != null) {
       if (DateTime.now().difference(_lastFetchTime!) <
@@ -24,7 +24,7 @@ class WeatherService {
     }
 
     try {
-      WeatherCondition newWeather;
+      WeatherMetrics newWeather;
 
       if (position != null) {
         // 台灣邊界判定 (粗略 Bounding Box)
@@ -75,28 +75,34 @@ class WeatherService {
     } catch (e, stackTrace) {
       // 靜默降級：任何錯誤都不中斷體驗，回傳快取或晴天
       AppLogger.e('Error in getCurrentWeather, falling back', e, stackTrace);
-      return _cachedWeather ?? WeatherCondition.clear;
+      return _cachedWeather ?? const WeatherMetrics();
     }
   }
 
-  static Future<WeatherCondition> _fetchGlobalWeather(Position position) async {
+  static Future<WeatherMetrics> _fetchGlobalWeather(Position position) async {
     final url = Uri.parse(
-      'https://api.open-meteo.com/v1/forecast?latitude=${position.latitude}&longitude=${position.longitude}&current=weather_code',
+      'https://api.open-meteo.com/v1/forecast?latitude=${position.latitude}&longitude=${position.longitude}&current=weather_code,wind_speed_10m,precipitation',
     );
     final response = await http.get(url).timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final weatherCode = data['current']['weather_code'] as int?;
-
-      if (weatherCode != null) {
-        return _mapWMOToCondition(weatherCode);
-      }
+      final current = data['current'];
+      
+      final weatherCode = current['weather_code'] as int? ?? 0;
+      final windSpeed = (current['wind_speed_10m'] as num?)?.toDouble() ?? 0.0;
+      final precipitation = (current['precipitation'] as num?)?.toDouble() ?? 0.0;
+      
+      return WeatherMetrics(
+        weatherCode: weatherCode,
+        windSpeed: windSpeed,
+        precipitation: precipitation,
+      );
     }
     throw Exception('Failed to fetch from Open-Meteo: ${response.statusCode}');
   }
 
-  static Future<WeatherCondition> _fetchCWAWeather(Position? position) async {
+  static Future<WeatherMetrics> _fetchCWAWeather(Position? position) async {
     if (_cwaApiKey.isEmpty || _cwaApiKey == 'CWA_API_KEY') {
       throw Exception('CWA API key is missing or not configured');
     }
@@ -108,7 +114,7 @@ class WeatherService {
       final data = jsonDecode(response.body);
       final stations = data['records']['Station'] as List;
 
-      if (stations.isEmpty) return WeatherCondition.clear;
+      if (stations.isEmpty) return const WeatherMetrics();
 
       Map<String, dynamic>? nearestStation;
       double minDistance = double.infinity;
@@ -153,21 +159,29 @@ class WeatherService {
       if (nearestStation != null) {
         final weatherElement = nearestStation['WeatherElement'];
         final weatherStr = weatherElement['Weather'] as String? ?? '-99';
+        final windStr = weatherElement['WindSpeed']?.toString() ?? '0.0';
+        final windSpeed = double.tryParse(windStr) ?? 0.0;
+        final precipStr = weatherElement['Now']?['Precipitation']?.toString() ?? '0.0';
+        
+        double precip = double.tryParse(precipStr) ?? 0.0;
+        if (precip < 0) precip = 0.0; // handle -99.0
 
+        int code = 0;
         if (weatherStr != '-99') {
           final condition = _mapWeatherStringToCondition(weatherStr);
-          AppLogger.i('Parsed weather status for Miaoli: $condition (raw: $weatherStr)');
-          return condition;
+          code = _conditionToWMO(condition);
         } else {
-          final precipStr =
-              weatherElement['Now']?['Precipitation']?.toString() ?? '0.0';
-          final precip = double.tryParse(precipStr) ?? 0.0;
           final condition = precip > 0.0
                 ? (precip > 5.0 ? WeatherCondition.stormy : WeatherCondition.rainy)
                 : WeatherCondition.cloudy;
-          AppLogger.i('Parsed weather status for Miaoli (by precip): $condition');
-          return condition;
+          code = _conditionToWMO(condition);
         }
+
+        return WeatherMetrics(
+          precipitation: precip,
+          windSpeed: windSpeed,
+          weatherCode: code,
+        );
       }
     }
     throw Exception('Failed to fetch from CWA: ${response.statusCode}');
@@ -213,23 +227,19 @@ class WeatherService {
   }
 
   static WeatherCondition _mapWMOToCondition(int code) {
-    // 0: Clear sky, 1: Mainly clear
-    if (code == 0 || code == 1) {
-      return WeatherCondition.clear;
-    }
-    // 2: partly cloudy, 3: overcast, 45, 48: fog
-    if (code == 2 || code == 3 || code == 45 || code == 48) {
-      return WeatherCondition.cloudy;
-    }
-    // 51-86: Drizzle, Rain, Snow, Showers
-    if (code >= 51 && code <= 86) {
-      return WeatherCondition.rainy;
-    }
-    // 95-99: Thunderstorm
-    if (code >= 95 && code <= 99) {
-      return WeatherCondition.stormy;
-    }
-
+    if (code == 0 || code == 1) return WeatherCondition.clear;
+    if (code == 2 || code == 3 || code == 45 || code == 48) return WeatherCondition.cloudy;
+    if (code >= 51 && code <= 86) return WeatherCondition.rainy;
+    if (code >= 95 && code <= 99) return WeatherCondition.stormy;
     return WeatherCondition.clear;
+  }
+  
+  static int _conditionToWMO(WeatherCondition condition) {
+    switch (condition) {
+      case WeatherCondition.clear: return 0;
+      case WeatherCondition.cloudy: return 3;
+      case WeatherCondition.rainy: return 61;
+      case WeatherCondition.stormy: return 95;
+    }
   }
 }
