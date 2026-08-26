@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/field_state.dart';
 import 'services/state_manager.dart';
-import 'theme/app_colors.dart';
 import 'theme/animation_constants.dart';
 import 'visuals/living_sky.dart';
 import 'visuals/cloud_layer.dart';

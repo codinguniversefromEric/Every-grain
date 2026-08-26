@@ -226,14 +226,7 @@ class WeatherService {
     return WeatherCondition.clear;
   }
 
-  static WeatherCondition _mapWMOToCondition(int code) {
-    if (code == 0 || code == 1) return WeatherCondition.clear;
-    if (code == 2 || code == 3 || code == 45 || code == 48) return WeatherCondition.cloudy;
-    if (code >= 51 && code <= 86) return WeatherCondition.rainy;
-    if (code >= 95 && code <= 99) return WeatherCondition.stormy;
-    return WeatherCondition.clear;
-  }
-  
+
   static int _conditionToWMO(WeatherCondition condition) {
     switch (condition) {
       case WeatherCondition.clear: return 0;
