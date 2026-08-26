@@ -13,9 +13,9 @@ class WeatherService {
   static DateTime? _lastFetchTime;
   static WeatherCondition? _cachedWeather;
 
-  static Future<WeatherCondition> getCurrentWeather(Position? position) async {
+  static Future<WeatherCondition> getCurrentWeather(Position? position, {bool forceRefresh = false}) async {
     // 1小時快取機制
-    if (_lastFetchTime != null && _cachedWeather != null) {
+    if (!forceRefresh && _lastFetchTime != null && _cachedWeather != null) {
       if (DateTime.now().difference(_lastFetchTime!) <
           const Duration(hours: 1)) {
         AppLogger.i('Using cached weather: $_cachedWeather');
@@ -36,14 +36,37 @@ class WeatherService {
 
         if (isInTaiwan) {
           AppLogger.i('User in Taiwan, using CWA API');
-          newWeather = await _fetchCWAWeather(position);
+          try {
+            newWeather = await _fetchCWAWeather(position);
+          } catch (e) {
+            AppLogger.w('CWA API failed ($e), gracefully degrading to Open-Meteo');
+            newWeather = await _fetchGlobalWeather(position);
+          }
         } else {
           AppLogger.i('User abroad, using Open-Meteo API');
           newWeather = await _fetchGlobalWeather(position);
         }
       } else {
-        // 沒有定位時，預設呼叫 CWA 台北站
-        newWeather = await _fetchCWAWeather(null);
+        // 沒有定位時，預設呼叫 CWA 苗栗縣站
+        try {
+          newWeather = await _fetchCWAWeather(null);
+        } catch (e) {
+          AppLogger.w('CWA API failed for default location ($e), gracefully degrading to Open-Meteo (Miaoli coordinates)');
+          // Provide Miaoli coordinates for fallback
+          final fallbackPos = Position(
+            latitude: 24.5602,
+            longitude: 120.8214,
+            timestamp: DateTime.now(),
+            accuracy: 0.0,
+            altitude: 0.0,
+            heading: 0.0,
+            speed: 0.0,
+            speedAccuracy: 0.0,
+            altitudeAccuracy: 0.0,
+            headingAccuracy: 0.0,
+          );
+          newWeather = await _fetchGlobalWeather(fallbackPos);
+        }
       }
 
       _cachedWeather = newWeather;
@@ -74,8 +97,8 @@ class WeatherService {
   }
 
   static Future<WeatherCondition> _fetchCWAWeather(Position? position) async {
-    if (_cwaApiKey == 'CWA_API_KEY') {
-      return WeatherCondition.clear;
+    if (_cwaApiKey.isEmpty || _cwaApiKey == 'CWA_API_KEY') {
+      throw Exception('CWA API key is missing or not configured');
     }
 
     final url = Uri.parse('$_cwaBaseUrl?Authorization=$_cwaApiKey&format=JSON');
@@ -99,8 +122,8 @@ class WeatherService {
               orElse: () => coordinates.first,
             );
 
-            final lat = double.parse(wgs84['StationLatitude']);
-            final lon = double.parse(wgs84['StationLongitude']);
+            final lat = double.parse(wgs84['StationLatitude'].toString());
+            final lon = double.parse(wgs84['StationLongitude'].toString());
 
             final distance = _calculateHaversineDistance(
               position.latitude,
@@ -119,8 +142,11 @@ class WeatherService {
         }
       } else {
         nearestStation = stations.firstWhere(
-          (s) => s['StationName'] == '臺北',
-          orElse: () => stations.first,
+          (s) => s['GeoInfo']?['CountyName'] == '苗栗縣',
+          orElse: () => stations.firstWhere(
+            (s) => s['StationName'] == '苗栗',
+            orElse: () => stations.first,
+          ),
         );
       }
 
@@ -129,17 +155,18 @@ class WeatherService {
         final weatherStr = weatherElement['Weather'] as String? ?? '-99';
 
         if (weatherStr != '-99') {
-          return _mapWeatherStringToCondition(weatherStr);
+          final condition = _mapWeatherStringToCondition(weatherStr);
+          AppLogger.i('Parsed weather status for Miaoli: $condition (raw: $weatherStr)');
+          return condition;
         } else {
           final precipStr =
-              weatherElement['Now']?['Precipitation'] as String? ?? '0.0';
+              weatherElement['Now']?['Precipitation']?.toString() ?? '0.0';
           final precip = double.tryParse(precipStr) ?? 0.0;
-          if (precip > 0.0) {
-            return precip > 5.0
-                ? WeatherCondition.stormy
-                : WeatherCondition.rainy;
-          }
-          return WeatherCondition.cloudy;
+          final condition = precip > 0.0
+                ? (precip > 5.0 ? WeatherCondition.stormy : WeatherCondition.rainy)
+                : WeatherCondition.cloudy;
+          AppLogger.i('Parsed weather status for Miaoli (by precip): $condition');
+          return condition;
         }
       }
     }
@@ -170,15 +197,7 @@ class WeatherService {
   }
 
   static WeatherCondition _mapWeatherStringToCondition(String weather) {
-    if (weather.contains('晴')) {
-      if (weather.contains('多雲') ||
-          weather.contains('陰') ||
-          weather.contains('靄') ||
-          weather.contains('霧')) {
-        return WeatherCondition.cloudy;
-      }
-      return WeatherCondition.clear;
-    } else if (weather.contains('雷')) {
+    if (weather.contains('雷')) {
       return WeatherCondition.stormy;
     } else if (weather.contains('雨')) {
       return WeatherCondition.rainy;
@@ -187,6 +206,8 @@ class WeatherService {
         weather.contains('霧') ||
         weather.contains('靄')) {
       return WeatherCondition.cloudy;
+    } else if (weather.contains('晴')) {
+      return WeatherCondition.clear;
     }
     return WeatherCondition.clear;
   }

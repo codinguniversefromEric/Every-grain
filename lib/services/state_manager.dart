@@ -28,7 +28,7 @@ class StateManager extends ChangeNotifier {
 
   StateManager();
 
-  Future<void> initializeState() async {
+  Future<void> initializeState({bool forceRefreshWeather = false}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -45,7 +45,7 @@ class StateManager extends ChangeNotifier {
     }
 
     _region = AgriculturalCalendar.getRegionForPosition(position);
-    final weather = await WeatherService.getCurrentWeather(position);
+    final weather = await WeatherService.getCurrentWeather(position, forceRefresh: forceRefreshWeather);
     final variety = VarietyService.getVarietyForPosition(position);
 
     _state = FieldState(
@@ -181,33 +181,40 @@ class StateManager extends ChangeNotifier {
   Future<void> teleportTo(double lat, double lon) async {
     if (_state == null) return;
 
-    final mockPos = Position(
-      latitude: lat,
-      longitude: lon,
-      timestamp: DateTime.now(),
-      accuracy: 0.0,
-      altitude: 0.0,
-      heading: 0.0,
-      speed: 0.0,
-      speedAccuracy: 0.0,
-      altitudeAccuracy: 0.0,
-      headingAccuracy: 0.0,
-    );
-
-    _isInTaiwan = lat >= 21.0 && lat <= 26.0 && lon >= 119.0 && lon <= 122.0;
-
-    _region = AgriculturalCalendar.getRegionForPosition(mockPos);
-    final weather = await WeatherService.getCurrentWeather(mockPos);
-    final variety = VarietyService.getVarietyForPosition(mockPos);
-
-    _state!.growthStage = AgriculturalCalendar.getStageForDate(
-      _simulatedDate,
-      _region,
-    );
-    _state!.weatherCondition = weather;
-    _state!.currentVariety = variety;
-
-    _updateAmbience();
+    _isLoading = true;
     notifyListeners();
+
+    try {
+      final mockPos = Position(
+        latitude: lat,
+        longitude: lon,
+        timestamp: DateTime.now(),
+        accuracy: 0.0,
+        altitude: 0.0,
+        heading: 0.0,
+        speed: 0.0,
+        speedAccuracy: 0.0,
+        altitudeAccuracy: 0.0,
+        headingAccuracy: 0.0,
+      );
+
+      _isInTaiwan = lat >= 21.0 && lat <= 26.0 && lon >= 119.0 && lon <= 122.0;
+
+      _region = AgriculturalCalendar.getRegionForPosition(mockPos);
+      final weather = await WeatherService.getCurrentWeather(mockPos, forceRefresh: true);
+      final variety = VarietyService.getVarietyForPosition(mockPos);
+
+      _state!.growthStage = AgriculturalCalendar.getStageForDate(
+        _simulatedDate,
+        _region,
+      );
+      _state!.weatherCondition = weather;
+      _state!.currentVariety = variety;
+
+      _updateAmbience();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

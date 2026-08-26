@@ -165,16 +165,16 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
           onHarvestSequenceTriggered: _showHarvestSequence,
           onSimulateNextMonth: _stateManager.simulateNextMonth,
           onTeleportTo: (lat, lon) async {
-            await _stateManager.teleportTo(lat, lon);
             if (context.mounted) {
               Navigator.pop(context);
             }
+            await _stateManager.teleportTo(lat, lon);
           },
           onResetLocation: () async {
-            await _stateManager.initializeState();
             if (context.mounted) {
               Navigator.pop(context);
             }
+            await _stateManager.initializeState(forceRefreshWeather: true);
           },
         );
       },
@@ -229,7 +229,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     return ListenableBuilder(
       listenable: _stateManager,
       builder: (context, _) {
-        if (_stateManager.isLoading || _stateManager.state == null) {
+        if (_stateManager.state == null) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -412,6 +412,13 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                       },
                       tooltip: AppLocalizations.of(context)!.aboutUs,
                     ),
+                  ),
+                ),
+              if (_stateManager.isLoading)
+                Container(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Colors.white70),
                   ),
                 ),
             ],
