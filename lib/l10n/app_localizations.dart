@@ -352,6 +352,12 @@ abstract class AppLocalizations {
   /// **'💻 前往 GitHub 檢視專案'**
   String get aboutGithubButton;
 
+  /// No description provided for @aboutRateButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'⭐ 給予評價 (Rate this App)'**
+  String get aboutRateButton;
+
   /// No description provided for @aboutCraftedWith.
   ///
   /// In zh, this message translates to:

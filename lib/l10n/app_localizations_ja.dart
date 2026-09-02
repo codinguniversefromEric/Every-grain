@@ -144,6 +144,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get aboutGithubButton => '💻 GitHubでプロジェクトを見る';
 
   @override
+  String get aboutRateButton => '⭐ アプリを評価する (Rate this App)';
+
+  @override
   String get aboutCraftedWith => '台湾で 🍚 と共に作られました';
 
   @override

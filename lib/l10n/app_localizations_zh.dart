@@ -140,6 +140,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aboutGithubButton => '💻 前往 GitHub 檢視專案';
 
   @override
+  String get aboutRateButton => '⭐ 給予評價 (Rate this App)';
+
+  @override
   String get aboutCraftedWith => '在台灣，用 🍚 傾心打造';
 
   @override
