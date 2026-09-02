@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/field_state.dart';
 
 class JournalDialog extends StatelessWidget {
   final bool isFirstLetter;
