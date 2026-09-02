@@ -3,47 +3,23 @@
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1E1915"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center">
+    android:background="#3D1C04" 
+    android:padding="8dp">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="粒粒"
-        android:textColor="#D4AF37"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+    <!-- Inner frame to give some bevel effect -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1E1915"
+        android:padding="2dp">
 
-    <TextView
-        android:id="@+id/tv_stage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="休耕中"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/tv_weather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="晴朗"
-        android:textColor="#A0A0A0"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/tv_notification"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="● 阿公有信"
-        android:textColor="#4CAF50"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:visibility="gone" />
+        <ImageView
+            android:id="@+id/iv_scenery"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:background="#0F2027"/>
+            
+    </LinearLayout>
 
 </LinearLayout>

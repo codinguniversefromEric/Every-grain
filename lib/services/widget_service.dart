@@ -1,5 +1,6 @@
 import 'package:home_widget/home_widget.dart';
 import '../models/field_state.dart';
+import '../widgets/widget_scenery_snapshot.dart';
 
 class WidgetService {
   static const String appGroupId = 'group.com.chia.riceJourney';
@@ -20,6 +21,20 @@ class WidgetService {
     await HomeWidget.saveWidgetData<String>('growth_stage', stageText);
     await HomeWidget.saveWidgetData<String>('weather', weatherText);
     await HomeWidget.saveWidgetData<bool>('has_unread_journal', hasUnreadJournal);
+
+    // Render snapshot
+    try {
+      await HomeWidget.renderFlutterWidget(
+        WidgetScenerySnapshot(
+          state: state,
+          hasUnreadJournal: hasUnreadJournal,
+        ),
+        logicalSize: const Size(400, 400),
+        key: 'scenery_image',
+      );
+    } catch (e) {
+      debugPrint('Failed to render widget snapshot: $e');
+    }
 
     // Trigger update for both platforms
     await HomeWidget.updateWidget(
