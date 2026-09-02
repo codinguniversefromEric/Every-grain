@@ -20,6 +20,10 @@ import 'widgets/rice_plant.dart';
 import 'widgets/developer_controls.dart';
 import 'widgets/harvest_dialog.dart';
 import 'widgets/about_screen.dart';
+import 'widgets/journal_button.dart';
+import 'widgets/journal_dialog.dart';
+import 'widgets/micro_simulation_overlay.dart';
+import 'package:in_app_review/in_app_review.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
@@ -122,6 +126,7 @@ const bool isBetaTestMode = true;
 class _RiceFieldScreenState extends State<RiceFieldScreen>
     with WidgetsBindingObserver {
   late final StateManager _stateManager;
+  bool _showMicroSimulation = false;
 
   @override
   void initState() {
@@ -195,8 +200,39 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     );
   }
 
+  void _openJournal() {
+    final state = _stateManager;
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (context) {
+        return JournalDialog(
+          isFirstLetter: !state.hasReadFirstLetter,
+          needsPlanting: state.needsPlanting,
+          onStartTask: () {
+            setState(() {
+              _showMicroSimulation = true;
+            });
+          },
+        );
+      },
+    ).then((_) {
+      if (!state.hasReadFirstLetter) {
+        state.markFirstLetterRead();
+      }
+    });
+  }
+
   void _executeHarvest() {
-    _stateManager.executeHarvest(_showHarvestSequence);
+    _stateManager.executeHarvest(() async {
+      _showHarvestSequence();
+      
+      if (await InAppReview.instance.isAvailable()) {
+        Future.delayed(const Duration(seconds: 1), () {
+          InAppReview.instance.requestReview();
+        });
+      }
+    });
   }
 
 
@@ -390,6 +426,33 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                     ),
                   ),
                 ),
+                
+              // 9. Farming Journal Button
+              if (!isTakingScreenshot)
+                Positioned(
+                  top: (kDebugMode || isBetaTestMode) ? 80 : 20,
+                  left: 20,
+                  child: SafeArea(
+                    child: JournalButton(
+                      hasUnread: _stateManager.hasUnreadJournal,
+                      onTap: _openJournal,
+                    ),
+                  ),
+                ),
+
+              // 10. Micro Simulation Overlay
+              if (_showMicroSimulation)
+                Positioned.fill(
+                  child: MicroSimulationOverlay(
+                    onCompleted: () async {
+                      setState(() {
+                        _showMicroSimulation = false;
+                      });
+                      await _stateManager.completePlanting();
+                    },
+                  ),
+                ),
+                
               if (_stateManager.isLoading)
                 Container(
                   color: Colors.black.withValues(alpha: 0.3),

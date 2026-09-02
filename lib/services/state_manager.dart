@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import '../models/field_state.dart';
 import 'agricultural_calendar.dart';
@@ -22,6 +23,9 @@ class StateManager extends ChangeNotifier {
   bool _isTimeLapseMode = false;
   DateTime _timeLapseClock = DateTime.now();
 
+  bool _hasReadFirstLetter = false;
+  bool _hasCompletedPlanting = false;
+
   final AmbientSoundService _ambientSound = AmbientSoundService();
 
   FieldState? get state => _state;
@@ -34,11 +38,27 @@ class StateManager extends ChangeNotifier {
   bool get isTimeLapseMode => _isTimeLapseMode;
   AmbientSoundService get ambientSound => _ambientSound;
 
+  bool get hasReadFirstLetter => _hasReadFirstLetter;
+  bool get hasCompletedPlanting => _hasCompletedPlanting;
+
+  bool get needsPlanting {
+    if (_state == null) return false;
+    return _state!.growthStage == GrowthStage.seedling && !_hasCompletedPlanting;
+  }
+
+  bool get hasUnreadJournal {
+    return !_hasReadFirstLetter || needsPlanting;
+  }
+
   StateManager();
 
   Future<void> initializeState({bool forceRefreshWeather = false}) async {
     _isLoading = true;
     notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    _hasReadFirstLetter = prefs.getBool('hasReadFirstLetter') ?? false;
+    _hasCompletedPlanting = prefs.getBool('hasCompletedPlanting') ?? false;
 
     Position? position = await AgriculturalCalendar.getPosition();
     _lastPosition = position;
@@ -57,11 +77,18 @@ class StateManager extends ChangeNotifier {
     final weatherMetrics = await WeatherService.getCurrentWeather(position, forceRefresh: forceRefreshWeather);
     final variety = VarietyService.getVarietyForPosition(position);
 
+    GrowthStage initialStage = AgriculturalCalendar.getStageForDate(
+      _simulatedDate,
+      _region,
+    );
+
+    if (initialStage == GrowthStage.fallow && _hasCompletedPlanting) {
+      _hasCompletedPlanting = false;
+      prefs.setBool('hasCompletedPlanting', false);
+    }
+
     _state = FieldState(
-      growthStage: AgriculturalCalendar.getStageForDate(
-        _simulatedDate,
-        _region,
-      ),
+      growthStage: initialStage,
       weatherMetrics: weatherMetrics,
       currentVariety: variety,
     );
@@ -153,8 +180,26 @@ class StateManager extends ChangeNotifier {
     }
   }
 
+  Future<void> markFirstLetterRead() async {
+    _hasReadFirstLetter = true;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasReadFirstLetter', true);
+    notifyListeners();
+  }
+
+  Future<void> completePlanting() async {
+    _hasCompletedPlanting = true;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasCompletedPlanting', true);
+    notifyListeners();
+  }
+
   Future<void> resetSeason() async {
     _isLoading = true;
+    _hasCompletedPlanting = false;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasCompletedPlanting', false);
+    
     if (_state != null) {
       _state!.growthStage = GrowthStage.fallow;
     }
