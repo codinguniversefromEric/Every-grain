@@ -22,10 +22,12 @@ class WidgetScenerySnapshot extends StatelessWidget {
           LivingSkyBackground(
             sunElevation: _getSunElevation(TimeOfDay.now()),
             weatherMetrics: WeatherMetrics(
-              temperature: 25,
-              humidity: 80,
-              condition: state.weatherCondition,
+              precipitation: state.weatherCondition == WeatherCondition.rainy ? 2.0 : 
+                            (state.weatherCondition == WeatherCondition.stormy ? 10.0 : 0.0),
               windSpeed: 2.0,
+              weatherCode: state.weatherCondition == WeatherCondition.cloudy ? 3 : 
+                          (state.weatherCondition == WeatherCondition.rainy ? 61 : 
+                          (state.weatherCondition == WeatherCondition.stormy ? 95 : 0)),
             ),
           ),
           

@@ -1,4 +1,6 @@
 import 'package:home_widget/home_widget.dart';
+import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import '../models/field_state.dart';
 import '../widgets/widget_scenery_snapshot.dart';
 
