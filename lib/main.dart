@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/field_state.dart';
 import 'services/state_manager.dart';
+import 'services/widget_service.dart';
 import 'theme/animation_constants.dart';
 import 'visuals/living_sky.dart';
 import 'visuals/cloud_layer.dart';
@@ -134,6 +135,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     _stateManager = StateManager();
     globalStateManager = _stateManager;
     WidgetsBinding.instance.addObserver(this);
+    WidgetService.init();
     _stateManager.initializeState();
   }
 
@@ -142,6 +144,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
       _stateManager.pauseApp();
+      WidgetService.updateWidget(
+        _stateManager.state, 
+        hasUnreadJournal: _stateManager.hasUnreadJournal
+      );
     } else if (state == AppLifecycleState.resumed) {
       _stateManager.resumeApp();
     }
