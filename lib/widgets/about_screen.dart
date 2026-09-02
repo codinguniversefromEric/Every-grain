@@ -1,3 +1,4 @@
+import 'package:in_app_review/in_app_review.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
@@ -196,7 +197,29 @@ class AboutScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              _buildGithubButton(context, loc.aboutGithubButton),
+              _buildOutlinedButton(
+                context,
+                text: loc.aboutGithubButton,
+                icon: Icons.open_in_new,
+                onTap: () async {
+                  final parsedUrl = Uri.parse('https://github.com/codinguniversefromEric/Every-grain');
+                  if (await canLaunchUrl(parsedUrl)) {
+                    await launchUrl(parsedUrl, mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              _buildOutlinedButton(
+                context,
+                text: loc.aboutRateButton,
+                icon: Icons.star_rate_rounded,
+                onTap: () async {
+                  final InAppReview inAppReview = InAppReview.instance;
+                  if (await inAppReview.isAvailable()) {
+                    inAppReview.openStoreListing(appStoreId: '6677028169'); // Replace with actual Apple ID if available
+                  }
+                },
+              ),
 
               const SizedBox(height: 64),
               Center(
@@ -243,16 +266,9 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGithubButton(BuildContext context, String text) {
+  Widget _buildOutlinedButton(BuildContext context, {required String text, required IconData icon, required VoidCallback onTap}) {
     return InkWell(
-      onTap: () async {
-        final url = Uri.parse(
-          'https://github.com/codinguniversefromEric/Every-grain',
-        );
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        }
-      },
+      onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -270,7 +286,7 @@ class AboutScreen extends StatelessWidget {
               text,
               style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
-            const Icon(Icons.open_in_new, color: Color(0xFFD4AF37), size: 20),
+            Icon(icon, color: const Color(0xFFD4AF37), size: 20),
           ],
         ),
       ),
