@@ -1,55 +1,54 @@
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
-import '../visuals/living_sky.dart';
-import 'rice_plant.dart';
 
 class WidgetScenerySnapshot extends StatelessWidget {
   final FieldState state;
   final bool hasUnreadJournal;
 
-  const WidgetScenerySnapshot({super.key, required this.state, this.hasUnreadJournal = false});
+  const WidgetScenerySnapshot({
+    super.key, 
+    required this.state, 
+    this.hasUnreadJournal = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 400,
       height: 400,
-      color: Colors.black,
+      color: _getSkyColor(state.weatherCondition),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Background Sky
-          LivingSkyBackground(
-            sunElevation: _getSunElevation(TimeOfDay.now()),
-            weatherMetrics: WeatherMetrics(
-              precipitation: state.weatherCondition == WeatherCondition.rainy ? 2.0 : 
-                            (state.weatherCondition == WeatherCondition.stormy ? 10.0 : 0.0),
-              windSpeed: 2.0,
-              weatherCode: state.weatherCondition == WeatherCondition.cloudy ? 3 : 
-                          (state.weatherCondition == WeatherCondition.rainy ? 61 : 
-                          (state.weatherCondition == WeatherCondition.stormy ? 95 : 0)),
+          // Basic Ground/Dirt
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 150,
+            child: Container(
+              color: const Color(0xFF3E2723), // Dark dirt color
             ),
           ),
           
-          // 2. Rice Plant Layer
+          // Basic Rice Plant (Static representation)
           if (state.growthStage != GrowthStage.fallow)
             Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 250,
-              child: RicePlantLayer(
-                growthStage: state.growthStage,
-                variety: state.currentVariety,
+              bottom: 20,
+              left: 100,
+              right: 100,
+              height: _getPlantHeight(state.growthStage),
+              child: CustomPaint(
+                painter: StaticRicePlantPainter(stage: state.growthStage),
               ),
             ),
             
-          // 3. Taiwan Wrought Iron Grill Overlay
+          // Taiwan Wrought Iron Grill Overlay
           CustomPaint(
             painter: IronGrillPainter(),
           ),
           
-          // 4. Notification indicator
+          // Notification indicator
           if (hasUnreadJournal)
             Positioned(
               top: 16,
@@ -63,7 +62,8 @@ class WidgetScenerySnapshot extends StatelessWidget {
                 ),
                 child: const Text(
                   '● 阿公有信',
-                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 18),
+                  textDirection: TextDirection.ltr,
                 ),
               ),
             ),
@@ -72,12 +72,60 @@ class WidgetScenerySnapshot extends StatelessWidget {
     );
   }
 
-  double _getSunElevation(TimeOfDay time) {
-    if (time.hour >= 6 && time.hour <= 18) {
-      return 1.0;
+  Color _getSkyColor(WeatherCondition condition) {
+    switch (condition) {
+      case WeatherCondition.cloudy: return const Color(0xFF90A4AE);
+      case WeatherCondition.rainy: return const Color(0xFF607D8B);
+      case WeatherCondition.stormy: return const Color(0xFF37474F);
+      case WeatherCondition.clear:
+      default: return const Color(0xFF81D4FA);
     }
-    return -1.0;
   }
+
+  double _getPlantHeight(GrowthStage stage) {
+    switch (stage) {
+      case GrowthStage.seedling: return 80;
+      case GrowthStage.tillering: return 150;
+      case GrowthStage.heading: return 200;
+      case GrowthStage.ripening: return 220;
+      case GrowthStage.harvested: return 40;
+      case GrowthStage.fallow: return 0;
+    }
+  }
+}
+
+class StaticRicePlantPainter extends CustomPainter {
+  final GrowthStage stage;
+  StaticRicePlantPainter({required this.stage});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (stage == GrowthStage.fallow || stage == GrowthStage.harvested) return;
+    
+    final paint = Paint()
+      ..color = stage == GrowthStage.ripening ? const Color(0xFFFFD54F) : const Color(0xFF66BB6A)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6.0
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    path.moveTo(size.width / 2, size.height);
+    path.quadraticBezierTo(
+      size.width / 2 + 20, size.height / 2, 
+      size.width / 2 - 10, 0
+    );
+    
+    path.moveTo(size.width / 2, size.height);
+    path.quadraticBezierTo(
+      size.width / 2 - 30, size.height / 2, 
+      size.width / 2 + 20, 20
+    );
+    
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class IronGrillPainter extends CustomPainter {
@@ -95,7 +143,6 @@ class IronGrillPainter extends CustomPainter {
     canvas.drawLine(Offset(size.width / 2, 0), Offset(size.width / 2, size.height), paint);
     canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
     
-    // Draw classic Taiwanese geometric curves (Heart / Mount shape)
     paint.strokeWidth = 3.0;
     
     void drawScroll(Offset center, bool flipX, bool flipY) {
@@ -119,7 +166,6 @@ class IronGrillPainter extends CustomPainter {
       canvas.drawPath(path, paint);
     }
     
-    // Center intersection ornaments
     drawScroll(Offset(size.width / 2, size.height / 2), false, false);
     drawScroll(Offset(size.width / 2, size.height / 2), true, false);
     drawScroll(Offset(size.width / 2, size.height / 2), false, true);

@@ -3,6 +3,7 @@ package com.chia.riceJourney
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
@@ -22,7 +23,10 @@ class RiceWidgetProvider : HomeWidgetProvider() {
                 if (imagePath != null) {
                     val file = File(imagePath)
                     if (file.exists()) {
-                        setImageViewUri(R.id.iv_scenery, Uri.fromFile(file))
+                        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                        if (bitmap != null) {
+                            setImageViewBitmap(R.id.iv_scenery, bitmap)
+                        }
                     }
                 }
 
