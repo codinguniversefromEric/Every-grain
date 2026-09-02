@@ -136,7 +136,14 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     globalStateManager = _stateManager;
     WidgetsBinding.instance.addObserver(this);
     WidgetService.init();
-    _stateManager.initializeState();
+    _stateManager.initializeState().then((_) {
+      if (mounted) {
+        WidgetService.updateWidget(
+          _stateManager.state, 
+          hasUnreadJournal: _stateManager.hasUnreadJournal
+        );
+      }
+    });
   }
 
   @override

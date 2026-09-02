@@ -50,6 +50,7 @@ struct RiceWidgetEntryView : View {
                     .aspectRatio(contentMode: .fill)
             } else {
                 Text("生長中...")
+                    .unredacted()
                     .foregroundColor(Color(red: 212/255, green: 175/255, blue: 55/255))
                     .font(.system(size: 14))
             }
