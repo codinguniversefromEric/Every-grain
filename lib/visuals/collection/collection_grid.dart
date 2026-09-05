@@ -11,61 +11,44 @@ class CollectionGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final allVarieties = RiceVariety.allVarieties;
 
-    return Scaffold(
-      backgroundColor: Colors.black.withValues(alpha: 0.8),
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('品種圖鑑', style: TextStyle(color: Colors.white)),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(24.0),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 16.0,
-                    mainAxisSpacing: 16.0,
-                    childAspectRatio: 0.75, // slightly taller for back text
-                  ),
-                  itemCount: 9,
-                  itemBuilder: (context, index) {
-                    if (index >= allVarieties.length) return const SizedBox();
-                    
-                    final variety = allVarieties[index];
-                    final isUnlocked = unlockedIds.contains(variety.id);
-
-                    return _CollectionCard(variety: variety, isUnlocked: isUnlocked);
-                  },
-                ),
-              ),
+    return Column(
+      children: [
+        const SizedBox(height: 32), // space for close button
+        Expanded(
+          child: GridView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 16.0,
+              mainAxisSpacing: 16.0,
+              childAspectRatio: 0.75, // slightly taller for back text
             ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 24.0),
-              child: Text(
-                '學術數據授權 / 資料來源：\n農業試驗所 (TARI) - 水稻品種資訊系統',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 12,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ],
+            itemCount: allVarieties.length,
+            itemBuilder: (context, index) {
+              final variety = allVarieties[index];
+              final isUnlocked = unlockedIds.contains(variety.id);
+              return _CollectionCard(
+                variety: variety,
+                isUnlocked: isUnlocked,
+              );
+            },
+          ),
         ),
-      ),
+        // Academic Attribution (Very Important)
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            '學術數據授權 / 資料來源：\n農業部農業試驗所 (TARI) - 水稻品種資訊系統',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black.withValues(alpha: 0.5),
+              fontSize: 10,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

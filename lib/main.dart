@@ -12,6 +12,7 @@ import 'visuals/cloud_layer.dart';
 import 'visuals/rain_layer.dart';
 import 'visuals/fireflies_layer.dart';
 import 'visuals/scenery/biome_scenery_layer.dart';
+import 'widgets/book_modal.dart';
 import 'visuals/collection/collection_grid.dart';
 import 'visuals/dragonfly_layer.dart';
 import 'visuals/water_ripple_layer.dart';
@@ -235,11 +236,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
 
   void _openJournal() {
     final state = _stateManager;
-    showDialog(
-      context: context,
-      barrierColor: Colors.black87,
-      builder: (context) {
-        return JournalDialog(
+    showBookModal(
+      context,
+      title: !state.hasReadFirstLetter ? '阿公的信' : '農事日誌',
+      content: JournalDialog(
           isFirstLetter: !state.hasReadFirstLetter,
           needsPlanting: state.needsPlanting,
           state: state.state,
@@ -257,8 +257,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
               builder: (context) => BwaBweiDialog(stateManager: state),
             );
           },
-        );
-      },
+        ),
     ).then((_) {
       if (!state.hasReadFirstLetter) {
         state.markFirstLetterRead();
@@ -486,12 +485,11 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                         color: Colors.white.withValues(alpha: _stateManager.unlockedVarieties.isNotEmpty ? 0.8 : 0.3),
                       ),
                       onPressed: () {
-                        Navigator.push(
+                        showBookModal(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => CollectionGrid(
-                              unlockedIds: _stateManager.unlockedVarieties,
-                            ),
+                          title: '台灣米護照',
+                          content: CollectionGrid(
+                            unlockedIds: _stateManager.unlockedVarieties,
                           ),
                         );
                       },

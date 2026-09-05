@@ -57,74 +57,57 @@ class JournalDialog extends StatelessWidget {
       }
     }
 
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF4EAD5), // Old paper color
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.5),
-              blurRadius: 15,
-              offset: const Offset(0, 10),
-            )
-          ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 32), // space for close button
+        Text(
+          title,
+          style: const TextStyle(
+            color: Color(0xFF5D4037),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2,
+          ),
+          textAlign: TextAlign.center,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Color(0xFF5D4037),
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              content,
-              style: const TextStyle(
-                color: Color(0xFF3E2723),
-                fontSize: 16,
-                height: 1.8,
-              ),
-            ),
-            const SizedBox(height: 32),
-            OutlinedButton(
-              onPressed: action,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF5D4037),
-                side: const BorderSide(color: Color(0xFF5D4037)),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(
-                buttonText,
-                style: const TextStyle(fontSize: 16, letterSpacing: 1),
-              ),
-            ),
-            if (showPrayButton) ...[
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  if (onPrayToEarthGod != null) onPrayToEarthGod!();
-                },
-                child: const Text(
-                  "氣象局報錯了，去向土地公抱怨",
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-              ),
-            ],
-          ],
+        const SizedBox(height: 24),
+        Text(
+          content,
+          style: const TextStyle(
+            color: Color(0xFF3E2723),
+            fontSize: 16,
+            height: 1.8,
+          ),
         ),
-      ),
+        const SizedBox(height: 32),
+        OutlinedButton(
+          onPressed: action,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: const Color(0xFF5D4037),
+            side: const BorderSide(color: Color(0xFF5D4037)),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+          child: Text(
+            buttonText,
+            style: const TextStyle(fontSize: 16, letterSpacing: 1),
+          ),
+        ),
+        if (showPrayButton) ...[
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (onPrayToEarthGod != null) onPrayToEarthGod!();
+            },
+            child: const Text(
+              "氣象局報錯了，去向土地公抱怨",
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
