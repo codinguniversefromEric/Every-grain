@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:just_audio/just_audio.dart';
 import '../models/field_state.dart';
+import '../models/weather_metrics.dart';
 import 'app_logger.dart';
 
 /// Manages ambient nature sounds that shift with time of day and season.
@@ -16,7 +17,7 @@ class AmbientSoundService {
   bool _isInitialized = false;
   
   Timer? _oneShotTimer;
-  WeatherMetrics _currentMetrics = const WeatherMetrics();
+  WeatherMetrics _currentMetrics = WeatherMetrics.clearSky();
 
   Future<void> init() async {
     if (_isInitialized) return;

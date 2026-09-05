@@ -144,7 +144,8 @@ class AgriculturalCalendar {
       case GrowthStage.harvested:
         return '豐收成熟：今天，有什麼值得好好感謝？';
       case GrowthStage.fallow:
-        return '冬日休耕：讓心沉澱，今天好好休息了嗎？';
+      case GrowthStage.dead:
+        return '靜待時機：沉澱與休息，是為了走更長遠的路。';
     }
   }
 }

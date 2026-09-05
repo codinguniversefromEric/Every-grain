@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../models/field_state.dart';
 
 class WidgetScenerySnapshot extends StatelessWidget {
@@ -42,6 +43,16 @@ class WidgetScenerySnapshot extends StatelessWidget {
                 painter: StaticRicePlantPainter(stage: state.growthStage),
               ),
             ),
+            
+          // Taiwanese Begonia Patterned Glass (Frosted Glass Effect)
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+              child: Container(
+                color: Colors.white.withOpacity(0.1),
+              ),
+            ),
+          ),
             
           // Taiwan Wrought Iron Grill Overlay
           CustomPaint(
@@ -90,6 +101,7 @@ class WidgetScenerySnapshot extends StatelessWidget {
       case GrowthStage.ripening: return 220;
       case GrowthStage.harvested: return 40;
       case GrowthStage.fallow: return 0;
+      case GrowthStage.dead: return 40;
     }
   }
 }

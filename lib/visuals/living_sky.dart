@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
+import '../models/weather_metrics.dart';
 import '../theme/app_colors.dart';
 
 class LivingSkyBackground extends StatefulWidget {

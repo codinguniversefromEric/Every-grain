@@ -5,8 +5,7 @@ class VarietyVisualTraits {
   final Color stemColor; // Base stem color
   final Color ripeGrainColor; // Color when ripening
   final double grainSize; // Relative size multiplier (1.0 = normal)
-  final double
-  grainRoundness; // width/height ratio of grain ovals (higher = rounder)
+  final double grainRoundness; // width/height ratio of grain ovals (higher = rounder)
   final double maxStalksMultiplier; // How dense the field is
   final double stalkHeightRange; // Height variation factor
 
@@ -20,12 +19,28 @@ class VarietyVisualTraits {
   });
 }
 
+/// Biological traits that determine how the variety responds to the environment.
+class VarietyGeneticTraits {
+  final double minOptimalTemp;
+  final double maxOptimalTemp;
+  final double maxFloodTolerance; // mm/h before gaining water stress
+  final double droughtResistance; // hours it can survive low humidity
+
+  const VarietyGeneticTraits({
+    required this.minOptimalTemp,
+    required this.maxOptimalTemp,
+    required this.maxFloodTolerance,
+    required this.droughtResistance,
+  });
+}
+
 class RiceVariety {
   final String id;
   final String name;
   final String description;
   final String funFact;
   final VarietyVisualTraits visualTraits;
+  final VarietyGeneticTraits geneticTraits;
 
   const RiceVariety({
     required this.id,
@@ -33,6 +48,7 @@ class RiceVariety {
     required this.description,
     required this.funFact,
     required this.visualTraits,
+    required this.geneticTraits,
   });
 
   static const RiceVariety tainan11 = RiceVariety(
@@ -47,6 +63,12 @@ class RiceVariety {
       grainRoundness: 1.6,
       maxStalksMultiplier: 1.2,
       stalkHeightRange: 0.45,
+    ),
+    geneticTraits: VarietyGeneticTraits(
+      minOptimalTemp: 22.0,
+      maxOptimalTemp: 32.0,
+      maxFloodTolerance: 40.0, // strong
+      droughtResistance: 72.0,
     ),
   );
 
@@ -63,6 +85,12 @@ class RiceVariety {
       maxStalksMultiplier: 1.0,
       stalkHeightRange: 0.55,
     ),
+    geneticTraits: VarietyGeneticTraits(
+      minOptimalTemp: 20.0,
+      maxOptimalTemp: 28.0, // Prefers slightly cooler (East coast)
+      maxFloodTolerance: 30.0,
+      droughtResistance: 48.0,
+    ),
   );
 
   static const RiceVariety tainung71 = RiceVariety(
@@ -78,6 +106,12 @@ class RiceVariety {
       maxStalksMultiplier: 1.1,
       stalkHeightRange: 0.4,
     ),
+    geneticTraits: VarietyGeneticTraits(
+      minOptimalTemp: 24.0,
+      maxOptimalTemp: 34.0,
+      maxFloodTolerance: 35.0,
+      droughtResistance: 60.0,
+    ),
   );
 
   static const RiceVariety taikeng9 = RiceVariety(
@@ -92,6 +126,12 @@ class RiceVariety {
       grainRoundness: 1.4,
       maxStalksMultiplier: 1.0,
       stalkHeightRange: 0.5,
+    ),
+    geneticTraits: VarietyGeneticTraits(
+      minOptimalTemp: 18.0, // Can handle cooler north
+      maxOptimalTemp: 30.0,
+      maxFloodTolerance: 45.0,
+      droughtResistance: 48.0,
     ),
   );
 }

@@ -1,39 +1,13 @@
 import 'rice_variety.dart';
+import 'weather_metrics.dart';
 
-enum GrowthStage { fallow, seedling, tillering, heading, ripening, harvested }
+enum GrowthStage { fallow, seedling, tillering, heading, ripening, harvested, dead }
 
 enum TaiwanRegion { north, south }
 
 enum DayPhase { morning, afternoon, evening, night }
 
 enum WeatherCondition { clear, cloudy, rainy, stormy }
-
-class WeatherMetrics {
-  final double precipitation; // mm/h
-  final double windSpeed;     // m/s
-  final int weatherCode;      // WMO code or equivalent
-
-  const WeatherMetrics({
-    this.precipitation = 0.0,
-    this.windSpeed = 0.0,
-    this.weatherCode = 0,
-  });
-
-  bool get isRaining => precipitation > 0.0 || _isRainCode(weatherCode);
-  bool get isStormy => precipitation > 5.0 || _isStormCode(weatherCode);
-  bool get isCloudy => condition == WeatherCondition.cloudy;
-  
-  // WMO Codes: 0=Clear, 1-3=Cloudy, 50-69=Drizzle/Rain, 80-82=Showers, 95-99=Thunderstorm
-  bool _isRainCode(int code) => (code >= 50 && code <= 69) || (code >= 80 && code <= 82);
-  bool _isStormCode(int code) => code >= 95;
-
-  WeatherCondition get condition {
-    if (isStormy) return WeatherCondition.stormy;
-    if (isRaining) return WeatherCondition.rainy;
-    if (weatherCode >= 1 && weatherCode <= 45) return WeatherCondition.cloudy;
-    return WeatherCondition.clear;
-  }
-}
 
 class FieldState {
   GrowthStage growthStage;
@@ -43,15 +17,43 @@ class FieldState {
   // Continuous lighting parameter (-90 to +90 degrees)
   double sunElevation;
 
+  // New biological continuous metrics
+  double vitality; // 0.0 to 1.0
+  double accumulatedBiomass; // Represents overall growth (e.g., 0.0 to 100.0)
+  double waterStressLevel; // 0.0 = perfect, > 1.0 = lethal
+  double temperatureStressLevel; // 0.0 = perfect, > 1.0 = lethal
+
   FieldState({
     this.growthStage = GrowthStage.fallow,
-    this.weatherMetrics = const WeatherMetrics(),
+    this.weatherMetrics = const WeatherMetrics(
+      temperature: 25.0,
+      humidity: 60.0,
+      windSpeed: 0.0,
+      windDirection: 0.0,
+      cloudCoverPercentage: 10.0,
+      precipitationIntensity: 0.0,
+    ),
     this.sunElevation = 45.0, // Default daytime
     this.currentVariety,
+    this.vitality = 1.0,
+    this.accumulatedBiomass = 0.0,
+    this.waterStressLevel = 0.0,
+    this.temperatureStressLevel = 0.0,
   });
 
-  // Backward compatibility getters
-  WeatherCondition get weatherCondition => weatherMetrics.condition;
+  bool get isDead => vitality <= 0.0 || growthStage == GrowthStage.dead;
+
+  // Backward compatibility getters to bridge WeatherMetrics back to simple enums
+  WeatherCondition get weatherCondition {
+    if (weatherMetrics.precipitationIntensity > 5.0 || weatherMetrics.windSpeed > 15.0) {
+      return WeatherCondition.stormy;
+    } else if (weatherMetrics.precipitationIntensity > 0.0) {
+      return WeatherCondition.rainy;
+    } else if (weatherMetrics.cloudCoverPercentage > 45.0) {
+      return WeatherCondition.cloudy;
+    }
+    return WeatherCondition.clear;
+  }
   
   DayPhase get dayPeriod {
     if (sunElevation > 10.0) {
@@ -65,7 +67,7 @@ class FieldState {
     }
   }
 
-  // Allow setting dayPeriod for developer controls
+  // Developer controls helper
   set dayPeriod(DayPhase phase) {
     switch (phase) {
       case DayPhase.morning:
@@ -79,24 +81,6 @@ class FieldState {
         break;
       case DayPhase.night:
         sunElevation = -45.0;
-        break;
-    }
-  }
-
-  // Allow setting weatherCondition for developer controls
-  set weatherCondition(WeatherCondition condition) {
-    switch (condition) {
-      case WeatherCondition.clear:
-        weatherMetrics = const WeatherMetrics(weatherCode: 0, precipitation: 0);
-        break;
-      case WeatherCondition.cloudy:
-        weatherMetrics = const WeatherMetrics(weatherCode: 3, precipitation: 0);
-        break;
-      case WeatherCondition.rainy:
-        weatherMetrics = const WeatherMetrics(weatherCode: 61, precipitation: 2.0);
-        break;
-      case WeatherCondition.stormy:
-        weatherMetrics = const WeatherMetrics(weatherCode: 95, precipitation: 10.0);
         break;
     }
   }

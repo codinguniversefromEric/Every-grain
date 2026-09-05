@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/field_state.dart';
+import 'models/rice_variety.dart';
 import 'services/state_manager.dart';
 import 'services/widget_service.dart';
 import 'theme/animation_constants.dart';
@@ -24,7 +25,9 @@ import 'widgets/about_screen.dart';
 import 'widgets/journal_button.dart';
 import 'widgets/journal_dialog.dart';
 import 'widgets/micro_simulation_overlay.dart';
-import 'package:in_app_review/in_app_review.dart';
+import 'services/review/review_service.dart';
+import 'services/review/native_review_service.dart';
+import 'services/review/fake_review_service.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
@@ -127,12 +130,14 @@ const bool isBetaTestMode = true;
 class _RiceFieldScreenState extends State<RiceFieldScreen>
     with WidgetsBindingObserver {
   late final StateManager _stateManager;
+  late final ReviewService _reviewService;
   bool _showMicroSimulation = false;
 
   @override
   void initState() {
     super.initState();
     _stateManager = StateManager();
+    _reviewService = isBetaTestMode ? FakeReviewService() : NativeReviewService();
     globalStateManager = _stateManager;
     WidgetsBinding.instance.addObserver(this);
     WidgetService.init();
@@ -195,6 +200,14 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
           },
           isTimeLapseActive: _stateManager.isTimeLapseMode,
           onToggleTimeLapse: _stateManager.toggleTimeLapse,
+          onUnlockAllCards: () async {
+            await _stateManager.debugInjectUnlockedCards([
+              RiceVariety.tainan11,
+              RiceVariety.kaohsiung139,
+              RiceVariety.tainung71,
+              RiceVariety.taikeng9,
+            ]);
+          },
         );
       },
     );
@@ -240,11 +253,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     _stateManager.executeHarvest(() async {
       _showHarvestSequence();
       
-      if (await InAppReview.instance.isAvailable()) {
-        Future.delayed(const Duration(seconds: 1), () {
-          InAppReview.instance.requestReview();
-        });
-      }
+      await _reviewService.checkAndRequestReview();
     });
   }
 

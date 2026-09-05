@@ -53,6 +53,7 @@ class WidgetService {
       case GrowthStage.heading: return '抽穗期';
       case GrowthStage.ripening: return '成熟期';
       case GrowthStage.harvested: return '已收割';
+      case GrowthStage.dead: return '已枯萎';
     }
   }
 

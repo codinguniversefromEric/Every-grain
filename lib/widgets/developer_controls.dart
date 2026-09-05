@@ -15,6 +15,7 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final VoidCallback onResetLocation;
   final bool isTimeLapseActive;
   final VoidCallback onToggleTimeLapse;
+  final VoidCallback onUnlockAllCards;
 
   const DeveloperControlsBottomSheet({
     super.key,
@@ -30,6 +31,7 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.onResetLocation,
     required this.isTimeLapseActive,
     required this.onToggleTimeLapse,
+    required this.onUnlockAllCards,
   });
 
   @override
@@ -297,6 +299,19 @@ class _DeveloperControlsBottomSheetState
                 widget.onGrowthStageChanged(GrowthStage.harvested);
                 Navigator.pop(context);
                 widget.onHarvestSequenceTriggered();
+              },
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple.shade100,
+                foregroundColor: Colors.purple.shade900,
+              ),
+              icon: const Icon(Icons.grid_view),
+              label: const Text('解鎖所有品種卡 (Unlock All Cards)'),
+              onPressed: () {
+                widget.onUnlockAllCards();
+                Navigator.pop(context);
               },
             ),
             const SizedBox(height: 24),
