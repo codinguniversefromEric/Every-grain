@@ -9,10 +9,13 @@ enum DayPhase { morning, afternoon, evening, night }
 
 enum WeatherCondition { clear, cloudy, rainy, stormy }
 
+enum SceneryBiome { plains, terraces, valley, coast }
+
 class FieldState {
   GrowthStage growthStage;
   WeatherMetrics weatherMetrics;
   RiceVariety? currentVariety;
+  SceneryBiome currentBiome;
   
   // Continuous lighting parameter (-90 to +90 degrees)
   double sunElevation;
@@ -30,6 +33,7 @@ class FieldState {
 
   FieldState({
     this.growthStage = GrowthStage.fallow,
+    this.currentBiome = SceneryBiome.plains,
     this.weatherMetrics = const WeatherMetrics(
       temperature: 25.0,
       humidity: 60.0,

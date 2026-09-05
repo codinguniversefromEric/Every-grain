@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../models/rice_variety.dart';
 
@@ -8,25 +9,7 @@ class CollectionGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    // Currently we have 4 varieties defined. Let's pad it to 9 slots for the 九宮格.
-    // In a full app, we'd have 9 actual varieties defined.
-    final allVarieties = [
-      RiceVariety.tainan11,
-      RiceVariety.kaohsiung139,
-      RiceVariety.tainung71,
-      RiceVariety.taikeng9,
-      // For demonstration of the 9-grid, duplicating to show locked slots
-      // In production, these would be 5 other real varieties.
-      ...List.generate(5, (index) => RiceVariety(
-        id: 'unknown_$index',
-        name: '未知品種',
-        description: '',
-        funFact: '',
-        visualTraits: RiceVariety.tainan11.visualTraits,
-        geneticTraits: RiceVariety.tainan11.geneticTraits,
-      )),
-    ];
+    final allVarieties = RiceVariety.allVarieties;
 
     return Scaffold(
       backgroundColor: Colors.black.withValues(alpha: 0.8),
@@ -42,65 +25,99 @@ class CollectionGrid extends StatelessWidget {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Center(
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(24.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 16.0,
-              mainAxisSpacing: 16.0,
-              childAspectRatio: 0.8,
-            ),
-            itemCount: 9,
-            itemBuilder: (context, index) {
-              if (index >= allVarieties.length) return const SizedBox();
-              
-              final variety = allVarieties[index];
-              final isUnlocked = unlockedIds.contains(variety.id);
-
-              return _buildGridCell(variety, isUnlocked);
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGridCell(RiceVariety variety, bool isUnlocked) {
-    if (isUnlocked) {
-      return Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.eco, color: variety.visualTraits.stemColor, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              variety.name,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            Expanded(
+              child: Center(
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(24.0),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 16.0,
+                    mainAxisSpacing: 16.0,
+                    childAspectRatio: 0.75, // slightly taller for back text
+                  ),
+                  itemCount: 9,
+                  itemBuilder: (context, index) {
+                    if (index >= allVarieties.length) return const SizedBox();
+                    
+                    final variety = allVarieties[index];
+                    final isUnlocked = unlockedIds.contains(variety.id);
+
+                    return _CollectionCard(variety: variety, isUnlocked: isUnlocked);
+                  },
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 24.0),
+              child: Text(
+                '學術數據授權 / 資料來源：\n農業試驗所 (TARI) - 水稻品種資訊系統',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 12,
+                  height: 1.5,
+                ),
               ),
             ),
           ],
         ),
-      );
+      ),
+    );
+  }
+}
+
+class _CollectionCard extends StatefulWidget {
+  final RiceVariety variety;
+  final bool isUnlocked;
+
+  const _CollectionCard({required this.variety, required this.isUnlocked});
+
+  @override
+  State<_CollectionCard> createState() => _CollectionCardState();
+}
+
+class _CollectionCardState extends State<_CollectionCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isFront = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _animation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _flipCard() {
+    if (!widget.isUnlocked) return;
+    if (_isFront) {
+      _controller.forward();
     } else {
-      // Locked state: Frosted glass silhouette per GEMINI.md aesthetic rules
+      _controller.reverse();
+    }
+    setState(() {
+      _isFront = !_isFront;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.isUnlocked) {
       return Container(
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.2), // Faint frosted look
@@ -119,5 +136,122 @@ class CollectionGrid extends StatelessWidget {
         ),
       );
     }
+
+    return GestureDetector(
+      onTap: _flipCard,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          final angle = _animation.value * pi;
+          final isBackVisible = angle > pi / 2;
+
+          return Transform(
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001)
+              ..rotateY(angle),
+            alignment: Alignment.center,
+            child: isBackVisible
+                ? Transform(
+                    transform: Matrix4.identity()..rotateY(pi),
+                    alignment: Alignment.center,
+                    child: _buildBack(),
+                  )
+                : _buildFront(),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFront() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4EAD5), // Old paper color
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.eco, color: widget.variety.visualTraits.stemColor, size: 36),
+          const SizedBox(height: 12),
+          Text(
+            widget.variety.name,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF5D4037),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBack() {
+    final data = widget.variety.tariData;
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF3E2723), // Dark wood/leather
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFD4AF37), width: 2), // Gold border
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 5,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildBackRow('日數', '${data.growthDays}天'),
+          _buildBackRow('千粒重', '${data.thousandGrainWeight}g'),
+          _buildBackRow('型態', data.grainType),
+          _buildBackRow('稻熱病', data.blastResistance),
+          _buildBackRow('親本', data.crossParents),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label: ',
+            style: const TextStyle(
+              fontSize: 10,
+              color: Colors.white70,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 10,
+                color: Color(0xFFD4AF37), // Gold text
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

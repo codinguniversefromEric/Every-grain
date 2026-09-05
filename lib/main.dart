@@ -11,6 +11,8 @@ import 'visuals/living_sky.dart';
 import 'visuals/cloud_layer.dart';
 import 'visuals/rain_layer.dart';
 import 'visuals/fireflies_layer.dart';
+import 'visuals/scenery/biome_scenery_layer.dart';
+import 'visuals/collection/collection_grid.dart';
 import 'visuals/dragonfly_layer.dart';
 import 'visuals/water_ripple_layer.dart';
 import 'visuals/shooting_star_layer.dart';
@@ -19,7 +21,6 @@ import 'visuals/wind_gust_layer.dart';
 import 'visuals/egret_flock_layer.dart';
 
 import 'widgets/widget_scenery_snapshot.dart';
-import 'visuals/collection/collection_grid.dart';
 import 'widgets/rice_plant.dart';
 import 'widgets/developer_controls.dart';
 import 'widgets/harvest_dialog.dart';
@@ -332,9 +333,17 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                   state.dayPeriod == DayPhase.evening)
                 const Positioned.fill(child: MistLayer()),
 
-              // 4. Procedural Rice Plant Layer
+              // 4. Scenery Biome Layer (Mountains, Ocean, Plains)
+              Positioned.fill(
+                child: BiomeSceneryLayer(
+                  biome: state.currentBiome,
+                  dayPhase: state.dayPeriod,
+                ),
+              ),
+
+              // 5. Procedural Rice Plant Layer
               Positioned(
-                bottom: 50,
+                bottom: -20, // Let it bleed into the bottom
                 left: 0,
                 right: 0,
                 child: RicePlantLayer(
@@ -500,6 +509,33 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                     child: JournalButton(
                       hasUnread: _stateManager.hasUnreadJournal,
                       onTap: _openJournal,
+                    ),
+                  ),
+                ),
+
+              // Reset Location Button (UX Safety)
+              if (_stateManager.isTeleported)
+                Positioned(
+                  top: 60,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(
+                    child: Center(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.my_location, color: Colors.white),
+                        label: const Text(
+                          "恢復真實定位",
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          elevation: 8,
+                        ),
+                        onPressed: () {
+                          _stateManager.resetTeleport();
+                        },
+                      ),
                     ),
                   ),
                 ),

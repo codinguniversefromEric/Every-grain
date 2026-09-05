@@ -20,6 +20,7 @@ class StateManager extends ChangeNotifier {
   bool _isLoading = true;
   bool _isHarvesting = false;
   bool _isInTaiwan = true;
+  bool _isTeleported = false;
   Position? _lastPosition;
   Timer? _simulationTimer;
   Timer? _timeLapseTimer;
@@ -108,11 +109,13 @@ class StateManager extends ChangeNotifier {
     _region = AgriculturalCalendar.getRegionForPosition(position);
     final weatherMetrics = await _weatherService.getCurrentWeather(position, forceRefresh: forceRefreshWeather);
     final variety = VarietyService.getVarietyForPosition(position);
+    final biome = VarietyService.getBiomeForPosition(position);
 
     _state = FieldState(
       growthStage: _hasCompletedPlanting ? GrowthStage.seedling : GrowthStage.fallow,
       weatherMetrics: weatherMetrics,
       currentVariety: variety,
+      currentBiome: biome,
     );
     _state!.nextPlantingAllowedAt = savedPlantingRest;
     
@@ -436,9 +439,12 @@ class StateManager extends ChangeNotifier {
     }
   }
 
+  bool get isTeleported => _isTeleported;
+
   Future<void> teleportTo(double lat, double lon) async {
     if (_state == null) return;
     _isLoading = true;
+    _isTeleported = true;
     notifyListeners();
 
     try {
@@ -453,12 +459,42 @@ class StateManager extends ChangeNotifier {
       
       final weatherMetrics = await _weatherService.getCurrentWeather(mockPos, forceRefresh: true);
       final variety = VarietyService.getVarietyForPosition(mockPos);
+      final biome = VarietyService.getBiomeForPosition(mockPos);
 
       _state!.weatherMetrics = weatherMetrics;
       _state!.currentVariety = variety;
+      _state!.currentBiome = biome;
       _state!.sunElevation = SolarCalculator.getSunElevation(lat, lon, DateTime.now());
       _lastPosition = mockPos;
 
+      _updateAmbience();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> resetTeleport() async {
+    if (!_isTeleported || _state == null) return;
+    _isLoading = true;
+    _isTeleported = false;
+    notifyListeners();
+
+    try {
+      Position? position = await AgriculturalCalendar.getPosition();
+      _lastPosition = position;
+      if (position != null) {
+        _isInTaiwan = position.latitude >= 21.0 && position.latitude <= 26.0 && position.longitude >= 119.0 && position.longitude <= 122.0;
+        _region = AgriculturalCalendar.getRegionForPosition(position);
+        final weatherMetrics = await _weatherService.getCurrentWeather(position, forceRefresh: true);
+        final variety = VarietyService.getVarietyForPosition(position);
+        final biome = VarietyService.getBiomeForPosition(position);
+
+        _state!.weatherMetrics = weatherMetrics;
+        _state!.currentVariety = variety;
+        _state!.currentBiome = biome;
+        _state!.sunElevation = SolarCalculator.getSunElevation(position.latitude, position.longitude, DateTime.now());
+      }
       _updateAmbience();
     } finally {
       _isLoading = false;
