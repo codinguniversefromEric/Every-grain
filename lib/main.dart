@@ -18,9 +18,12 @@ import 'visuals/mist_layer.dart';
 import 'visuals/wind_gust_layer.dart';
 import 'visuals/egret_flock_layer.dart';
 
+import 'widgets/widget_scenery_snapshot.dart';
+import 'visuals/collection/collection_grid.dart';
 import 'widgets/rice_plant.dart';
 import 'widgets/developer_controls.dart';
 import 'widgets/harvest_dialog.dart';
+import 'widgets/bwa_bwei_dialog.dart';
 import 'widgets/about_screen.dart';
 import 'widgets/journal_button.dart';
 import 'widgets/journal_dialog.dart';
@@ -184,6 +187,8 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
           onGrowthStageChanged: _stateManager.updateGrowthStage,
           onDayPhaseChanged: _stateManager.updateDayPhase,
           onWeatherChanged: _stateManager.updateWeather,
+          currentMetrics: _stateManager.state!.weatherMetrics,
+          onMetricsChanged: _stateManager.updateWeatherMetrics,
           onHarvestSequenceTriggered: _showHarvestSequence,
           onSimulateNextMonth: _stateManager.simulateNextMonth,
           onTeleportTo: (lat, lon) async {
@@ -208,6 +213,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
               RiceVariety.taikeng9,
             ]);
           },
+          onResetField: _stateManager.resetSeason,
         );
       },
     );
@@ -235,10 +241,20 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
         return JournalDialog(
           isFirstLetter: !state.hasReadFirstLetter,
           needsPlanting: state.needsPlanting,
+          state: state.state,
           onStartTask: () {
             setState(() {
               _showMicroSimulation = true;
             });
+          },
+          onPlowDeadCrop: () {
+            state.plowDeadCrop();
+          },
+          onPrayToEarthGod: () {
+            showDialog(
+              context: context,
+              builder: (context) => BwaBweiDialog(stateManager: state),
+            );
           },
         );
       },
@@ -445,6 +461,32 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                         );
                       },
                       tooltip: AppLocalizations.of(context)!.aboutUs,
+                    ),
+                  ),
+                ),
+                
+              // Collection Grid Button
+              if (!isTakingScreenshot)
+                Positioned(
+                  bottom: 20,
+                  right: 80,
+                  child: SafeArea(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.grid_view,
+                        color: Colors.white.withValues(alpha: _stateManager.unlockedVarieties.isNotEmpty ? 0.8 : 0.3),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CollectionGrid(
+                              unlockedIds: _stateManager.unlockedVarieties,
+                            ),
+                          ),
+                        );
+                      },
+                      tooltip: '圖鑑 (Collection)',
                     ),
                   ),
                 ),

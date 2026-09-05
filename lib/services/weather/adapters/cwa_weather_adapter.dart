@@ -7,7 +7,7 @@ import '../../../models/weather_metrics.dart';
 class CwaWeatherAdapter implements WeatherAdapter {
   final String _apiKey;
   static const String _cwaBaseUrl =
-      'https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0003-001';
+      'https://opendata.cwa.gov.tw/api/v1/rest/datastore/O-A0001-001';
 
   CwaWeatherAdapter(this._apiKey);
 
@@ -52,14 +52,26 @@ class CwaWeatherAdapter implements WeatherAdapter {
 
       if (nearestStation != null) {
         final weatherElement = nearestStation['WeatherElement'];
-        final tempStr = weatherElement['AirTemperature']?.toString() ?? '25.0';
-        final humStr = weatherElement['RelativeHumidity']?.toString() ?? '60.0';
-        final windStr = weatherElement['WindSpeed']?.toString() ?? '0.0';
-        final windDirStr = weatherElement['WindDirection']?.toString() ?? '0.0';
-        final precipStr = weatherElement['Now']?['Precipitation']?.toString() ?? '0.0';
+        final tempStr = (weatherElement['AirTemperature'] ?? weatherElement['TEMP'])?.toString() ?? '25.0';
+        final humStr = (weatherElement['RelativeHumidity'] ?? weatherElement['HUMD'])?.toString() ?? '60.0';
+        final windStr = (weatherElement['WindSpeed'] ?? weatherElement['WDSD'])?.toString() ?? '0.0';
+        final windDirStr = (weatherElement['WindDirection'] ?? weatherElement['WDIR'])?.toString() ?? '0.0';
         
+        // Precipitation could be in Now/Precipitation or just H_24R or HOUR_24
+        String precipStr = '0.0';
+        if (weatherElement['Now'] != null && weatherElement['Now']['Precipitation'] != null) {
+          precipStr = weatherElement['Now']['Precipitation'].toString();
+        } else if (weatherElement['HOUR_24'] != null) {
+          precipStr = weatherElement['HOUR_24'].toString();
+        } else if (weatherElement['H_24R'] != null) {
+          precipStr = weatherElement['H_24R'].toString();
+        }
+
         final temp = double.tryParse(tempStr) ?? 25.0;
-        final hum = double.tryParse(humStr) ?? 60.0;
+        double hum = double.tryParse(humStr) ?? 60.0;
+        // HUMD in O-A0001 is often 0~1 range, so check if it's <= 1.0 (except 0)
+        if (hum > 0 && hum <= 1.0) hum *= 100.0;
+
         final windSpeed = double.tryParse(windStr) ?? 0.0;
         final windDir = double.tryParse(windDirStr) ?? 0.0;
         double precip = double.tryParse(precipStr) ?? 0.0;

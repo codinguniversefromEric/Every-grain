@@ -5,6 +5,12 @@ class AgriculturalCalendar {
   // Approximate latitude separating North/South Taiwan farming patterns (around Taichung/Changhua)
   static const double _northSouthDividerLat = 24.0;
 
+  /// Returns the approximate date of the next solar term (節氣).
+  /// Solar terms occur roughly every 15 days.
+  static DateTime getNextSolarTermDate(DateTime currentDate) {
+    return currentDate.add(const Duration(days: 15));
+  }
+
   static Future<Position?> getPosition() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();

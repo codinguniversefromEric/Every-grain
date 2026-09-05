@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
+import '../models/weather_metrics.dart';
 import '../l10n/app_localizations.dart';
 
 class DeveloperControlsBottomSheet extends StatefulWidget {
@@ -11,11 +12,14 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final VoidCallback onSimulateNextMonth;
   final WeatherCondition currentWeather;
   final ValueChanged<WeatherCondition> onWeatherChanged;
+  final WeatherMetrics currentMetrics;
+  final ValueChanged<WeatherMetrics> onMetricsChanged;
   final void Function(double lat, double lon) onTeleportTo;
   final VoidCallback onResetLocation;
   final bool isTimeLapseActive;
   final VoidCallback onToggleTimeLapse;
   final VoidCallback onUnlockAllCards;
+  final VoidCallback onResetField;
 
   const DeveloperControlsBottomSheet({
     super.key,
@@ -27,11 +31,14 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.onSimulateNextMonth,
     required this.currentWeather,
     required this.onWeatherChanged,
+    required this.currentMetrics,
+    required this.onMetricsChanged,
     required this.onTeleportTo,
     required this.onResetLocation,
     required this.isTimeLapseActive,
     required this.onToggleTimeLapse,
     required this.onUnlockAllCards,
+    required this.onResetField,
   });
 
   @override
@@ -43,12 +50,14 @@ class _DeveloperControlsBottomSheetState
     extends State<DeveloperControlsBottomSheet> {
   late DayPhase _localDayPhase;
   late WeatherCondition _localWeather;
+  late WeatherMetrics _localMetrics;
 
   @override
   void initState() {
     super.initState();
     _localDayPhase = widget.currentDayPhase;
     _localWeather = widget.currentWeather;
+    _localMetrics = widget.currentMetrics;
   }
 
   @override
@@ -287,6 +296,95 @@ class _DeveloperControlsBottomSheetState
                 ),
               ],
             ),
+            const Divider(height: 32),
+            
+            // 4. Fine-grained metrics
+            const Text(
+              '生物環境參數 (Bio Metrics)',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            // Temperature Slider
+            Row(
+              children: [
+                const Icon(Icons.thermostat, size: 20),
+                const SizedBox(width: 8),
+                Text('溫度 (Temp): ${_localMetrics.temperature.toStringAsFixed(1)}°C'),
+              ],
+            ),
+            Slider(
+              value: _localMetrics.temperature.clamp(-5.0, 45.0),
+              min: -5.0,
+              max: 45.0,
+              divisions: 50,
+              onChanged: (v) {
+                setState(() {
+                  _localMetrics = WeatherMetrics(
+                    temperature: v,
+                    humidity: _localMetrics.humidity,
+                    windSpeed: _localMetrics.windSpeed,
+                    windDirection: _localMetrics.windDirection,
+                    cloudCoverPercentage: _localMetrics.cloudCoverPercentage,
+                    precipitationIntensity: _localMetrics.precipitationIntensity,
+                  );
+                });
+                widget.onMetricsChanged(_localMetrics);
+              },
+            ),
+            // Humidity Slider
+            Row(
+              children: [
+                const Icon(Icons.water_drop, size: 20, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text('濕度 (Hum): ${_localMetrics.humidity.toStringAsFixed(1)}%'),
+              ],
+            ),
+            Slider(
+              value: _localMetrics.humidity.clamp(0.0, 100.0),
+              min: 0.0,
+              max: 100.0,
+              divisions: 20,
+              onChanged: (v) {
+                setState(() {
+                  _localMetrics = WeatherMetrics(
+                    temperature: _localMetrics.temperature,
+                    humidity: v,
+                    windSpeed: _localMetrics.windSpeed,
+                    windDirection: _localMetrics.windDirection,
+                    cloudCoverPercentage: _localMetrics.cloudCoverPercentage,
+                    precipitationIntensity: _localMetrics.precipitationIntensity,
+                  );
+                });
+                widget.onMetricsChanged(_localMetrics);
+              },
+            ),
+            // Precipitation Slider
+            Row(
+              children: [
+                const Icon(Icons.thunderstorm, size: 20, color: Colors.indigo),
+                const SizedBox(width: 8),
+                Text('降雨 (Rain): ${_localMetrics.precipitationIntensity.toStringAsFixed(1)} mm/h'),
+              ],
+            ),
+            Slider(
+              value: _localMetrics.precipitationIntensity.clamp(0.0, 50.0),
+              min: 0.0,
+              max: 50.0,
+              divisions: 50,
+              onChanged: (v) {
+                setState(() {
+                  _localMetrics = WeatherMetrics(
+                    temperature: _localMetrics.temperature,
+                    humidity: _localMetrics.humidity,
+                    windSpeed: _localMetrics.windSpeed,
+                    windDirection: _localMetrics.windDirection,
+                    cloudCoverPercentage: _localMetrics.cloudCoverPercentage,
+                    precipitationIntensity: v,
+                  );
+                });
+                widget.onMetricsChanged(_localMetrics);
+              },
+            ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
@@ -311,6 +409,32 @@ class _DeveloperControlsBottomSheetState
               label: const Text('解鎖所有品種卡 (Unlock All Cards)'),
               onPressed: () {
                 widget.onUnlockAllCards();
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade900,
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.warning),
+              label: const Text('觸發枯萎死亡 (Force Dead)'),
+              onPressed: () {
+                widget.onGrowthStageChanged(GrowthStage.dead);
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.brown.shade700,
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.delete_sweep),
+              label: const Text('重新翻土 (Reset to Fallow)'),
+              onPressed: () {
+                widget.onResetField();
                 Navigator.pop(context);
               },
             ),

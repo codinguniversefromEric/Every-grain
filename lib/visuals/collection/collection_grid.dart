@@ -28,23 +28,43 @@ class CollectionGrid extends StatelessWidget {
       )),
     ];
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(24.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 16.0,
-        mainAxisSpacing: 16.0,
-        childAspectRatio: 0.8,
+    return Scaffold(
+      backgroundColor: Colors.black.withValues(alpha: 0.8),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text('品種圖鑑', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
       ),
-      itemCount: 9,
-      itemBuilder: (context, index) {
-        if (index >= allVarieties.length) return const SizedBox();
-        
-        final variety = allVarieties[index];
-        final isUnlocked = unlockedIds.contains(variety.id);
+      body: SafeArea(
+        child: Center(
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(24.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 16.0,
+              mainAxisSpacing: 16.0,
+              childAspectRatio: 0.8,
+            ),
+            itemCount: 9,
+            itemBuilder: (context, index) {
+              if (index >= allVarieties.length) return const SizedBox();
+              
+              final variety = allVarieties[index];
+              final isUnlocked = unlockedIds.contains(variety.id);
 
-        return _buildGridCell(variety, isUnlocked);
-      },
+              return _buildGridCell(variety, isUnlocked);
+            },
+          ),
+        ),
+      ),
     );
   }
 

@@ -53,6 +53,13 @@ class StateManager extends ChangeNotifier {
 
   bool get needsPlanting {
     if (_state == null) return false;
+    
+    // Check solar term rest period
+    if (_state!.nextPlantingAllowedAt != null && 
+        DateTime.now().isBefore(_state!.nextPlantingAllowedAt!)) {
+      return false;
+    }
+
     return _state!.growthStage == GrowthStage.fallow && !_hasCompletedPlanting;
   }
 
@@ -72,6 +79,18 @@ class StateManager extends ChangeNotifier {
     
     List<String> savedVarieties = prefs.getStringList('unlockedVarieties') ?? [];
     _unlockedVarieties = savedVarieties.toSet();
+
+    DateTime? savedPlantingRest;
+    final nextPlantStr = prefs.getString('nextPlantingAllowedAt');
+    if (nextPlantStr != null) {
+      savedPlantingRest = DateTime.tryParse(nextPlantStr);
+    }
+
+    DateTime? savedOverrideUntil;
+    final overrideStr = prefs.getString('weatherOverrideUntil');
+    if (overrideStr != null) {
+      savedOverrideUntil = DateTime.tryParse(overrideStr);
+    }
 
     Position? position = await AgriculturalCalendar.getPosition();
     _lastPosition = position;
@@ -95,6 +114,19 @@ class StateManager extends ChangeNotifier {
       weatherMetrics: weatherMetrics,
       currentVariety: variety,
     );
+    _state!.nextPlantingAllowedAt = savedPlantingRest;
+    
+    // Resume weather override if still active
+    if (savedOverrideUntil != null && DateTime.now().isBefore(savedOverrideUntil)) {
+      _state!.weatherOverrideUntil = savedOverrideUntil;
+      // We don't have the exact overriddenMetrics saved natively right now.
+      // A full implementation would persist the exact JSON of WeatherMetrics.
+      // For now, we mock a clear sky if override is active upon restart, or just clear the flag.
+      _state!.overriddenMetrics = const WeatherMetrics(
+        temperature: 28, humidity: 50, windSpeed: 2, windDirection: 0, cloudCoverPercentage: 10, precipitationIntensity: 0
+      );
+      _state!.weatherMetrics = _state!.overriddenMetrics!;
+    }
     
     final pos = _lastPosition ?? Position(
         latitude: 24.5602, longitude: 120.8214, timestamp: DateTime.now(),
@@ -131,6 +163,16 @@ class StateManager extends ChangeNotifier {
         final now = DateTime.now();
         final delta = now.difference(_lastTickTime);
         _lastTickTime = now;
+
+        if (_state!.weatherOverrideUntil != null && now.isAfter(_state!.weatherOverrideUntil!)) {
+          _state!.weatherOverrideUntil = null;
+          _state!.overriddenMetrics = null;
+          _weatherService.getCurrentWeather(_lastPosition, forceRefresh: true).then((metrics) {
+            if (_state != null && _state!.overriddenMetrics == null) {
+              _state!.weatherMetrics = metrics;
+            }
+          });
+        }
 
         _state = CropSimulationEngine.tickSimulation(
           _state!,
@@ -225,11 +267,46 @@ class StateManager extends ChangeNotifier {
     
     if (_state != null) {
       _state!.growthStage = GrowthStage.fallow;
-      _state!.vitality = 0.0;
+      _state!.vitality = 100.0;
       _state!.accumulatedBiomass = 0.0;
+      _state!.temperatureStressLevel = 0.0;
+      _state!.waterStressLevel = 0.0;
+      _state!.nextPlantingAllowedAt = null;
     }
     notifyListeners();
     await initializeState();
+  }
+
+  Future<void> plowDeadCrop() async {
+    _hasCompletedPlanting = false;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasCompletedPlanting', false);
+
+    if (_state != null) {
+      _state!.growthStage = GrowthStage.fallow;
+      _state!.vitality = 100.0;
+      _state!.accumulatedBiomass = 0.0;
+      _state!.temperatureStressLevel = 0.0;
+      _state!.waterStressLevel = 0.0;
+      // Impose solar term restriction
+      _state!.nextPlantingAllowedAt = AgriculturalCalendar.getNextSolarTermDate(DateTime.now());
+      await prefs.setString('nextPlantingAllowedAt', _state!.nextPlantingAllowedAt!.toIso8601String());
+    }
+    notifyListeners();
+  }
+
+  Future<void> applyWeatherOverride(WeatherMetrics overridden) async {
+    if (_state != null) {
+      final overrideUntil = DateTime.now().add(const Duration(hours: 3));
+      _state!.weatherOverrideUntil = overrideUntil;
+      _state!.overriddenMetrics = overridden;
+      _state!.weatherMetrics = overridden;
+      _updateAmbience();
+      notifyListeners();
+      
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('weatherOverrideUntil', overrideUntil.toIso8601String());
+    }
   }
 
   void executeHarvest(VoidCallback onHarvestComplete) async {
@@ -289,6 +366,14 @@ class StateManager extends ChangeNotifier {
   void updateDayPhase(DayPhase phase) {
     if (_state != null) {
       _state!.dayPeriod = phase;
+      _updateAmbience();
+      notifyListeners();
+    }
+  }
+
+  void updateWeatherMetrics(WeatherMetrics metrics) {
+    if (_state != null) {
+      _state!.weatherMetrics = metrics;
       _updateAmbience();
       notifyListeners();
     }

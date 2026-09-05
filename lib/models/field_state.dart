@@ -23,6 +23,11 @@ class FieldState {
   double waterStressLevel; // 0.0 = perfect, > 1.0 = lethal
   double temperatureStressLevel; // 0.0 = perfect, > 1.0 = lethal
 
+  // Folklore & Environmental Override
+  DateTime? weatherOverrideUntil;
+  WeatherMetrics? overriddenMetrics;
+  DateTime? nextPlantingAllowedAt;
+
   FieldState({
     this.growthStage = GrowthStage.fallow,
     this.weatherMetrics = const WeatherMetrics(

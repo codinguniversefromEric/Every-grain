@@ -14,6 +14,7 @@ class MicroSimulationOverlay extends StatefulWidget {
 
 class _MicroSimulationOverlayState extends State<MicroSimulationOverlay> {
   final List<bool> _planted = List.generate(9, (_) => false);
+  bool _showCompletion = false;
   bool _isFadingOut = false;
 
   void _handleTap(int index) {
@@ -23,13 +24,25 @@ class _MicroSimulationOverlayState extends State<MicroSimulationOverlay> {
       _planted[index] = true;
     });
     
-    // Play sound effect here if possible (can be tied to global ambient sound)
-    
     if (_planted.every((element) => element)) {
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
           setState(() {
-            _isFadingOut = true;
+            _showCompletion = true;
+          });
+          
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              setState(() {
+                _isFadingOut = true;
+              });
+              
+              Future.delayed(const Duration(seconds: 1), () {
+                if (mounted) {
+                  widget.onCompleted();
+                }
+              });
+            }
           });
         }
       });
@@ -38,15 +51,16 @@ class _MicroSimulationOverlayState extends State<MicroSimulationOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isFadingOut) {
-      return AnimatedOpacity(
-        opacity: 0.0,
-        duration: const Duration(seconds: 2),
-        onEnd: widget.onCompleted,
-        child: _buildCompletionMessage(),
-      );
-    }
+    return AnimatedOpacity(
+      opacity: _isFadingOut ? 0.0 : 1.0,
+      duration: const Duration(seconds: 1),
+      child: _showCompletion 
+          ? _buildCompletionMessage() 
+          : _buildGrid(context),
+    );
+  }
 
+  Widget _buildGrid(BuildContext context) {
     return Container(
       color: Colors.black.withValues(alpha: 0.5),
       child: SafeArea(
