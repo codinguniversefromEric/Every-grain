@@ -230,4 +230,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageSystem => 'System Default / 跟隨系統';
+
+  @override
+  String get testerLocTaoyuan => '📍 Taoyuan';
+
+  @override
+  String get testerLocTainan => '📍 Tainan';
+
+  @override
+  String get testerLocYilan => '📍 Yilan';
+
+  @override
+  String get collectionTitle => 'Rice Passport';
+
+  @override
+  String get collectionTooltip => 'Collection';
+
+  @override
+  String get collectionSourceText =>
+      'Academic Data Licensed from:\nTaiwan Agricultural Research Institute (TARI)';
+
+  @override
+  String get journalTitle => 'Farm Journal';
+
+  @override
+  String get journalTooltip => 'Journal';
+
+  @override
+  String get journalGrandpaTitle => 'A Letter from Grandpa';
+
+  @override
+  String get journalGrandpaContent =>
+      'Welcome to the field, my child.\n\nYou don\'t need to log in every day to weed, nor buy fertilizer.\nJust look at it occasionally, listen to the wind and bugs.\n\nEvery grain is a gift of time. Feel the breath of this land.';
+
+  @override
+  String get journalGrandpaButton => 'I understand';
+
+  @override
+  String get journalDeadTitle => 'Unexpected Weather';
+
+  @override
+  String get journalDeadContent =>
+      'Extreme climate has caused the plants to wither.\n\nThis is the helplessness of farming; nature has its temper.\nWe can only accept it, plow the soil, and wait for the next solar term to start over.';
+
+  @override
+  String get journalDeadButton => 'Plow the soil';
+
+  @override
+  String get journalNothingContent =>
+      'Nothing special in the field today, the rice is growing quietly.\n\n\"Let nature take its course.\"';
+
+  @override
+  String get journalPrayButton => 'Weather app is wrong, pray to Earth God';
+
+  @override
+  String get journalCloseButton => 'Close';
+
+  @override
+  String get journalFallowTitle => 'Fallow Period';
+
+  @override
+  String get journalFallowContent =>
+      'The land is resting, waiting for the next solar term.\nTake a walk around and see different sceneries.';
+
+  @override
+  String get devControlTeleportReset => 'Reset to Real Location';
+
+  @override
+  String get devControlTeleportResetDesc =>
+      'You are simulating another region. Weather and variety are overridden.';
 }

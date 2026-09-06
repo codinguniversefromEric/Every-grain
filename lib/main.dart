@@ -238,7 +238,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     final state = _stateManager;
     showBookModal(
       context,
-      title: !state.hasReadFirstLetter ? '阿公的信' : '農事日誌',
+      title: !state.hasReadFirstLetter ? AppLocalizations.of(context)!.journalGrandpaTitle : AppLocalizations.of(context)!.journalTitle,
       content: JournalDialog(
           isFirstLetter: !state.hasReadFirstLetter,
           needsPlanting: state.needsPlanting,
@@ -487,13 +487,13 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                       onPressed: () {
                         showBookModal(
                           context,
-                          title: '台灣米護照',
+                          title: AppLocalizations.of(context)!.collectionTitle,
                           content: CollectionGrid(
                             unlockedIds: _stateManager.unlockedVarieties,
                           ),
                         );
                       },
-                      tooltip: '圖鑑 (Collection)',
+                      tooltip: AppLocalizations.of(context)!.collectionTooltip,
                     ),
                   ),
                 ),
@@ -521,9 +521,9 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                     child: Center(
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.my_location, color: Colors.white),
-                        label: const Text(
-                          "恢復真實定位",
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        label: Text(
+                          AppLocalizations.of(context)!.devControlTeleportReset,
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent.withValues(alpha: 0.9),

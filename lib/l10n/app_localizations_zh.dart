@@ -219,4 +219,71 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get languageSystem => 'System Default / 跟隨系統';
+
+  @override
+  String get testerLocTaoyuan => '📍 桃園 (北部 - 桃園3號)';
+
+  @override
+  String get testerLocTainan => '📍 台南 (南部 - 台南11號)';
+
+  @override
+  String get testerLocYilan => '📍 宜蘭 (東部 - 越光米)';
+
+  @override
+  String get collectionTitle => '台灣米護照';
+
+  @override
+  String get collectionTooltip => '圖鑑 (Collection)';
+
+  @override
+  String get collectionSourceText =>
+      '學術數據授權 / 資料來源：\n農業部農業試驗所 (TARI) - 水稻品種資訊系統';
+
+  @override
+  String get journalTitle => '農事日誌';
+
+  @override
+  String get journalTooltip => '日誌 (Journal)';
+
+  @override
+  String get journalGrandpaTitle => '阿公的信';
+
+  @override
+  String get journalGrandpaContent =>
+      '孩子，歡迎來到這片田。\n\n這裡不需要你每天辛苦登入除草，也不需要你花錢買肥料。\n你只需要偶爾看著它，聽聽風聲、聽聽蟲鳴。\n\n每一粒米都是時間的餽贈。去感受這片土地的呼吸吧。';
+
+  @override
+  String get journalGrandpaButton => '我明白了';
+
+  @override
+  String get journalDeadTitle => '天有不測風雲';
+
+  @override
+  String get journalDeadContent =>
+      '極端的氣候讓植物枯萎了。\n\n這就是務農的無奈，大自然有它自己的脾氣。\n我們只能認命翻土，等待下個節氣到來，重新來過。';
+
+  @override
+  String get journalDeadButton => '認命翻土';
+
+  @override
+  String get journalNothingContent => '今天田裡沒什麼特別的事，稻子正安靜地生長著。\n\n「看天田，隨遇而安。」';
+
+  @override
+  String get journalPrayButton => '氣象局報錯了，去向土地公抱怨';
+
+  @override
+  String get journalCloseButton => '關閉';
+
+  @override
+  String get journalFallowTitle => '休耕中';
+
+  @override
+  String get journalFallowContent =>
+      '土地正在休息，等待下一個節氣的到來。\n這段時間，您可以到處走走，看看不一樣的風景。';
+
+  @override
+  String get devControlTeleportReset => '恢復真實定位';
+
+  @override
+  String get devControlTeleportResetDesc => '您目前正在模擬其他地區，氣象與品種已強制鎖定';
 }

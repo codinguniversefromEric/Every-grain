@@ -114,14 +114,29 @@ class _DeveloperControlsBottomSheetState
                   onPressed: () => widget.onTeleportTo(25.0330, 121.5654),
                 ),
                 ActionChip(
+                  backgroundColor: Colors.lightBlue.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocTaoyuan),
+                  onPressed: () => widget.onTeleportTo(24.9936, 121.3010),
+                ),
+                ActionChip(
                   backgroundColor: Colors.green.withValues(alpha: 0.1),
                   label: Text(loc.testerLocTaichung),
                   onPressed: () => widget.onTeleportTo(24.1477, 120.6736),
                 ),
                 ActionChip(
+                  backgroundColor: Colors.orange.shade200.withValues(alpha: 0.2),
+                  label: Text(loc.testerLocTainan),
+                  onPressed: () => widget.onTeleportTo(23.1118, 120.2858),
+                ),
+                ActionChip(
                   backgroundColor: Colors.orange.withValues(alpha: 0.1),
                   label: Text(loc.testerLocKaohsiung),
                   onPressed: () => widget.onTeleportTo(22.6273, 120.2642),
+                ),
+                ActionChip(
+                  backgroundColor: Colors.teal.withValues(alpha: 0.1),
+                  label: Text(loc.testerLocYilan),
+                  onPressed: () => widget.onTeleportTo(24.7021, 121.7377),
                 ),
                 ActionChip(
                   backgroundColor: Colors.purple.withValues(alpha: 0.1),

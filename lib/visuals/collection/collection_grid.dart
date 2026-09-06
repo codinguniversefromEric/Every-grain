@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../models/rice_variety.dart';
+import '../../l10n/app_localizations.dart';
 
 class CollectionGrid extends StatelessWidget {
   final Set<String> unlockedIds;
@@ -9,6 +10,7 @@ class CollectionGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final allVarieties = RiceVariety.allVarieties;
 
     return Column(
@@ -39,7 +41,7 @@ class CollectionGrid extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            '學術數據授權 / 資料來源：\n農業部農業試驗所 (TARI) - 水稻品種資訊系統',
+            loc.collectionSourceText,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black.withValues(alpha: 0.5),

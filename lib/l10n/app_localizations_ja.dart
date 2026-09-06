@@ -223,4 +223,71 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get languageSystem => 'システム設定に従う';
+
+  @override
+  String get testerLocTaoyuan => '📍 桃園';
+
+  @override
+  String get testerLocTainan => '📍 台南';
+
+  @override
+  String get testerLocYilan => '📍 宜蘭';
+
+  @override
+  String get collectionTitle => '台湾米パスポート';
+
+  @override
+  String get collectionTooltip => '図鑑 (Collection)';
+
+  @override
+  String get collectionSourceText => '学術データライセンス提供：\n台湾農業試験所 (TARI)';
+
+  @override
+  String get journalTitle => '農作業日誌';
+
+  @override
+  String get journalTooltip => '日誌 (Journal)';
+
+  @override
+  String get journalGrandpaTitle => 'おじいちゃんからの手紙';
+
+  @override
+  String get journalGrandpaContent =>
+      'この畑へようこそ。\n\n毎日ログインして草むしりする必要も、肥料を買う必要もありません。\nただ時々見て、風の音や虫の声を聞いてください。\n\n一粒一粒がお米は時間の贈り物です。この土地の呼吸を感じてください。';
+
+  @override
+  String get journalGrandpaButton => 'わかりました';
+
+  @override
+  String get journalDeadTitle => '不測の事態';
+
+  @override
+  String get journalDeadContent =>
+      '極端な気候により植物が枯れてしまいました。\n\nこれが農業の無力さです。自然には独自の気まぐれがあります。\n諦めて土を耕し、次の二十四節気を待ってやり直すしかありません。';
+
+  @override
+  String get journalDeadButton => '土を耕す';
+
+  @override
+  String get journalNothingContent => '今日は畑に特別なことはなく、稲は静かに成長しています。\n\n「天に任せる」';
+
+  @override
+  String get journalPrayButton => '天気予報が間違っている、土地神様に文句を言う';
+
+  @override
+  String get journalCloseButton => '閉じる';
+
+  @override
+  String get journalFallowTitle => '休耕中';
+
+  @override
+  String get journalFallowContent =>
+      '土地は休んでおり、次の二十四節気を待っています。\n少し歩き回って、違う景色を見てみましょう。';
+
+  @override
+  String get devControlTeleportReset => '現在の位置に戻る';
+
+  @override
+  String get devControlTeleportResetDesc =>
+      '現在他の地域をシミュレートしています。天候と品種は上書きされています。';
 }

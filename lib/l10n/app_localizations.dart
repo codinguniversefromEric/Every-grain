@@ -513,6 +513,132 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'System Default / 跟隨系統'**
   String get languageSystem;
+
+  /// No description provided for @testerLocTaoyuan.
+  ///
+  /// In zh, this message translates to:
+  /// **'📍 桃園 (北部 - 桃園3號)'**
+  String get testerLocTaoyuan;
+
+  /// No description provided for @testerLocTainan.
+  ///
+  /// In zh, this message translates to:
+  /// **'📍 台南 (南部 - 台南11號)'**
+  String get testerLocTainan;
+
+  /// No description provided for @testerLocYilan.
+  ///
+  /// In zh, this message translates to:
+  /// **'📍 宜蘭 (東部 - 越光米)'**
+  String get testerLocYilan;
+
+  /// No description provided for @collectionTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'台灣米護照'**
+  String get collectionTitle;
+
+  /// No description provided for @collectionTooltip.
+  ///
+  /// In zh, this message translates to:
+  /// **'圖鑑 (Collection)'**
+  String get collectionTooltip;
+
+  /// No description provided for @collectionSourceText.
+  ///
+  /// In zh, this message translates to:
+  /// **'學術數據授權 / 資料來源：\n農業部農業試驗所 (TARI) - 水稻品種資訊系統'**
+  String get collectionSourceText;
+
+  /// No description provided for @journalTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'農事日誌'**
+  String get journalTitle;
+
+  /// No description provided for @journalTooltip.
+  ///
+  /// In zh, this message translates to:
+  /// **'日誌 (Journal)'**
+  String get journalTooltip;
+
+  /// No description provided for @journalGrandpaTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'阿公的信'**
+  String get journalGrandpaTitle;
+
+  /// No description provided for @journalGrandpaContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'孩子，歡迎來到這片田。\n\n這裡不需要你每天辛苦登入除草，也不需要你花錢買肥料。\n你只需要偶爾看著它，聽聽風聲、聽聽蟲鳴。\n\n每一粒米都是時間的餽贈。去感受這片土地的呼吸吧。'**
+  String get journalGrandpaContent;
+
+  /// No description provided for @journalGrandpaButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'我明白了'**
+  String get journalGrandpaButton;
+
+  /// No description provided for @journalDeadTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'天有不測風雲'**
+  String get journalDeadTitle;
+
+  /// No description provided for @journalDeadContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'極端的氣候讓植物枯萎了。\n\n這就是務農的無奈，大自然有它自己的脾氣。\n我們只能認命翻土，等待下個節氣到來，重新來過。'**
+  String get journalDeadContent;
+
+  /// No description provided for @journalDeadButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'認命翻土'**
+  String get journalDeadButton;
+
+  /// No description provided for @journalNothingContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'今天田裡沒什麼特別的事，稻子正安靜地生長著。\n\n「看天田，隨遇而安。」'**
+  String get journalNothingContent;
+
+  /// No description provided for @journalPrayButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'氣象局報錯了，去向土地公抱怨'**
+  String get journalPrayButton;
+
+  /// No description provided for @journalCloseButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'關閉'**
+  String get journalCloseButton;
+
+  /// No description provided for @journalFallowTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'休耕中'**
+  String get journalFallowTitle;
+
+  /// No description provided for @journalFallowContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'土地正在休息，等待下一個節氣的到來。\n這段時間，您可以到處走走，看看不一樣的風景。'**
+  String get journalFallowContent;
+
+  /// No description provided for @devControlTeleportReset.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢復真實定位'**
+  String get devControlTeleportReset;
+
+  /// No description provided for @devControlTeleportResetDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'您目前正在模擬其他地區，氣象與品種已強制鎖定'**
+  String get devControlTeleportResetDesc;
 }
 
 class _AppLocalizationsDelegate

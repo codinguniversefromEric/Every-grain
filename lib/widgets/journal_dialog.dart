@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
+import '../l10n/app_localizations.dart';
 
 class JournalDialog extends StatelessWidget {
   final bool isFirstLetter;
@@ -21,20 +22,21 @@ class JournalDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String title = "農事日誌";
+    final loc = AppLocalizations.of(context)!;
+    String title = loc.journalTitle;
     String content = "";
-    String buttonText = "關閉";
+    String buttonText = loc.journalCloseButton;
     VoidCallback action = () => Navigator.of(context).pop();
     bool showPrayButton = false;
 
     if (isFirstLetter) {
-      title = "阿公的信";
-      content = "孩子，歡迎來到這片田。\n\n這裡不需要你每天辛苦登入除草，也不需要你花錢買肥料。\n你只需要偶爾看著它，聽聽風聲、聽聽蟲鳴。\n\n每一粒米都是時間的餽贈。去感受這片土地的呼吸吧。";
-      buttonText = "我明白了";
+      title = loc.journalGrandpaTitle;
+      content = loc.journalGrandpaContent;
+      buttonText = loc.journalGrandpaButton;
     } else if (state?.growthStage == GrowthStage.dead) {
-      title = "天有不測風雲";
-      content = "極端的氣候讓植物枯萎了。\n\n這就是務農的無奈，大自然有它自己的脾氣。\n我們只能認命翻土，等待下個節氣到來，重新來過。";
-      buttonText = "認命翻土";
+      title = loc.journalDeadTitle;
+      content = loc.journalDeadContent;
+      buttonText = loc.journalDeadButton;
       action = () {
         if (onPlowDeadCrop != null) onPlowDeadCrop!();
         Navigator.of(context).pop();
@@ -51,7 +53,7 @@ class JournalDialog extends StatelessWidget {
         onStartTask();
       };
     } else {
-      content = "今天田裡沒什麼特別的事，稻子正安靜地生長著。\n\n「看天田，隨遇而安。」";
+      content = loc.journalNothingContent;
       if (state?.weatherOverrideUntil == null) {
         showPrayButton = true;
       }
@@ -101,9 +103,9 @@ class JournalDialog extends StatelessWidget {
               Navigator.of(context).pop();
               if (onPrayToEarthGod != null) onPrayToEarthGod!();
             },
-            child: const Text(
-              "氣象局報錯了，去向土地公抱怨",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            child: Text(
+              loc.journalPrayButton,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
           ),
         ],
