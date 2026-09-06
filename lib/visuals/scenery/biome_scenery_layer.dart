@@ -95,11 +95,14 @@ class _SceneryPainter extends CustomPainter {
   void _drawPlains(Canvas canvas, Size size, Color color, bool isNight) {
     final paint = Paint()..color = color..style = PaintingStyle.fill;
     
-    // Distant tree line
+    // Distant tree line / rolling hills
     final path = Path();
     path.moveTo(0, size.height * 0.7);
-    for (double x = 0; x <= size.width; x += 20) {
-      final y = size.height * 0.7 - sin(x * 0.05) * 10 - sin(x * 0.1) * 5;
+    
+    // Smooth out the jagged lines by sampling densely (every 2 pixels instead of 20)
+    // and adjusting the sine waves for a more natural, gentle rolling hill effect.
+    for (double x = 0; x <= size.width; x += 2) {
+      final y = size.height * 0.65 - (sin(x * 0.01) * 15) - (cos(x * 0.03) * 5);
       path.lineTo(x, y);
     }
     path.lineTo(size.width, size.height);
@@ -109,41 +112,47 @@ class _SceneryPainter extends CustomPainter {
 
     // Power lines (電線桿)
     final polePaint = Paint()
-      ..color = color.withValues(alpha: 0.8)
-      ..strokeWidth = 3
+      ..color = color.withValues(alpha: 0.85)
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
     
     final wirePaint = Paint()
       ..color = color.withValues(alpha: 0.5)
-      ..strokeWidth = 1
+      ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
     final poleX = size.width * 0.8;
-    final poleBaseY = size.height * 0.75;
-    final poleTopY = size.height * 0.4;
+    // Anchor the pole lower down in the foreground so it doesn't float in the mountains
+    final poleBaseY = size.height * 0.85; 
+    final poleTopY = size.height * 0.35;
     
     // Draw pole
     canvas.drawLine(Offset(poleX, poleBaseY), Offset(poleX, poleTopY), polePaint);
     // Draw crossbars
-    canvas.drawLine(Offset(poleX - 15, poleTopY + 10), Offset(poleX + 15, poleTopY + 10), polePaint);
-    canvas.drawLine(Offset(poleX - 20, poleTopY + 25), Offset(poleX + 20, poleTopY + 25), polePaint);
+    canvas.drawLine(Offset(poleX - 18, poleTopY + 15), Offset(poleX + 18, poleTopY + 15), polePaint);
+    canvas.drawLine(Offset(poleX - 25, poleTopY + 35), Offset(poleX + 25, poleTopY + 35), polePaint);
 
     // Draw wires swooping in from off-screen
     final wirePath1 = Path()
-      ..moveTo(0, poleTopY + 5)
-      ..quadraticBezierTo(poleX * 0.5, poleTopY + 30, poleX - 15, poleTopY + 10);
+      ..moveTo(0, poleTopY + 10)
+      ..quadraticBezierTo(poleX * 0.5, poleTopY + 45, poleX - 18, poleTopY + 15);
     final wirePath2 = Path()
-      ..moveTo(0, poleTopY + 15)
-      ..quadraticBezierTo(poleX * 0.5, poleTopY + 40, poleX - 20, poleTopY + 25);
+      ..moveTo(0, poleTopY + 25)
+      ..quadraticBezierTo(poleX * 0.5, poleTopY + 60, poleX - 25, poleTopY + 35);
     
     // Wires going off right
     final wirePath3 = Path()
-      ..moveTo(poleX + 15, poleTopY + 10)
-      ..quadraticBezierTo(size.width * 0.9, poleTopY + 15, size.width, poleTopY + 5);
+      ..moveTo(poleX + 18, poleTopY + 15)
+      ..quadraticBezierTo(size.width * 0.9, poleTopY + 25, size.width, poleTopY + 10);
+    final wirePath4 = Path()
+      ..moveTo(poleX + 25, poleTopY + 35)
+      ..quadraticBezierTo(size.width * 0.9, poleTopY + 45, size.width, poleTopY + 25);
       
     canvas.drawPath(wirePath1, wirePaint);
     canvas.drawPath(wirePath2, wirePaint);
     canvas.drawPath(wirePath3, wirePaint);
+    canvas.drawPath(wirePath4, wirePaint);
   }
 
   void _drawTerraces(Canvas canvas, Size size, Color color) {
