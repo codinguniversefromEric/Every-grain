@@ -41,8 +41,7 @@ struct RiceWidgetEntryView : View {
     @ViewBuilder
     var content: some View {
         ZStack {
-            // Inner frame / bevel
-            Color(red: 30/255, green: 25/255, blue: 21/255) // #1E1915
+            Color.black
             
             if let image = uiImage {
                 Image(uiImage: image)
@@ -55,21 +54,15 @@ struct RiceWidgetEntryView : View {
                     .font(.system(size: 14))
             }
         }
-        .padding(2)
         .widgetURL(URL(string: "ricejourney://widget"))
     }
 
     var body: some View {
         if #available(iOS 17.0, *) {
             content
-                .containerBackground(Color(red: 61/255, green: 28/255, blue: 4/255), for: .widget)
-                .padding(8) // Thick wooden outer frame effect
-                .background(Color(red: 61/255, green: 28/255, blue: 4/255))
+                .containerBackground(Color.black, for: .widget)
         } else {
-            ZStack {
-                Color(red: 61/255, green: 28/255, blue: 4/255)
-                content.padding(8)
-            }
+            content
         }
     }
 }

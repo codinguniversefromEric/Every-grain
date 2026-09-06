@@ -1,8 +1,14 @@
-import 'package:flutter/material.dart';
+import re
+
+with open("lib/widgets/widget_scenery_snapshot.dart", "r", encoding="utf-8") as f:
+    content = f.read()
+
+# We completely rewrite the file
+new_content = """import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 import '../models/weather_metrics.dart';
 import '../visuals/living_sky.dart';
-import '../visuals/scenery/biome_scenery_layer.dart';
+import '../visuals/biome_scenery_layer.dart';
 import 'rice_plant.dart';
 
 class WidgetScenerySnapshot extends StatelessWidget {
@@ -18,7 +24,7 @@ class WidgetScenerySnapshot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Provide a mocked sun elevation for snapshot
-    final sunElevation = state.dayPeriod != DayPhase.night ? 45.0 : -45.0;
+    final sunElevation = state.isDaytime ? 45.0 : -45.0;
     
     // Provide Directionality to avoid errors since this renders outside app tree
     return Directionality(
@@ -36,17 +42,17 @@ class WidgetScenerySnapshot extends StatelessWidget {
               weatherMetrics: WeatherMetrics(
                 temperature: 25.0,
                 humidity: 70.0,
-                windSpeed: state.weatherCondition == WeatherCondition.stormy ? 20.0 : 5.0,
-                windDirection: 0.0,
-                cloudCoverPercentage: state.weatherCondition == WeatherCondition.clear ? 10.0 : 80.0,
-                precipitationIntensity: (state.weatherCondition == WeatherCondition.rainy || state.weatherCondition == WeatherCondition.stormy) ? 10.0 : 0.0,
+                cloudCover: state.weatherCondition == WeatherCondition.clear ? 10.0 : 80.0,
+                isRaining: state.weatherCondition == WeatherCondition.rainy || state.weatherCondition == WeatherCondition.stormy,
+                isStormy: state.weatherCondition == WeatherCondition.stormy,
+                isCloudy: state.weatherCondition == WeatherCondition.cloudy,
               ),
             ),
             
             // Mountains
             BiomeSceneryLayer(
-              biome: state.currentBiome,
-              dayPhase: state.dayPeriod,
+              isDaytime: state.isDaytime,
+              weatherCondition: state.weatherCondition,
             ),
             
             // Ground
@@ -70,7 +76,7 @@ class WidgetScenerySnapshot extends StatelessWidget {
                   height: 400,
                   child: RicePlantLayer(
                     growthStage: state.growthStage,
-                    variety: state.currentVariety,
+                    variety: state.variety,
                   ),
                 ),
               ),
@@ -99,3 +105,7 @@ class WidgetScenerySnapshot extends StatelessWidget {
     );
   }
 }
+"""
+
+with open("lib/widgets/widget_scenery_snapshot.dart", "w", encoding="utf-8") as f:
+    f.write(new_content)

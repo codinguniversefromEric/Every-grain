@@ -21,6 +21,7 @@ dependencies:
   url_launcher: ^6.3.0
   in_app_review: ^2.0.9
   home_widget: ^0.9.3
+  workmanager: ^0.10.9
 dev_dependencies:
   flutter_test:
     sdk: flutter

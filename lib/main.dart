@@ -6,6 +6,7 @@ import 'models/field_state.dart';
 import 'models/rice_variety.dart';
 import 'services/state_manager.dart';
 import 'services/widget_service.dart';
+import 'services/background_service.dart';
 import 'theme/animation_constants.dart';
 import 'visuals/living_sky.dart';
 import 'visuals/cloud_layer.dart';
@@ -146,6 +147,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     globalStateManager = _stateManager;
     WidgetsBinding.instance.addObserver(this);
     WidgetService.init();
+    BackgroundService.init();
     _stateManager.initializeState().then((_) {
       if (mounted) {
         WidgetService.updateWidget(
