@@ -24,8 +24,8 @@ class WidgetScenerySnapshot extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Container(
-        width: 800,
-        height: 800,
+        width: 400,
+        height: 200,
         color: Colors.black,
         child: Stack(
           fit: StackFit.expand,
@@ -54,7 +54,7 @@ class WidgetScenerySnapshot extends StatelessWidget {
               bottom: 0,
               left: 0,
               right: 0,
-              height: 200, // Thick ground for 800x800
+              height: 100, // Thick ground
               child: Container(
                 color: const Color(0xFF2E1C15), // Dark soil
               ),
@@ -67,7 +67,7 @@ class WidgetScenerySnapshot extends StatelessWidget {
                 left: 0,
                 right: 0,
                 child: SizedBox(
-                  height: 400,
+                  height: 200,
                   child: RicePlantLayer(
                     growthStage: state.growthStage,
                     variety: state.currentVariety,
