@@ -25,7 +25,7 @@ class WidgetScenerySnapshot extends StatelessWidget {
       textDirection: TextDirection.ltr,
       child: Container(
         width: 400,
-        height: 200,
+        height: 400,
         color: Colors.black,
         child: Stack(
           fit: StackFit.expand,
