@@ -101,11 +101,11 @@ class _SceneryPainter extends CustomPainter {
     
     // Smooth out the jagged lines by sampling densely (every 2 pixels instead of 20)
     // and adjusting the sine waves for a more natural, gentle rolling hill effect.
-    for (double x = 0; x <= size.width; x += 2) {
+    for (double x = 0; x <= size.width + 10; x += 2) {
       final y = size.height * 0.65 - (sin(x * 0.01) * 15) - (cos(x * 0.03) * 5);
       path.lineTo(x, y);
     }
-    path.lineTo(size.width, size.height);
+    path.lineTo(size.width + 50, size.height);
     path.lineTo(0, size.height);
     path.close();
     canvas.drawPath(path, paint);
@@ -167,12 +167,12 @@ class _SceneryPainter extends CustomPainter {
       path.moveTo(0, size.height);
       path.lineTo(0, baseY - sin(i * 1.5) * 30);
       
-      for (double x = 0; x <= size.width; x += 40) {
+      for (double x = 0; x <= size.width + 40; x += 40) {
         final y = baseY - sin(x * 0.02 + i) * 40 - cos(x * 0.01 + i * 2) * 20;
         path.lineTo(x, y);
       }
       
-      path.lineTo(size.width, size.height);
+      path.lineTo(size.width + 50, size.height);
       path.close();
       canvas.drawPath(path, paint);
       
@@ -277,7 +277,7 @@ class _SceneryPainter extends CustomPainter {
       final wavePath = Path();
       wavePath.moveTo(0, waveY);
       
-      for (double x = 0; x <= size.width; x += 10) {
+      for (double x = 0; x <= size.width + 15; x += 10) {
         // Complex wave function
         final y = waveY + sin(x * 0.03 + shift + w) * 5 + cos(x * 0.01 - shift * 2) * 3;
         wavePath.lineTo(x, y);

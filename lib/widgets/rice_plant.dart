@@ -403,7 +403,7 @@ class _WaterPainter extends CustomPainter {
       final ripple = sin((time * pi * 2) + i * 0.8) * 12;
       final path = Path();
       path.moveTo(0, y);
-      for (double x = 0; x < size.width; x += 30) {
+      for (double x = 0; x <= size.width + 30; x += 30) {
         final localRipple =
             sin((time * pi * 2) + x * 0.01 + i * 0.5) * 6 + ripple;
         path.lineTo(x, y + localRipple);
