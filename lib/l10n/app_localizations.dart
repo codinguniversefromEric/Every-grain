@@ -355,7 +355,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutRateButton.
   ///
   /// In zh, this message translates to:
-  /// **'⭐ 給予評價 (Rate this App)'**
+  /// **'⭐ 給予評價'**
   String get aboutRateButton;
 
   /// No description provided for @aboutCraftedWith.
