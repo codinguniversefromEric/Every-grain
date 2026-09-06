@@ -73,44 +73,44 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get varietyTainan11Desc =>
-      '全台產量最大、適應性最強的「全民天菜」。米粒飽滿、產量高，是台灣最常見的白米品種。 (日本語訳準備中)';
+      '台湾で最も広く栽培されている品種。ふっくらとした粒と高い収量が特徴で、台湾を代表する白米です。';
 
   @override
   String get varietyTainan11Fact =>
-      '知識卡：台南11號的抗病蟲害能力極強，不僅在台灣南部廣泛種植，甚至還曾外銷到日本，是真正的「台灣之光」！ (日本語訳準備中)';
+      '知識カード：病害虫に強く、安定した収量を誇り、台湾農業の屋台骨として活躍しています。';
 
   @override
   String get varietyKaohsiung139Name => '高雄139号';
 
   @override
   String get varietyKaohsiung139Desc =>
-      '花東地區的主力品種。雖然米粒心腹白較多，外觀不如其他品種晶瑩剔透，但吃起來口感極佳。 (日本語訳準備中)';
+      '台湾東部の主力品種。米粒の中心がやや白濁していますが、その味と食感は格別です。';
 
   @override
   String get varietyKaohsiung139Fact =>
-      '知識卡：外表不美麗卻極度美味，因此被農民暱稱為「醜美人」。多虧了東部的好水與較長的生長期，造就了它的絕佳風味。 (日本語訳準備中)';
+      '知識カード：外見はイマイチですが味が絶品なため、農家から「醜い美人」と呼ばれています。東部の綺麗な水がその風味を育てます。';
 
   @override
   String get varietyTainung71Name => '台農71号';
 
   @override
   String get varietyTainung71Desc =>
-      '台灣中部名米，烹煮時會散發出濃郁的芋頭香氣。米粒短圓飽滿，口感黏彈。 (日本語訳準備中)';
+      '台湾中部の名米。炊き上がると豊かなタロイモの香りが広がります。短く丸い粒で、もっちりとした食感です。';
 
   @override
   String get varietyTainung71Fact =>
-      '知識卡：「益全」二字是為了紀念畢生奉獻於此品種研發，卻在品種發表前夕因過勞辭世的郭益全博士。 (日本語訳準備中)';
+      '知識カード：「益全」という名は、この品種の開発に生涯を捧げ、発表直前に過労で倒れた郭益全博士を記念して名付けられました。';
 
   @override
   String get varietyTaikeng9Name => '台稉9号';
 
   @override
   String get varietyTaikeng9Desc =>
-      '北部常見的優質品種，即使放冷了依然Q彈好吃，是製作頂級御飯糰與壽司的首選。 (日本語訳準備中)';
+      '台湾北部でよく見られる高品質な品種。冷めてももっちりとした食感が残るため、高級おにぎりや寿司に最適です。';
 
   @override
   String get varietyTaikeng9Fact =>
-      '知識卡：因為其冷卻後不易變硬的特性，許多知名連鎖超商的飯糰都是指定使用台稉9號喔！ (日本語訳準備中)';
+      '知識カード：冷めても固くなりにくい特性から、多くの大手コンビニチェーンで高級おにぎり用に指定されています！';
 
   @override
   String get aboutTitle => '一粒の米\nRice Journey';
@@ -331,7 +331,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tariParents => '交配親';
 
   @override
-  String get varietyTainan11Parents => '嘉農育811221 / 台稉7號';
+  String get varietyTainan11Parents => '嘉農育811221 / 台稉7号';
 
   @override
   String get varietyTainan11Blast => '中抵抗性';
@@ -340,7 +340,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyTainan11Grain => 'ジャポニカ米';
 
   @override
-  String get varietyTaikeng9Parents => '北育29號 / 台農67號';
+  String get varietyTaikeng9Parents => '北育29号 / 台農67号';
 
   @override
   String get varietyTaikeng9Blast => '中抵抗性';
@@ -349,7 +349,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyTaikeng9Grain => 'ジャポニカ米';
 
   @override
-  String get varietyTainung71Parents => '絹光 / 台稉4號';
+  String get varietyTainung71Parents => 'キヌヒカリ / 台稉4号';
 
   @override
   String get varietyTainung71Blast => '中感受性';
@@ -358,7 +358,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyTainung71Grain => 'ジャポニカ米';
 
   @override
-  String get varietyKaohsiung139Parents => '屏東9號 / 臺中65號';
+  String get varietyKaohsiung139Parents => '屏東9号 / 台中65号';
 
   @override
   String get varietyKaohsiung139Blast => '高感受性';
@@ -371,14 +371,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get varietyTaichungSen10Desc =>
-      '台灣產量最大、也是最好吃的「秈米」(長米)。高纖低澱粉，口感鬆軟不黏。 (日本語訳準備中)';
+      '台湾で最も生産量が多く、最高に美味しいインディカ米（長粒米）。食物繊維が豊富でデンプンが少なく、ふっくらとして粘り気が少ないのが特徴です。';
 
   @override
   String get varietyTaichungSen10Fact =>
-      '知識卡：打破了長米「乾硬」的刻板印象，是米粉與蘿蔔糕的頂級原料，深受中部農民喜愛。 (日本語訳準備中)';
+      '知識カード：インディカ米は美味しくないという固定観念を完全に打ち砕き、ベジタリアン料理やチャーハンの定番となりました。';
 
   @override
-  String get varietyTaichungSen10Parents => 'IR 24 / Chianung-Sen 8';
+  String get varietyTaichungSen10Parents => 'IR 24 / 嘉農秈8号';
 
   @override
   String get varietyTaichungSen10Blast => '抵抗性';
@@ -391,14 +391,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get varietyKoshihikariDesc =>
-      '來自日本的超級名種。米粒晶瑩剔透，黏性強，口感無與倫比，但極難照顧。 (日本語訳準備中)';
+      '日本生まれの伝説的なスーパー品種。透き通った粒と強い粘り気、比類のない食感を持っていますが、栽培は非常に困難です。';
 
   @override
   String get varietyKoshihikariFact =>
-      '知識卡：原本只適合高緯度氣候，後來引進台灣後，發現在氣候涼爽、水質純淨的蘭陽平原也能種出頂級的越光米！ (日本語訳準備中)';
+      '知識カード：本来台湾の気候は暑すぎますが、池上の農家の方々の卓越した技術により栽培に成功しています！';
 
   @override
-  String get varietyKoshihikariParents => '農林22號 / 農林1號';
+  String get varietyKoshihikariParents => '農林22号 / 農林1号';
 
   @override
   String get varietyKoshihikariBlast => '高感受性';
@@ -410,14 +410,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyTaoyuan3Name => '桃園3号';
 
   @override
-  String get varietyTaoyuan3Desc => '北部著名的香米品種，散發淡淡的爆米花香與芋香。穀粒大且飽滿。 (日本語訳準備中)';
+  String get varietyTaoyuan3Desc =>
+      '台湾北部の有名な香り米。ポップコーンやタロイモのほのかな香りがします。粒が大きくふっくらとしています。';
 
   @override
   String get varietyTaoyuan3Fact =>
-      '知識卡：為桃竹地區的代表性品種，由於其耐寒性極佳，非常適應北部秋冬的濕冷氣候。 (日本語訳準備中)';
+      '知識カード：桃園・新竹地域の代表的な品種。優れた耐寒性を持つため、北部の湿って冷え込む秋冬の気候に最適です。';
 
   @override
-  String get varietyTaoyuan3Parents => '台稉4號 / 台稉2號';
+  String get varietyTaoyuan3Parents => '台稉4号 / 台稉2号';
 
   @override
   String get varietyTaoyuan3Blast => '感受性';
@@ -430,14 +431,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get varietyKaohsiung147Desc =>
-      '南部新興的冠軍香米。擁有獨特的淡雅芋香與光澤，入口甘甜，連年在比賽中奪冠。 (日本語訳準備中)';
+      '南部から登場した新進気鋭のチャンピオン香り米。上品なタロイモの香りと艶があり、甘みのある味わいで毎年コンクールで優勝しています。';
 
   @override
   String get varietyKaohsiung147Fact =>
-      '知識卡：專為高屏地區炎熱氣候培育，它的出現讓南台灣有了屬於自己驕傲的頂級香米。 (日本語訳準備中)';
+      '知識カード：高雄や屏東の暑い気候に合わせて開発され、台湾南部に誇るべき独自の最高級香り米をもたらしました。';
 
   @override
-  String get varietyKaohsiung147Parents => '高雄145號 / 台農74號';
+  String get varietyKaohsiung147Parents => '高雄145号 / 台農74号';
 
   @override
   String get varietyKaohsiung147Blast => '中感受性';
@@ -450,14 +451,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get varietyTainung67Desc =>
-      '曾經統治台灣稻田的傳奇品種！適應力極強、產量極高，是 1980 年代台灣農村的共同記憶。 (日本語訳準備中)';
+      'かつて台湾の田んぼを席巻した伝説の品種！驚異的な適応力と超多収量を誇り、1980年代の台湾農村の共通の記憶となっています。';
 
   @override
   String get varietyTainung67Fact =>
-      '知識卡：雖然現在已經因為食味品質不如新品種而逐漸被淘汰，但它強悍的生命力曾拯救了無數農家的生計。 (日本語訳準備中)';
+      '知識カード：食味の良い新品種に押されて徐々に姿を消しましたが、その強靭な生命力は無数の農家の生計を救いました。';
 
   @override
-  String get varietyTainung67Parents => '嘉農242號 / 台南5號';
+  String get varietyTainung67Parents => '嘉農242号 / 台南5号';
 
   @override
   String get varietyTainung67Blast => '抵抗性';

@@ -146,5 +146,6 @@
   "microSimCompleted": "Today's farming is done.\nThe water is just right.\nGo back to your day.",
   "journalPlantingTitle": "Today's Task: Planting",
   "journalPlantingContent": "The water is perfect, it's time to plant the seedlings.\nIt's hard work, but it's the beginning of everything.",
-  "journalPlantingButton": "Go to the field"
+  "journalPlantingButton": "Go to the field",
+  "aboutRateButton": "⭐ Rate this App"
 }

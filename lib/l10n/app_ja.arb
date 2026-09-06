@@ -41,7 +41,7 @@
   "aboutOpenSourceTitle": "オープンソース",
   "aboutOpenSourceDesc": "このプロジェクトは完全無料でオープンソースです。コードの閲覧、学習、貢献をいつでも歓迎します。",
   "aboutGithubButton": "💻 GitHubでプロジェクトを見る",
-  "aboutRateButton": "⭐ アプリを評価する (Rate this App)",
+  "aboutRateButton": "⭐ アプリを評価する",
   "aboutCraftedWith": "台湾で 🍚 と共に作られました",
   "testerControlsTitle": "測試員工具 (DevTools)",
   "testerControlsDesc": "快速穿梭時空，體驗完整的稻米旅程 (Time travel & testing).",
