@@ -62,9 +62,9 @@ class _BookModalContentState extends State<_BookModalContent> {
             builder: (context, child) {
               // We delay the opening slightly so the scale/fade happens first
               final openProgress = Interval(0.3, 1.0, curve: Curves.easeInOutCubic).transform(widget.animation.value);
-              final angle = -openProgress * pi; // 0 to -180 degrees
+              final angle = openProgress * pi; // 0 to -180 degrees
               
-              final isCoverVisible = angle >= -pi / 2;
+              final isCoverVisible = angle <= pi / 2;
 
               return Stack(
                 children: [
@@ -111,7 +111,7 @@ class _BookModalContentState extends State<_BookModalContent> {
                   Positioned.fill(
                     child: Transform(
                       transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.001) // perspective
+                        ..setEntry(3, 2, 0.0015) // perspective
                         ..rotateY(angle),
                       alignment: Alignment.centerLeft,
                       child: isCoverVisible

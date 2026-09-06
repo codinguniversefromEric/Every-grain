@@ -1,4 +1,10 @@
-import 'dart:math';
+import re
+
+with open("lib/widgets/rice_plant.dart", "r", encoding="utf-8") as f:
+    content = f.read()
+
+# We completely replace RicePlantLayer and its painters
+new_content = """import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 import '../models/rice_variety.dart';
@@ -320,3 +326,7 @@ class _WaterPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _WaterPainter oldDelegate) => true;
 }
+"""
+
+with open("lib/widgets/rice_plant.dart", "w", encoding="utf-8") as f:
+    f.write(new_content)

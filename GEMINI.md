@@ -81,3 +81,7 @@ App 會根據各種條件（例如節氣、地點、時間等）來呈現對應�
    - 由於開發者本機環境存在多個 GitHub 帳號的憑證衝突，AI 在提供推播指令給使用者時，**絕對禁止**只提供單純的 `git push`。
    - **強制格式**：一律必須在 URL 中帶入指定的帳號名稱 `codinguniversefromEric`，以強制喚起正確的權限認證。指令範例如下：
      `git push https://codinguniversefromEric@github.com/codinguniversefromEric/Every-grain.git main`
+
+7. **多國語系嚴格防呆 (Strict i18n Linting)**:
+   - 每次完成任何 UI 或資料的修改後，必須執行 `grep -r -E "[\u4e00-\u9fa5]" lib/` 來檢查是否還有殘留寫死在程式碼中的中文。
+   - 所有新增的文案（包含小工具、提示框、圖鑑）都必須同步寫入 `.arb` 檔案，確保在英文、日文語系下不會出現中文溢位或未翻譯的情況。
