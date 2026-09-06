@@ -308,4 +308,150 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get bwaResultNegative => '陰筊。\n\n土地公認為現在這樣最好。\n請順應天意。';
+
+  @override
+  String get tariGrowthDays => '日數';
+
+  @override
+  String get tariWeight => '千粒重';
+
+  @override
+  String get tariType => '型態';
+
+  @override
+  String get tariBlast => '稻熱病';
+
+  @override
+  String get tariParents => '親本';
+
+  @override
+  String get varietyTainan11Parents => '嘉農育811221 / 台稉7號';
+
+  @override
+  String get varietyTainan11Blast => '中抗';
+
+  @override
+  String get varietyTainan11Grain => '稉米';
+
+  @override
+  String get varietyTaikeng9Parents => '北育29號 / 台農67號';
+
+  @override
+  String get varietyTaikeng9Blast => '中抗';
+
+  @override
+  String get varietyTaikeng9Grain => '稉米';
+
+  @override
+  String get varietyTainung71Parents => '絹光 / 台稉4號';
+
+  @override
+  String get varietyTainung71Blast => '中感';
+
+  @override
+  String get varietyTainung71Grain => '稉米';
+
+  @override
+  String get varietyKaohsiung139Parents => '屏東9號 / 臺中65號';
+
+  @override
+  String get varietyKaohsiung139Blast => '極感';
+
+  @override
+  String get varietyKaohsiung139Grain => '稉米';
+
+  @override
+  String get varietyTaichungSen10Name => '台中秈 10 號';
+
+  @override
+  String get varietyTaichungSen10Desc => '台灣產量最大、也是最好吃的「秈米」(長米)。高纖低澱粉，口感鬆軟不黏。';
+
+  @override
+  String get varietyTaichungSen10Fact =>
+      '知識卡：打破了長米「乾硬」的刻板印象，是米粉與蘿蔔糕的頂級原料，深受中部農民喜愛。';
+
+  @override
+  String get varietyTaichungSen10Parents => 'IR 24 / Chianung-Sen 8';
+
+  @override
+  String get varietyTaichungSen10Blast => '抗';
+
+  @override
+  String get varietyTaichungSen10Grain => '秈米';
+
+  @override
+  String get varietyKoshihikariName => '越光米 (Koshihikari)';
+
+  @override
+  String get varietyKoshihikariDesc => '來自日本的超級名種。米粒晶瑩剔透，黏性強，口感無與倫比，但極難照顧。';
+
+  @override
+  String get varietyKoshihikariFact =>
+      '知識卡：原本只適合高緯度氣候，後來引進台灣後，發現在氣候涼爽、水質純淨的蘭陽平原也能種出頂級的越光米！';
+
+  @override
+  String get varietyKoshihikariParents => '農林22號 / 農林1號';
+
+  @override
+  String get varietyKoshihikariBlast => '極感';
+
+  @override
+  String get varietyKoshihikariGrain => '稉米';
+
+  @override
+  String get varietyTaoyuan3Name => '桃園 3 號 (新香米)';
+
+  @override
+  String get varietyTaoyuan3Desc => '北部著名的香米品種，散發淡淡的爆米花香與芋香。穀粒大且飽滿。';
+
+  @override
+  String get varietyTaoyuan3Fact => '知識卡：為桃竹地區的代表性品種，由於其耐寒性極佳，非常適應北部秋冬的濕冷氣候。';
+
+  @override
+  String get varietyTaoyuan3Parents => '台稉4號 / 台稉2號';
+
+  @override
+  String get varietyTaoyuan3Blast => '感';
+
+  @override
+  String get varietyTaoyuan3Grain => '稉米';
+
+  @override
+  String get varietyKaohsiung147Name => '高雄 147 號 (香鑽)';
+
+  @override
+  String get varietyKaohsiung147Desc => '南部新興的冠軍香米。擁有獨特的淡雅芋香與光澤，入口甘甜，連年在比賽中奪冠。';
+
+  @override
+  String get varietyKaohsiung147Fact =>
+      '知識卡：專為高屏地區炎熱氣候培育，它的出現讓南台灣有了屬於自己驕傲的頂級香米。';
+
+  @override
+  String get varietyKaohsiung147Parents => '高雄145號 / 台農74號';
+
+  @override
+  String get varietyKaohsiung147Blast => '中感';
+
+  @override
+  String get varietyKaohsiung147Grain => '稉米';
+
+  @override
+  String get varietyTainung67Name => '台農 67 號';
+
+  @override
+  String get varietyTainung67Desc =>
+      '曾經統治台灣稻田的傳奇品種！適應力極強、產量極高，是 1980 年代台灣農村的共同記憶。';
+
+  @override
+  String get varietyTainung67Fact =>
+      '知識卡：雖然現在已經因為食味品質不如新品種而逐漸被淘汰，但它強悍的生命力曾拯救了無數農家的生計。';
+
+  @override
+  String get varietyTainung67Parents => '嘉農242號 / 台南5號';
+
+  @override
+  String get varietyTainung67Blast => '抗';
+
+  @override
+  String get varietyTainung67Grain => '稉米';
 }

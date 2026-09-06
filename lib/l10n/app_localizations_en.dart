@@ -71,48 +71,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varietyKnowledgeCardPrefix => 'Local Variety Knowledge Card: ';
 
   @override
-  String get varietyTainan11Name => 'Tainan 11';
+  String get varietyTainan11Name => '台南 11 號';
 
   @override
   String get varietyTainan11Desc =>
-      'The most widely planted and adaptable high-yield variety in Taiwan. Plump grains and high yield make it the most common white rice.';
+      '全台產量最大、適應性最強的「全民天菜」。米粒飽滿、產量高，是台灣最常見的白米品種。 (English translation pending)';
 
   @override
   String get varietyTainan11Fact =>
-      'Fact: Highly resistant to pests, this variety is not only widely planted in southern Taiwan but was also once exported to Japan!';
+      '知識卡：台南11號的抗病蟲害能力極強，不僅在台灣南部廣泛種植，甚至還曾外銷到日本，是真正的「台灣之光」！ (English translation pending)';
 
   @override
-  String get varietyKaohsiung139Name => 'Kaohsiung 139 (Ugly Beauty)';
+  String get varietyKaohsiung139Name => '高雄 139 號 (醜美人)';
 
   @override
   String get varietyKaohsiung139Desc =>
-      'The primary variety in eastern Taiwan. Although the grains have more white belly and aren\'t as crystal clear, the taste is exceptional.';
+      '花東地區的主力品種。雖然米粒心腹白較多，外觀不如其他品種晶瑩剔透，但吃起來口感極佳。 (English translation pending)';
 
   @override
   String get varietyKaohsiung139Fact =>
-      'Fact: Nicknamed \'Ugly Beauty\' by farmers for its plain looks but amazing flavor. The good water and longer growth period in the east create its perfect taste.';
+      '知識卡：外表不美麗卻極度美味，因此被農民暱稱為「醜美人」。多虧了東部的好水與較長的生長期，造就了它的絕佳風味。 (English translation pending)';
 
   @override
-  String get varietyTainung71Name => 'Tainung 71 (Yik-Chuan Aromatic Rice)';
+  String get varietyTainung71Name => '台農 71 號 (益全香米)';
 
   @override
   String get varietyTainung71Desc =>
-      'A famous central Taiwan rice that releases a rich taro-like aroma when cooked. The grains are short, round, plump, and chewy.';
+      '台灣中部名米，烹煮時會散發出濃郁的芋頭香氣。米粒短圓飽滿，口感黏彈。 (English translation pending)';
 
   @override
   String get varietyTainung71Fact =>
-      'Fact: Named in memory of Dr. Yik-Chuan Kuo, who dedicated his life to developing this variety but passed away from overwork just before its release.';
+      '知識卡：「益全」二字是為了紀念畢生奉獻於此品種研發，卻在品種發表前夕因過勞辭世的郭益全博士。 (English translation pending)';
 
   @override
-  String get varietyTaikeng9Name => 'Taikeng 9';
+  String get varietyTaikeng9Name => '台稉 9 號';
 
   @override
   String get varietyTaikeng9Desc =>
-      'A premium northern variety that stays chewy and delicious even when cold, making it the top choice for high-end onigiri and sushi.';
+      '北部常見的優質品種，即使放冷了依然Q彈好吃，是製作頂級御飯糰與壽司的首選。 (English translation pending)';
 
   @override
   String get varietyTaikeng9Fact =>
-      'Fact: Because it doesn\'t harden easily when cold, it is the designated rice for rice balls in many major convenience stores!';
+      '知識卡：因為其冷卻後不易變硬的特性，許多知名連鎖超商的飯糰都是指定使用台稉9號喔！ (English translation pending)';
 
   @override
   String get aboutTitle => 'Every Grain\nRice Journey';
@@ -323,4 +323,155 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get bwaResultNegative =>
       'Negative Blocks.\n\nThe Earth God thinks it\'s best as it is.\nPlease follow the will of heaven.';
+
+  @override
+  String get tariGrowthDays => 'Days';
+
+  @override
+  String get tariWeight => 'Weight(g)';
+
+  @override
+  String get tariType => 'Type';
+
+  @override
+  String get tariBlast => 'Blast Res.';
+
+  @override
+  String get tariParents => 'Parents';
+
+  @override
+  String get varietyTainan11Parents => '嘉農育811221 / 台稉7號';
+
+  @override
+  String get varietyTainan11Blast => 'Mod. Res.';
+
+  @override
+  String get varietyTainan11Grain => 'Japonica';
+
+  @override
+  String get varietyTaikeng9Parents => '北育29號 / 台農67號';
+
+  @override
+  String get varietyTaikeng9Blast => 'Mod. Res.';
+
+  @override
+  String get varietyTaikeng9Grain => 'Japonica';
+
+  @override
+  String get varietyTainung71Parents => '絹光 / 台稉4號';
+
+  @override
+  String get varietyTainung71Blast => 'Mod. Susc.';
+
+  @override
+  String get varietyTainung71Grain => 'Japonica';
+
+  @override
+  String get varietyKaohsiung139Parents => '屏東9號 / 臺中65號';
+
+  @override
+  String get varietyKaohsiung139Blast => 'Highly Susc.';
+
+  @override
+  String get varietyKaohsiung139Grain => 'Japonica';
+
+  @override
+  String get varietyTaichungSen10Name => '台中秈 10 號';
+
+  @override
+  String get varietyTaichungSen10Desc =>
+      '台灣產量最大、也是最好吃的「秈米」(長米)。高纖低澱粉，口感鬆軟不黏。 (English translation pending)';
+
+  @override
+  String get varietyTaichungSen10Fact =>
+      '知識卡：打破了長米「乾硬」的刻板印象，是米粉與蘿蔔糕的頂級原料，深受中部農民喜愛。 (English translation pending)';
+
+  @override
+  String get varietyTaichungSen10Parents => 'IR 24 / Chianung-Sen 8';
+
+  @override
+  String get varietyTaichungSen10Blast => 'Resistant';
+
+  @override
+  String get varietyTaichungSen10Grain => 'Indica';
+
+  @override
+  String get varietyKoshihikariName => '越光米 (Koshihikari)';
+
+  @override
+  String get varietyKoshihikariDesc =>
+      '來自日本的超級名種。米粒晶瑩剔透，黏性強，口感無與倫比，但極難照顧。 (English translation pending)';
+
+  @override
+  String get varietyKoshihikariFact =>
+      '知識卡：原本只適合高緯度氣候，後來引進台灣後，發現在氣候涼爽、水質純淨的蘭陽平原也能種出頂級的越光米！ (English translation pending)';
+
+  @override
+  String get varietyKoshihikariParents => '農林22號 / 農林1號';
+
+  @override
+  String get varietyKoshihikariBlast => 'Highly Susc.';
+
+  @override
+  String get varietyKoshihikariGrain => 'Japonica';
+
+  @override
+  String get varietyTaoyuan3Name => '桃園 3 號 (新香米)';
+
+  @override
+  String get varietyTaoyuan3Desc =>
+      '北部著名的香米品種，散發淡淡的爆米花香與芋香。穀粒大且飽滿。 (English translation pending)';
+
+  @override
+  String get varietyTaoyuan3Fact =>
+      '知識卡：為桃竹地區的代表性品種，由於其耐寒性極佳，非常適應北部秋冬的濕冷氣候。 (English translation pending)';
+
+  @override
+  String get varietyTaoyuan3Parents => '台稉4號 / 台稉2號';
+
+  @override
+  String get varietyTaoyuan3Blast => 'Susceptible';
+
+  @override
+  String get varietyTaoyuan3Grain => 'Japonica';
+
+  @override
+  String get varietyKaohsiung147Name => '高雄 147 號 (香鑽)';
+
+  @override
+  String get varietyKaohsiung147Desc =>
+      '南部新興的冠軍香米。擁有獨特的淡雅芋香與光澤，入口甘甜，連年在比賽中奪冠。 (English translation pending)';
+
+  @override
+  String get varietyKaohsiung147Fact =>
+      '知識卡：專為高屏地區炎熱氣候培育，它的出現讓南台灣有了屬於自己驕傲的頂級香米。 (English translation pending)';
+
+  @override
+  String get varietyKaohsiung147Parents => '高雄145號 / 台農74號';
+
+  @override
+  String get varietyKaohsiung147Blast => 'Mod. Susc.';
+
+  @override
+  String get varietyKaohsiung147Grain => 'Japonica';
+
+  @override
+  String get varietyTainung67Name => '台農 67 號';
+
+  @override
+  String get varietyTainung67Desc =>
+      '曾經統治台灣稻田的傳奇品種！適應力極強、產量極高，是 1980 年代台灣農村的共同記憶。 (English translation pending)';
+
+  @override
+  String get varietyTainung67Fact =>
+      '知識卡：雖然現在已經因為食味品質不如新品種而逐漸被淘汰，但它強悍的生命力曾拯救了無數農家的生計。 (English translation pending)';
+
+  @override
+  String get varietyTainung67Parents => '嘉農242號 / 台南5號';
+
+  @override
+  String get varietyTainung67Blast => 'Resistant';
+
+  @override
+  String get varietyTainung67Grain => 'Japonica';
 }

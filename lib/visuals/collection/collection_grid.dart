@@ -1,3 +1,4 @@
+import '../../utils/variety_l10n_extension.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../models/rice_variety.dart';
@@ -149,6 +150,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
   }
 
   Widget _buildFront() {
+    final loc = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF4EAD5), // Old paper color
@@ -167,7 +169,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
           Icon(Icons.eco, color: widget.variety.visualTraits.stemColor, size: 36),
           const SizedBox(height: 12),
           Text(
-            widget.variety.name,
+            widget.variety.localizedName(loc),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 14,
@@ -181,6 +183,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
   }
 
   Widget _buildBack() {
+    final loc = AppLocalizations.of(context)!;
     final data = widget.variety.tariData;
     return Container(
       decoration: BoxDecoration(
@@ -200,11 +203,11 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildBackRow('日數', '${data.growthDays}天'),
-          _buildBackRow('千粒重', '${data.thousandGrainWeight}g'),
-          _buildBackRow('型態', data.grainType),
-          _buildBackRow('稻熱病', data.blastResistance),
-          _buildBackRow('親本', data.crossParents),
+          _buildBackRow(loc.tariGrowthDays, '${data.growthDays}${loc.localeName == 'en' ? '' : '天'}'),
+          _buildBackRow(loc.tariWeight, '${data.thousandGrainWeight}g'),
+          _buildBackRow(loc.tariType, data.localizedGrainType(loc, widget.variety)),
+          _buildBackRow(loc.tariBlast, data.localizedBlast(loc, widget.variety)),
+          _buildBackRow(loc.tariParents, data.localizedParents(loc, widget.variety)),
         ],
       ),
     );

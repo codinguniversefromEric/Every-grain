@@ -1,3 +1,4 @@
+import '../utils/variety_l10n_extension.dart';
 import 'package:flutter/material.dart';
 import '../models/rice_variety.dart';
 import '../l10n/app_localizations.dart';
@@ -7,54 +8,6 @@ class HarvestDialog extends StatelessWidget {
   final RiceVariety? variety;
 
   const HarvestDialog({super.key, required this.onRestart, this.variety});
-
-  String _getVarietyName(BuildContext context, RiceVariety v) {
-    final loc = AppLocalizations.of(context)!;
-    switch (v.id) {
-      case 'tainan_11':
-        return loc.varietyTainan11Name;
-      case 'kaohsiung_139':
-        return loc.varietyKaohsiung139Name;
-      case 'tainung_71':
-        return loc.varietyTainung71Name;
-      case 'taikeng_9':
-        return loc.varietyTaikeng9Name;
-      default:
-        return v.name;
-    }
-  }
-
-  String _getVarietyDesc(BuildContext context, RiceVariety v) {
-    final loc = AppLocalizations.of(context)!;
-    switch (v.id) {
-      case 'tainan_11':
-        return loc.varietyTainan11Desc;
-      case 'kaohsiung_139':
-        return loc.varietyKaohsiung139Desc;
-      case 'tainung_71':
-        return loc.varietyTainung71Desc;
-      case 'taikeng_9':
-        return loc.varietyTaikeng9Desc;
-      default:
-        return v.description;
-    }
-  }
-
-  String _getVarietyFact(BuildContext context, RiceVariety v) {
-    final loc = AppLocalizations.of(context)!;
-    switch (v.id) {
-      case 'tainan_11':
-        return loc.varietyTainan11Fact;
-      case 'kaohsiung_139':
-        return loc.varietyKaohsiung139Fact;
-      case 'tainung_71':
-        return loc.varietyTainung71Fact;
-      case 'taikeng_9':
-        return loc.varietyTaikeng9Fact;
-      default:
-        return v.funFact;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +62,7 @@ class HarvestDialog extends StatelessWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                '${loc.varietyKnowledgeCardPrefix}${_getVarietyName(context, variety!)}',
+                                '${loc.varietyKnowledgeCardPrefix}${variety!.localizedName(AppLocalizations.of(context)!)}',
                                 style: const TextStyle(
                                   color: Color(0xFFD4AF37),
                                   fontWeight: FontWeight.bold,
@@ -121,7 +74,7 @@ class HarvestDialog extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          _getVarietyDesc(context, variety!),
+                          variety!.localizedDesc(AppLocalizations.of(context)!),
                           style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
@@ -130,7 +83,7 @@ class HarvestDialog extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          _getVarietyFact(context, variety!),
+                          variety!.localizedFact(AppLocalizations.of(context)!),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,

@@ -681,6 +681,288 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'陰筊。\n\n土地公認為現在這樣最好。\n請順應天意。'**
   String get bwaResultNegative;
+
+  /// No description provided for @tariGrowthDays.
+  ///
+  /// In zh, this message translates to:
+  /// **'日數'**
+  String get tariGrowthDays;
+
+  /// No description provided for @tariWeight.
+  ///
+  /// In zh, this message translates to:
+  /// **'千粒重'**
+  String get tariWeight;
+
+  /// No description provided for @tariType.
+  ///
+  /// In zh, this message translates to:
+  /// **'型態'**
+  String get tariType;
+
+  /// No description provided for @tariBlast.
+  ///
+  /// In zh, this message translates to:
+  /// **'稻熱病'**
+  String get tariBlast;
+
+  /// No description provided for @tariParents.
+  ///
+  /// In zh, this message translates to:
+  /// **'親本'**
+  String get tariParents;
+
+  /// No description provided for @varietyTainan11Parents.
+  ///
+  /// In zh, this message translates to:
+  /// **'嘉農育811221 / 台稉7號'**
+  String get varietyTainan11Parents;
+
+  /// No description provided for @varietyTainan11Blast.
+  ///
+  /// In zh, this message translates to:
+  /// **'中抗'**
+  String get varietyTainan11Blast;
+
+  /// No description provided for @varietyTainan11Grain.
+  ///
+  /// In zh, this message translates to:
+  /// **'稉米'**
+  String get varietyTainan11Grain;
+
+  /// No description provided for @varietyTaikeng9Parents.
+  ///
+  /// In zh, this message translates to:
+  /// **'北育29號 / 台農67號'**
+  String get varietyTaikeng9Parents;
+
+  /// No description provided for @varietyTaikeng9Blast.
+  ///
+  /// In zh, this message translates to:
+  /// **'中抗'**
+  String get varietyTaikeng9Blast;
+
+  /// No description provided for @varietyTaikeng9Grain.
+  ///
+  /// In zh, this message translates to:
+  /// **'稉米'**
+  String get varietyTaikeng9Grain;
+
+  /// No description provided for @varietyTainung71Parents.
+  ///
+  /// In zh, this message translates to:
+  /// **'絹光 / 台稉4號'**
+  String get varietyTainung71Parents;
+
+  /// No description provided for @varietyTainung71Blast.
+  ///
+  /// In zh, this message translates to:
+  /// **'中感'**
+  String get varietyTainung71Blast;
+
+  /// No description provided for @varietyTainung71Grain.
+  ///
+  /// In zh, this message translates to:
+  /// **'稉米'**
+  String get varietyTainung71Grain;
+
+  /// No description provided for @varietyKaohsiung139Parents.
+  ///
+  /// In zh, this message translates to:
+  /// **'屏東9號 / 臺中65號'**
+  String get varietyKaohsiung139Parents;
+
+  /// No description provided for @varietyKaohsiung139Blast.
+  ///
+  /// In zh, this message translates to:
+  /// **'極感'**
+  String get varietyKaohsiung139Blast;
+
+  /// No description provided for @varietyKaohsiung139Grain.
+  ///
+  /// In zh, this message translates to:
+  /// **'稉米'**
+  String get varietyKaohsiung139Grain;
+
+  /// No description provided for @varietyTaichungSen10Name.
+  ///
+  /// In zh, this message translates to:
+  /// **'台中秈 10 號'**
+  String get varietyTaichungSen10Name;
+
+  /// No description provided for @varietyTaichungSen10Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'台灣產量最大、也是最好吃的「秈米」(長米)。高纖低澱粉，口感鬆軟不黏。'**
+  String get varietyTaichungSen10Desc;
+
+  /// No description provided for @varietyTaichungSen10Fact.
+  ///
+  /// In zh, this message translates to:
+  /// **'知識卡：打破了長米「乾硬」的刻板印象，是米粉與蘿蔔糕的頂級原料，深受中部農民喜愛。'**
+  String get varietyTaichungSen10Fact;
+
+  /// No description provided for @varietyTaichungSen10Parents.
+  ///
+  /// In zh, this message translates to:
+  /// **'IR 24 / Chianung-Sen 8'**
+  String get varietyTaichungSen10Parents;
+
+  /// No description provided for @varietyTaichungSen10Blast.
+  ///
+  /// In zh, this message translates to:
+  /// **'抗'**
+  String get varietyTaichungSen10Blast;
+
+  /// No description provided for @varietyTaichungSen10Grain.
+  ///
+  /// In zh, this message translates to:
+  /// **'秈米'**
+  String get varietyTaichungSen10Grain;
+
+  /// No description provided for @varietyKoshihikariName.
+  ///
+  /// In zh, this message translates to:
+  /// **'越光米 (Koshihikari)'**
+  String get varietyKoshihikariName;
+
+  /// No description provided for @varietyKoshihikariDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'來自日本的超級名種。米粒晶瑩剔透，黏性強，口感無與倫比，但極難照顧。'**
+  String get varietyKoshihikariDesc;
+
+  /// No description provided for @varietyKoshihikariFact.
+  ///
+  /// In zh, this message translates to:
+  /// **'知識卡：原本只適合高緯度氣候，後來引進台灣後，發現在氣候涼爽、水質純淨的蘭陽平原也能種出頂級的越光米！'**
+  String get varietyKoshihikariFact;
+
+  /// No description provided for @varietyKoshihikariParents.
+  ///
+  /// In zh, this message translates to:
+  /// **'農林22號 / 農林1號'**
+  String get varietyKoshihikariParents;
+
+  /// No description provided for @varietyKoshihikariBlast.
+  ///
+  /// In zh, this message translates to:
+  /// **'極感'**
+  String get varietyKoshihikariBlast;
+
+  /// No description provided for @varietyKoshihikariGrain.
+  ///
+  /// In zh, this message translates to:
+  /// **'稉米'**
+  String get varietyKoshihikariGrain;
+
+  /// No description provided for @varietyTaoyuan3Name.
+  ///
+  /// In zh, this message translates to:
+  /// **'桃園 3 號 (新香米)'**
+  String get varietyTaoyuan3Name;
+
+  /// No description provided for @varietyTaoyuan3Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'北部著名的香米品種，散發淡淡的爆米花香與芋香。穀粒大且飽滿。'**
+  String get varietyTaoyuan3Desc;
+
+  /// No description provided for @varietyTaoyuan3Fact.
+  ///
+  /// In zh, this message translates to:
+  /// **'知識卡：為桃竹地區的代表性品種，由於其耐寒性極佳，非常適應北部秋冬的濕冷氣候。'**
+  String get varietyTaoyuan3Fact;
+
+  /// No description provided for @varietyTaoyuan3Parents.
+  ///
+  /// In zh, this message translates to:
+  /// **'台稉4號 / 台稉2號'**
+  String get varietyTaoyuan3Parents;
+
+  /// No description provided for @varietyTaoyuan3Blast.
+  ///
+  /// In zh, this message translates to:
+  /// **'感'**
+  String get varietyTaoyuan3Blast;
+
+  /// No description provided for @varietyTaoyuan3Grain.
+  ///
+  /// In zh, this message translates to:
+  /// **'稉米'**
+  String get varietyTaoyuan3Grain;
+
+  /// No description provided for @varietyKaohsiung147Name.
+  ///
+  /// In zh, this message translates to:
+  /// **'高雄 147 號 (香鑽)'**
+  String get varietyKaohsiung147Name;
+
+  /// No description provided for @varietyKaohsiung147Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'南部新興的冠軍香米。擁有獨特的淡雅芋香與光澤，入口甘甜，連年在比賽中奪冠。'**
+  String get varietyKaohsiung147Desc;
+
+  /// No description provided for @varietyKaohsiung147Fact.
+  ///
+  /// In zh, this message translates to:
+  /// **'知識卡：專為高屏地區炎熱氣候培育，它的出現讓南台灣有了屬於自己驕傲的頂級香米。'**
+  String get varietyKaohsiung147Fact;
+
+  /// No description provided for @varietyKaohsiung147Parents.
+  ///
+  /// In zh, this message translates to:
+  /// **'高雄145號 / 台農74號'**
+  String get varietyKaohsiung147Parents;
+
+  /// No description provided for @varietyKaohsiung147Blast.
+  ///
+  /// In zh, this message translates to:
+  /// **'中感'**
+  String get varietyKaohsiung147Blast;
+
+  /// No description provided for @varietyKaohsiung147Grain.
+  ///
+  /// In zh, this message translates to:
+  /// **'稉米'**
+  String get varietyKaohsiung147Grain;
+
+  /// No description provided for @varietyTainung67Name.
+  ///
+  /// In zh, this message translates to:
+  /// **'台農 67 號'**
+  String get varietyTainung67Name;
+
+  /// No description provided for @varietyTainung67Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'曾經統治台灣稻田的傳奇品種！適應力極強、產量極高，是 1980 年代台灣農村的共同記憶。'**
+  String get varietyTainung67Desc;
+
+  /// No description provided for @varietyTainung67Fact.
+  ///
+  /// In zh, this message translates to:
+  /// **'知識卡：雖然現在已經因為食味品質不如新品種而逐漸被淘汰，但它強悍的生命力曾拯救了無數農家的生計。'**
+  String get varietyTainung67Fact;
+
+  /// No description provided for @varietyTainung67Parents.
+  ///
+  /// In zh, this message translates to:
+  /// **'嘉農242號 / 台南5號'**
+  String get varietyTainung67Parents;
+
+  /// No description provided for @varietyTainung67Blast.
+  ///
+  /// In zh, this message translates to:
+  /// **'抗'**
+  String get varietyTainung67Blast;
+
+  /// No description provided for @varietyTainung67Grain.
+  ///
+  /// In zh, this message translates to:
+  /// **'稉米'**
+  String get varietyTainung67Grain;
 }
 
 class _AppLocalizationsDelegate
