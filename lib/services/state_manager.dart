@@ -298,6 +298,23 @@ class StateManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> clearWeatherOverride() async {
+    if (_state != null) {
+      _state!.weatherOverrideUntil = null;
+      _state!.overriddenMetrics = null;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('weatherOverrideUntil');
+      _weatherService.getCurrentWeather(_lastPosition, forceRefresh: true).then((metrics) {
+        if (_state != null && _state!.overriddenMetrics == null) {
+          _state!.weatherMetrics = metrics;
+          _updateAmbience();
+          notifyListeners();
+        }
+      });
+      notifyListeners();
+    }
+  }
+
   Future<void> applyWeatherOverride(WeatherMetrics overridden) async {
     if (_state != null) {
       final overrideUntil = DateTime.now().add(const Duration(hours: 3));

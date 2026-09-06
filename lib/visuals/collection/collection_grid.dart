@@ -24,7 +24,7 @@ class CollectionGrid extends StatelessWidget {
               crossAxisCount: 3,
               crossAxisSpacing: 16.0,
               mainAxisSpacing: 16.0,
-              childAspectRatio: 0.75, // slightly taller for back text
+              childAspectRatio: 0.70, // slightly taller for back text
             ),
             itemCount: allVarieties.length,
             itemBuilder: (context, index) {
@@ -195,7 +195,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
           ),
         ],
       ),
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(4.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,7 +212,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
 
   Widget _buildBackRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

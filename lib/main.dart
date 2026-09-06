@@ -216,6 +216,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
             ]);
           },
           onResetField: _stateManager.resetSeason,
+          onClearWeatherOverride: _stateManager.clearWeatherOverride,
         );
       },
     );

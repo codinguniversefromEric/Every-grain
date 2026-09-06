@@ -20,6 +20,7 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
   final VoidCallback onToggleTimeLapse;
   final VoidCallback onUnlockAllCards;
   final VoidCallback onResetField;
+  final VoidCallback onClearWeatherOverride;
 
   const DeveloperControlsBottomSheet({
     super.key,
@@ -39,6 +40,7 @@ class DeveloperControlsBottomSheet extends StatefulWidget {
     required this.onToggleTimeLapse,
     required this.onUnlockAllCards,
     required this.onResetField,
+    required this.onClearWeatherOverride,
   });
 
   @override
@@ -401,6 +403,19 @@ class _DeveloperControlsBottomSheetState
               },
             ),
             const SizedBox(height: 16),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueGrey.shade700,
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.cloud_off),
+              label: const Text('清除天氣覆寫 (Clear Weather Override)'),
+              onPressed: () {
+                widget.onClearWeatherOverride();
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFD4AF37),
