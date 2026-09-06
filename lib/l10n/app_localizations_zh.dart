@@ -146,73 +146,74 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aboutCraftedWith => '在台灣，用 🍚 傾心打造';
 
   @override
-  String get testerControlsTitle => '測試員工具';
+  String get testerControlsTitle => '測試員工具 (DevTools)';
 
   @override
-  String get testerControlsDesc => '快速穿梭時空，體驗完整的稻米旅程。';
+  String get testerControlsDesc => '快速穿梭時空，體驗完整的稻米旅程 (Time travel & testing).';
 
   @override
-  String get testerLocationTitle => '🇹🇼 1. 台灣 (品種測試)';
+  String get testerLocationTitle => '🇹🇼 1. 台灣 (Location & Varieties)';
 
   @override
-  String get testerLocationDesc => '瞬間移動會自動更新該地區的天氣與在地品種。';
+  String get testerLocationDesc =>
+      '瞬間移動會自動更新該地區的天氣與在地品種 (Updates local weather and variety).';
 
   @override
-  String get testerLocCurrent => '📍 回到目前真實位置';
+  String get testerLocCurrent => '📍 回到目前真實位置 (Reset to Real Location)';
 
   @override
-  String get testerLocTaipei => '📍 台北 (北部 - 台稉9號)';
+  String get testerLocTaipei => '📍 台北 Taipei (北部 - 台稉9號)';
 
   @override
-  String get testerLocTaichung => '📍 台中 (中部 - 台農71號)';
+  String get testerLocTaichung => '📍 台中 Taichung (中部 - 台中秈10號/台農71號)';
 
   @override
-  String get testerLocKaohsiung => '📍 高雄 (南部 - 台南11號)';
+  String get testerLocKaohsiung => '📍 高雄 Kaohsiung (南部 - 高雄147號)';
 
   @override
-  String get testerLocTaitung => '📍 台東 (東部 - 高雄139號)';
+  String get testerLocTaitung => '📍 花東 Hualien/Taitung (東部 - 高雄139號)';
 
   @override
-  String get testerGlobalTitle => '✈️ 2. 海外 (氣象測試)';
+  String get testerGlobalTitle => '✈️ 2. 海外 (Global Weather)';
 
   @override
-  String get testerLocNewYork => '🗽 紐約';
+  String get testerLocNewYork => '🗽 紐約 New York';
 
   @override
-  String get testerLocTokyo => '🗼 東京';
+  String get testerLocTokyo => '🗼 東京 Tokyo';
 
   @override
-  String get testerLocParis => '🥐 巴黎';
+  String get testerLocParis => '🥐 巴黎 Paris';
 
   @override
-  String get testerLocSydney => '🦘 雪梨';
+  String get testerLocSydney => '🦘 雪梨 Sydney';
 
   @override
-  String get testerLocLondon => '💂 倫敦';
+  String get testerLocLondon => '💂 倫敦 London';
 
   @override
-  String get testerLocCairo => '🏜️ 開羅';
+  String get testerLocCairo => '🏜️ 開羅 Cairo';
 
   @override
-  String get testerLocRio => '💃 里約';
+  String get testerLocRio => '💃 里約 Rio';
 
   @override
-  String get testerTimeTitle => '⏳ 3. 時間';
+  String get testerTimeTitle => '⏳ 3. 時間 (Time Control)';
 
   @override
-  String get testerNextMonth => '快轉一個月';
+  String get testerNextMonth => '快轉一個月 (Fast Forward 1 Month)';
 
   @override
-  String get testerToNight => '切換至夜晚';
+  String get testerToNight => '切換至夜晚 (Switch to Night)';
 
   @override
-  String get testerToDay => '切換至白天';
+  String get testerToDay => '切換至白天 (Switch to Day)';
 
   @override
-  String get testerEventsTitle => '⛈️ 4. 事件與天氣';
+  String get testerEventsTitle => '⛈️ 4. 事件與天氣 (Events & Weather)';
 
   @override
-  String get testerForceHarvest => '強制進入收割期';
+  String get testerForceHarvest => '強制進入收割期 (Force Harvest)';
 
   @override
   String get languageName => 'Language / 語言';
@@ -221,13 +222,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get languageSystem => 'System Default / 跟隨系統';
 
   @override
-  String get testerLocTaoyuan => '📍 桃園 (北部 - 桃園3號)';
+  String get testerLocTaoyuan => '📍 桃園 Taoyuan (北部 - 桃園3號)';
 
   @override
-  String get testerLocTainan => '📍 台南 (南部 - 台南11號)';
+  String get testerLocTainan => '📍 台南 Tainan (南部 - 台南11號)';
 
   @override
-  String get testerLocYilan => '📍 宜蘭 (東部 - 越光米)';
+  String get testerLocYilan => '📍 宜蘭 Yilan (東部 - 越光米)';
 
   @override
   String get collectionTitle => '台灣米護照';
@@ -286,4 +287,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get devControlTeleportResetDesc => '您目前正在模擬其他地區，氣象與品種已強制鎖定';
+
+  @override
+  String get bwaTitle => '田邊土地公廟';
+
+  @override
+  String get bwaDesc => '你帶著一炷香，走到田埂邊的土地公廟，祈求風調雨順。\n\n(點擊下方擲筊)';
+
+  @override
+  String get bwaButton => '擲筊';
+
+  @override
+  String get bwaClose => '離開';
+
+  @override
+  String get bwaResultHoly => '聖筊！\n\n土地公聽到了你的祈求。\n天氣已為您修正為晴天。';
+
+  @override
+  String get bwaResultLaughing => '笑筊。\n\n土地公笑了笑，沒有答應。\n或許大自然有它的安排吧。';
+
+  @override
+  String get bwaResultNegative => '陰筊。\n\n土地公認為現在這樣最好。\n請順應天意。';
 }

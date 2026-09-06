@@ -155,75 +155,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutCraftedWith => 'Crafted with 🍚 in Taiwan';
 
   @override
-  String get testerControlsTitle => 'Tester Controls';
+  String get testerControlsTitle => '測試員工具 (DevTools)';
 
   @override
-  String get testerControlsDesc =>
-      'Quickly jump through time and space to experience the full Rice Journey.';
+  String get testerControlsDesc => '快速穿梭時空，體驗完整的稻米旅程 (Time travel & testing).';
 
   @override
-  String get testerLocationTitle => '🇹🇼 1. Taiwan (Variety Test)';
+  String get testerLocationTitle => '🇹🇼 1. 台灣 (Location & Varieties)';
 
   @override
   String get testerLocationDesc =>
-      'Teleporting will automatically update the weather and rice variety for that region.';
+      '瞬間移動會自動更新該地區的天氣與在地品種 (Updates local weather and variety).';
 
   @override
-  String get testerLocCurrent => '📍 Reset to Real Location';
+  String get testerLocCurrent => '📍 回到目前真實位置 (Reset to Real Location)';
 
   @override
-  String get testerLocTaipei => '📍 Taipei (North - Taikeng 9)';
+  String get testerLocTaipei => '📍 台北 Taipei (北部 - 台稉9號)';
 
   @override
-  String get testerLocTaichung => '📍 Taichung (Central - Tainung 71)';
+  String get testerLocTaichung => '📍 台中 Taichung (中部 - 台中秈10號/台農71號)';
 
   @override
-  String get testerLocKaohsiung => '📍 Kaohsiung (South - Tainan 11)';
+  String get testerLocKaohsiung => '📍 高雄 Kaohsiung (南部 - 高雄147號)';
 
   @override
-  String get testerLocTaitung => '📍 Taitung (East - Kaohsiung 139)';
+  String get testerLocTaitung => '📍 花東 Hualien/Taitung (東部 - 高雄139號)';
 
   @override
-  String get testerGlobalTitle => '✈️ 2. Global (Open-Meteo Test)';
+  String get testerGlobalTitle => '✈️ 2. 海外 (Global Weather)';
 
   @override
-  String get testerLocNewYork => '🗽 New York';
+  String get testerLocNewYork => '🗽 紐約 New York';
 
   @override
-  String get testerLocTokyo => '🗼 Tokyo';
+  String get testerLocTokyo => '🗼 東京 Tokyo';
 
   @override
-  String get testerLocParis => '🥐 Paris';
+  String get testerLocParis => '🥐 巴黎 Paris';
 
   @override
-  String get testerLocSydney => '🦘 Sydney';
+  String get testerLocSydney => '🦘 雪梨 Sydney';
 
   @override
-  String get testerLocLondon => '💂 London';
+  String get testerLocLondon => '💂 倫敦 London';
 
   @override
-  String get testerLocCairo => '🏜️ Cairo';
+  String get testerLocCairo => '🏜️ 開羅 Cairo';
 
   @override
-  String get testerLocRio => '💃 Rio';
+  String get testerLocRio => '💃 里約 Rio';
 
   @override
-  String get testerTimeTitle => '⏳ 3. Time';
+  String get testerTimeTitle => '⏳ 3. 時間 (Time Control)';
 
   @override
-  String get testerNextMonth => 'Next Month';
+  String get testerNextMonth => '快轉一個月 (Fast Forward 1 Month)';
 
   @override
-  String get testerToNight => 'To Night';
+  String get testerToNight => '切換至夜晚 (Switch to Night)';
 
   @override
-  String get testerToDay => 'To Day';
+  String get testerToDay => '切換至白天 (Switch to Day)';
 
   @override
-  String get testerEventsTitle => '⛈️ 4. Events & Weather';
+  String get testerEventsTitle => '⛈️ 4. 事件與天氣 (Events & Weather)';
 
   @override
-  String get testerForceHarvest => 'Force Harvest Stage Now';
+  String get testerForceHarvest => '強制進入收割期 (Force Harvest)';
 
   @override
   String get languageName => 'Language / 語言';
@@ -232,13 +231,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageSystem => 'System Default / 跟隨系統';
 
   @override
-  String get testerLocTaoyuan => '📍 Taoyuan';
+  String get testerLocTaoyuan => '📍 桃園 Taoyuan (北部 - 桃園3號)';
 
   @override
-  String get testerLocTainan => '📍 Tainan';
+  String get testerLocTainan => '📍 台南 Tainan (南部 - 台南11號)';
 
   @override
-  String get testerLocYilan => '📍 Yilan';
+  String get testerLocYilan => '📍 宜蘭 Yilan (東部 - 越光米)';
 
   @override
   String get collectionTitle => 'Rice Passport';
@@ -299,4 +298,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get devControlTeleportResetDesc =>
       'You are simulating another region. Weather and variety are overridden.';
+
+  @override
+  String get bwaTitle => 'Earth God Shrine';
+
+  @override
+  String get bwaDesc =>
+      'You brought incense to the shrine by the field, praying for good weather.\n\n(Tap below to cast moon blocks)';
+
+  @override
+  String get bwaButton => 'Cast Blocks';
+
+  @override
+  String get bwaClose => 'Leave';
+
+  @override
+  String get bwaResultHoly =>
+      'Holy Blocks!\n\nThe Earth God heard your prayers.\nThe weather is now sunny.';
+
+  @override
+  String get bwaResultLaughing =>
+      'Laughing Blocks.\n\nThe Earth God smiled but did not agree.\nNature has its own course.';
+
+  @override
+  String get bwaResultNegative =>
+      'Negative Blocks.\n\nThe Earth God thinks it\'s best as it is.\nPlease follow the will of heaven.';
 }

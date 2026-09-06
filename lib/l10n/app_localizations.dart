@@ -367,139 +367,139 @@ abstract class AppLocalizations {
   /// No description provided for @testerControlsTitle.
   ///
   /// In zh, this message translates to:
-  /// **'測試員工具'**
+  /// **'測試員工具 (DevTools)'**
   String get testerControlsTitle;
 
   /// No description provided for @testerControlsDesc.
   ///
   /// In zh, this message translates to:
-  /// **'快速穿梭時空，體驗完整的稻米旅程。'**
+  /// **'快速穿梭時空，體驗完整的稻米旅程 (Time travel & testing).'**
   String get testerControlsDesc;
 
   /// No description provided for @testerLocationTitle.
   ///
   /// In zh, this message translates to:
-  /// **'🇹🇼 1. 台灣 (品種測試)'**
+  /// **'🇹🇼 1. 台灣 (Location & Varieties)'**
   String get testerLocationTitle;
 
   /// No description provided for @testerLocationDesc.
   ///
   /// In zh, this message translates to:
-  /// **'瞬間移動會自動更新該地區的天氣與在地品種。'**
+  /// **'瞬間移動會自動更新該地區的天氣與在地品種 (Updates local weather and variety).'**
   String get testerLocationDesc;
 
   /// No description provided for @testerLocCurrent.
   ///
   /// In zh, this message translates to:
-  /// **'📍 回到目前真實位置'**
+  /// **'📍 回到目前真實位置 (Reset to Real Location)'**
   String get testerLocCurrent;
 
   /// No description provided for @testerLocTaipei.
   ///
   /// In zh, this message translates to:
-  /// **'📍 台北 (北部 - 台稉9號)'**
+  /// **'📍 台北 Taipei (北部 - 台稉9號)'**
   String get testerLocTaipei;
 
   /// No description provided for @testerLocTaichung.
   ///
   /// In zh, this message translates to:
-  /// **'📍 台中 (中部 - 台農71號)'**
+  /// **'📍 台中 Taichung (中部 - 台中秈10號/台農71號)'**
   String get testerLocTaichung;
 
   /// No description provided for @testerLocKaohsiung.
   ///
   /// In zh, this message translates to:
-  /// **'📍 高雄 (南部 - 台南11號)'**
+  /// **'📍 高雄 Kaohsiung (南部 - 高雄147號)'**
   String get testerLocKaohsiung;
 
   /// No description provided for @testerLocTaitung.
   ///
   /// In zh, this message translates to:
-  /// **'📍 台東 (東部 - 高雄139號)'**
+  /// **'📍 花東 Hualien/Taitung (東部 - 高雄139號)'**
   String get testerLocTaitung;
 
   /// No description provided for @testerGlobalTitle.
   ///
   /// In zh, this message translates to:
-  /// **'✈️ 2. 海外 (氣象測試)'**
+  /// **'✈️ 2. 海外 (Global Weather)'**
   String get testerGlobalTitle;
 
   /// No description provided for @testerLocNewYork.
   ///
   /// In zh, this message translates to:
-  /// **'🗽 紐約'**
+  /// **'🗽 紐約 New York'**
   String get testerLocNewYork;
 
   /// No description provided for @testerLocTokyo.
   ///
   /// In zh, this message translates to:
-  /// **'🗼 東京'**
+  /// **'🗼 東京 Tokyo'**
   String get testerLocTokyo;
 
   /// No description provided for @testerLocParis.
   ///
   /// In zh, this message translates to:
-  /// **'🥐 巴黎'**
+  /// **'🥐 巴黎 Paris'**
   String get testerLocParis;
 
   /// No description provided for @testerLocSydney.
   ///
   /// In zh, this message translates to:
-  /// **'🦘 雪梨'**
+  /// **'🦘 雪梨 Sydney'**
   String get testerLocSydney;
 
   /// No description provided for @testerLocLondon.
   ///
   /// In zh, this message translates to:
-  /// **'💂 倫敦'**
+  /// **'💂 倫敦 London'**
   String get testerLocLondon;
 
   /// No description provided for @testerLocCairo.
   ///
   /// In zh, this message translates to:
-  /// **'🏜️ 開羅'**
+  /// **'🏜️ 開羅 Cairo'**
   String get testerLocCairo;
 
   /// No description provided for @testerLocRio.
   ///
   /// In zh, this message translates to:
-  /// **'💃 里約'**
+  /// **'💃 里約 Rio'**
   String get testerLocRio;
 
   /// No description provided for @testerTimeTitle.
   ///
   /// In zh, this message translates to:
-  /// **'⏳ 3. 時間'**
+  /// **'⏳ 3. 時間 (Time Control)'**
   String get testerTimeTitle;
 
   /// No description provided for @testerNextMonth.
   ///
   /// In zh, this message translates to:
-  /// **'快轉一個月'**
+  /// **'快轉一個月 (Fast Forward 1 Month)'**
   String get testerNextMonth;
 
   /// No description provided for @testerToNight.
   ///
   /// In zh, this message translates to:
-  /// **'切換至夜晚'**
+  /// **'切換至夜晚 (Switch to Night)'**
   String get testerToNight;
 
   /// No description provided for @testerToDay.
   ///
   /// In zh, this message translates to:
-  /// **'切換至白天'**
+  /// **'切換至白天 (Switch to Day)'**
   String get testerToDay;
 
   /// No description provided for @testerEventsTitle.
   ///
   /// In zh, this message translates to:
-  /// **'⛈️ 4. 事件與天氣'**
+  /// **'⛈️ 4. 事件與天氣 (Events & Weather)'**
   String get testerEventsTitle;
 
   /// No description provided for @testerForceHarvest.
   ///
   /// In zh, this message translates to:
-  /// **'強制進入收割期'**
+  /// **'強制進入收割期 (Force Harvest)'**
   String get testerForceHarvest;
 
   /// No description provided for @languageName.
@@ -517,19 +517,19 @@ abstract class AppLocalizations {
   /// No description provided for @testerLocTaoyuan.
   ///
   /// In zh, this message translates to:
-  /// **'📍 桃園 (北部 - 桃園3號)'**
+  /// **'📍 桃園 Taoyuan (北部 - 桃園3號)'**
   String get testerLocTaoyuan;
 
   /// No description provided for @testerLocTainan.
   ///
   /// In zh, this message translates to:
-  /// **'📍 台南 (南部 - 台南11號)'**
+  /// **'📍 台南 Tainan (南部 - 台南11號)'**
   String get testerLocTainan;
 
   /// No description provided for @testerLocYilan.
   ///
   /// In zh, this message translates to:
-  /// **'📍 宜蘭 (東部 - 越光米)'**
+  /// **'📍 宜蘭 Yilan (東部 - 越光米)'**
   String get testerLocYilan;
 
   /// No description provided for @collectionTitle.
@@ -639,6 +639,48 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'您目前正在模擬其他地區，氣象與品種已強制鎖定'**
   String get devControlTeleportResetDesc;
+
+  /// No description provided for @bwaTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'田邊土地公廟'**
+  String get bwaTitle;
+
+  /// No description provided for @bwaDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'你帶著一炷香，走到田埂邊的土地公廟，祈求風調雨順。\n\n(點擊下方擲筊)'**
+  String get bwaDesc;
+
+  /// No description provided for @bwaButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'擲筊'**
+  String get bwaButton;
+
+  /// No description provided for @bwaClose.
+  ///
+  /// In zh, this message translates to:
+  /// **'離開'**
+  String get bwaClose;
+
+  /// No description provided for @bwaResultHoly.
+  ///
+  /// In zh, this message translates to:
+  /// **'聖筊！\n\n土地公聽到了你的祈求。\n天氣已為您修正為晴天。'**
+  String get bwaResultHoly;
+
+  /// No description provided for @bwaResultLaughing.
+  ///
+  /// In zh, this message translates to:
+  /// **'笑筊。\n\n土地公笑了笑，沒有答應。\n或許大自然有它的安排吧。'**
+  String get bwaResultLaughing;
+
+  /// No description provided for @bwaResultNegative.
+  ///
+  /// In zh, this message translates to:
+  /// **'陰筊。\n\n土地公認為現在這樣最好。\n請順應天意。'**
+  String get bwaResultNegative;
 }
 
 class _AppLocalizationsDelegate
