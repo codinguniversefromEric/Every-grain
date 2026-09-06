@@ -7,7 +7,9 @@ struct Provider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), imagePath: nil)
+        let userDefaults = UserDefaults(suiteName: "group.com.chia.riceJourney")
+        let imagePath = userDefaults?.string(forKey: "scenery_image")
+        let entry = SimpleEntry(date: Date(), imagePath: imagePath)
         completion(entry)
     }
 
