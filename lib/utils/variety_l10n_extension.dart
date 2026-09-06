@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import '../models/rice_variety.dart';
 import '../l10n/app_localizations.dart';
 

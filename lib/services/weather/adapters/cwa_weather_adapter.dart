@@ -81,8 +81,9 @@ class CwaWeatherAdapter implements WeatherAdapter {
         // Approximate cloud cover from weather text or just infer from rain
         double cloudCover = 10.0;
         final weatherStr = weatherElement['Weather'] as String? ?? '';
-        if (weatherStr.contains('陰') || precip > 0) cloudCover = 90.0;
-        else if (weatherStr.contains('多雲')) cloudCover = 50.0;
+        if (weatherStr.contains('陰') || precip > 0) {
+          cloudCover = 90.0;
+        } else if (weatherStr.contains('多雲')) cloudCover = 50.0;
 
         return WeatherMetrics(
           temperature: temp == -99.0 ? 25.0 : temp,
