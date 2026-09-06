@@ -276,11 +276,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get journalCloseButton => '關閉';
 
   @override
-  String get journalFallowTitle => '休耕中';
+  String get journalFallowTitle => '休養生息';
 
   @override
-  String get journalFallowContent =>
-      '土地正在休息，等待下一個節氣的到來。\n這段時間，您可以到處走走，看看不一樣的風景。';
+  String get journalFallowContent => '田地正在休養生息。\n我們靜待下一個節氣到來，再重新播種。';
 
   @override
   String get devControlTeleportReset => '恢復真實定位';
@@ -454,4 +453,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get varietyTainung67Grain => '稉米';
+
+  @override
+  String get microSimInstruction => '請在發光處插下秧苗\n(點擊光點)';
+
+  @override
+  String get microSimCompleted => '今日農事已畢\n田水正好\n去忙你的吧。';
+
+  @override
+  String get journalPlantingTitle => '今日農事：插秧';
+
+  @override
+  String get journalPlantingContent => '田水正好，是時候把秧苗插下去了。\n雖然辛苦，但這是一切的開始。';
+
+  @override
+  String get journalPlantingButton => '去田裡看看';
 }

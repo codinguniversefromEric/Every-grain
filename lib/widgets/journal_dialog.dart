@@ -42,12 +42,12 @@ class JournalDialog extends StatelessWidget {
         Navigator.of(context).pop();
       };
     } else if (state?.growthStage == GrowthStage.fallow && state?.nextPlantingAllowedAt != null && DateTime.now().isBefore(state!.nextPlantingAllowedAt!)) {
-      title = "休養生息";
-      content = "田地正在休養生息。\n我們靜待下一個節氣到來，再重新播種。";
+      title = loc.journalFallowTitle;
+      content = loc.journalFallowContent;
     } else if (needsPlanting) {
-      title = "今日農事：插秧";
-      content = "田水正好，是時候把秧苗插下去了。\n雖然辛苦，但這是一切的開始。";
-      buttonText = "去田裡看看";
+      title = loc.journalPlantingTitle;
+      content = loc.journalPlantingContent;
+      buttonText = loc.journalPlantingButton;
       action = () {
         Navigator.of(context).pop();
         onStartTask();

@@ -84,8 +84,8 @@
   "journalNothingContent": "Nothing special in the field today, the rice is growing quietly.\n\n\"Let nature take its course.\"",
   "journalPrayButton": "Weather app is wrong, pray to Earth God",
   "journalCloseButton": "Close",
-  "journalFallowTitle": "Fallow Period",
-  "journalFallowContent": "The land is resting, waiting for the next solar term.\nTake a walk around and see different sceneries.",
+  "journalFallowTitle": "Fallow Rest",
+  "journalFallowContent": "The field is resting.\nWe wait for the next solar term to plant again.",
   "devControlTeleportReset": "Reset to Real Location",
   "devControlTeleportResetDesc": "You are simulating another region. Weather and variety are overridden.",
   "bwaTitle": "Earth God Shrine",
@@ -141,5 +141,10 @@
   "varietyTainung67Fact": "知識卡：雖然現在已經因為食味品質不如新品種而逐漸被淘汰，但它強悍的生命力曾拯救了無數農家的生計。 (English translation pending)",
   "varietyTainung67Parents": "嘉農242號 / 台南5號",
   "varietyTainung67Blast": "Resistant",
-  "varietyTainung67Grain": "Japonica"
+  "varietyTainung67Grain": "Japonica",
+  "microSimInstruction": "Please plant seedlings at the glowing spots\n(Tap the lights)",
+  "microSimCompleted": "Today's farming is done.\nThe water is just right.\nGo back to your day.",
+  "journalPlantingTitle": "Today's Task: Planting",
+  "journalPlantingContent": "The water is perfect, it's time to plant the seedlings.\nIt's hard work, but it's the beginning of everything.",
+  "journalPlantingButton": "Go to the field"
 }

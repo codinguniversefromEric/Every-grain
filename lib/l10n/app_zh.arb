@@ -85,8 +85,8 @@
   "journalNothingContent": "今天田裡沒什麼特別的事，稻子正安靜地生長著。\n\n「看天田，隨遇而安。」",
   "journalPrayButton": "氣象局報錯了，去向土地公抱怨",
   "journalCloseButton": "關閉",
-  "journalFallowTitle": "休耕中",
-  "journalFallowContent": "土地正在休息，等待下一個節氣的到來。\n這段時間，您可以到處走走，看看不一樣的風景。",
+  "journalFallowTitle": "休養生息",
+  "journalFallowContent": "田地正在休養生息。\n我們靜待下一個節氣到來，再重新播種。",
   "devControlTeleportReset": "恢復真實定位",
   "devControlTeleportResetDesc": "您目前正在模擬其他地區，氣象與品種已強制鎖定",
   "bwaTitle": "田邊土地公廟",
@@ -142,5 +142,10 @@
   "varietyTainung67Fact": "知識卡：雖然現在已經因為食味品質不如新品種而逐漸被淘汰，但它強悍的生命力曾拯救了無數農家的生計。",
   "varietyTainung67Parents": "嘉農242號 / 台南5號",
   "varietyTainung67Blast": "抗",
-  "varietyTainung67Grain": "稉米"
+  "varietyTainung67Grain": "稉米",
+  "microSimInstruction": "請在發光處插下秧苗\n(點擊光點)",
+  "microSimCompleted": "今日農事已畢\n田水正好\n去忙你的吧。",
+  "journalPlantingTitle": "今日農事：插秧",
+  "journalPlantingContent": "田水正好，是時候把秧苗插下去了。\n雖然辛苦，但這是一切的開始。",
+  "journalPlantingButton": "去田裡看看"
 }

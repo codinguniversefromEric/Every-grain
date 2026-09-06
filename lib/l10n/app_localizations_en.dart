@@ -71,7 +71,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varietyKnowledgeCardPrefix => 'Local Variety Knowledge Card: ';
 
   @override
-  String get varietyTainan11Name => '台南 11 號';
+  String get varietyTainan11Name => 'Tainan 11';
 
   @override
   String get varietyTainan11Desc =>
@@ -82,7 +82,7 @@ class AppLocalizationsEn extends AppLocalizations {
       '知識卡：台南11號的抗病蟲害能力極強，不僅在台灣南部廣泛種植，甚至還曾外銷到日本，是真正的「台灣之光」！ (English translation pending)';
 
   @override
-  String get varietyKaohsiung139Name => '高雄 139 號 (醜美人)';
+  String get varietyKaohsiung139Name => 'Kaohsiung 139';
 
   @override
   String get varietyKaohsiung139Desc =>
@@ -93,7 +93,7 @@ class AppLocalizationsEn extends AppLocalizations {
       '知識卡：外表不美麗卻極度美味，因此被農民暱稱為「醜美人」。多虧了東部的好水與較長的生長期，造就了它的絕佳風味。 (English translation pending)';
 
   @override
-  String get varietyTainung71Name => '台農 71 號 (益全香米)';
+  String get varietyTainung71Name => 'Tainung 71';
 
   @override
   String get varietyTainung71Desc =>
@@ -104,7 +104,7 @@ class AppLocalizationsEn extends AppLocalizations {
       '知識卡：「益全」二字是為了紀念畢生奉獻於此品種研發，卻在品種發表前夕因過勞辭世的郭益全博士。 (English translation pending)';
 
   @override
-  String get varietyTaikeng9Name => '台稉 9 號';
+  String get varietyTaikeng9Name => 'Taikeng 9';
 
   @override
   String get varietyTaikeng9Desc =>
@@ -286,11 +286,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get journalCloseButton => 'Close';
 
   @override
-  String get journalFallowTitle => 'Fallow Period';
+  String get journalFallowTitle => 'Fallow Rest';
 
   @override
   String get journalFallowContent =>
-      'The land is resting, waiting for the next solar term.\nTake a walk around and see different sceneries.';
+      'The field is resting.\nWe wait for the next solar term to plant again.';
 
   @override
   String get devControlTeleportReset => 'Reset to Real Location';
@@ -376,7 +376,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varietyKaohsiung139Grain => 'Japonica';
 
   @override
-  String get varietyTaichungSen10Name => '台中秈 10 號';
+  String get varietyTaichungSen10Name => 'Taichung Sen 10';
 
   @override
   String get varietyTaichungSen10Desc =>
@@ -396,7 +396,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varietyTaichungSen10Grain => 'Indica';
 
   @override
-  String get varietyKoshihikariName => '越光米 (Koshihikari)';
+  String get varietyKoshihikariName => 'Koshihikari';
 
   @override
   String get varietyKoshihikariDesc =>
@@ -416,7 +416,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varietyKoshihikariGrain => 'Japonica';
 
   @override
-  String get varietyTaoyuan3Name => '桃園 3 號 (新香米)';
+  String get varietyTaoyuan3Name => 'Taoyuan 3';
 
   @override
   String get varietyTaoyuan3Desc =>
@@ -436,7 +436,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varietyTaoyuan3Grain => 'Japonica';
 
   @override
-  String get varietyKaohsiung147Name => '高雄 147 號 (香鑽)';
+  String get varietyKaohsiung147Name => 'Kaohsiung 147';
 
   @override
   String get varietyKaohsiung147Desc =>
@@ -456,7 +456,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get varietyKaohsiung147Grain => 'Japonica';
 
   @override
-  String get varietyTainung67Name => '台農 67 號';
+  String get varietyTainung67Name => 'Tainung 67';
 
   @override
   String get varietyTainung67Desc =>
@@ -474,4 +474,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get varietyTainung67Grain => 'Japonica';
+
+  @override
+  String get microSimInstruction =>
+      'Please plant seedlings at the glowing spots\n(Tap the lights)';
+
+  @override
+  String get microSimCompleted =>
+      'Today\'s farming is done.\nThe water is just right.\nGo back to your day.';
+
+  @override
+  String get journalPlantingTitle => 'Today\'s Task: Planting';
+
+  @override
+  String get journalPlantingContent =>
+      'The water is perfect, it\'s time to plant the seedlings.\nIt\'s hard work, but it\'s the beginning of everything.';
+
+  @override
+  String get journalPlantingButton => 'Go to the field';
 }

@@ -69,7 +69,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyKnowledgeCardPrefix => '品種図鑑：';
 
   @override
-  String get varietyTainan11Name => '台南 11 號';
+  String get varietyTainan11Name => '台南11号';
 
   @override
   String get varietyTainan11Desc =>
@@ -80,7 +80,7 @@ class AppLocalizationsJa extends AppLocalizations {
       '知識卡：台南11號的抗病蟲害能力極強，不僅在台灣南部廣泛種植，甚至還曾外銷到日本，是真正的「台灣之光」！ (日本語訳準備中)';
 
   @override
-  String get varietyKaohsiung139Name => '高雄 139 號 (醜美人)';
+  String get varietyKaohsiung139Name => '高雄139号';
 
   @override
   String get varietyKaohsiung139Desc =>
@@ -91,7 +91,7 @@ class AppLocalizationsJa extends AppLocalizations {
       '知識卡：外表不美麗卻極度美味，因此被農民暱稱為「醜美人」。多虧了東部的好水與較長的生長期，造就了它的絕佳風味。 (日本語訳準備中)';
 
   @override
-  String get varietyTainung71Name => '台農 71 號 (益全香米)';
+  String get varietyTainung71Name => '台農71号';
 
   @override
   String get varietyTainung71Desc =>
@@ -102,7 +102,7 @@ class AppLocalizationsJa extends AppLocalizations {
       '知識卡：「益全」二字是為了紀念畢生奉獻於此品種研發，卻在品種發表前夕因過勞辭世的郭益全博士。 (日本語訳準備中)';
 
   @override
-  String get varietyTaikeng9Name => '台稉 9 號';
+  String get varietyTaikeng9Name => '台稉9号';
 
   @override
   String get varietyTaikeng9Desc =>
@@ -280,11 +280,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get journalCloseButton => '閉じる';
 
   @override
-  String get journalFallowTitle => '休耕中';
+  String get journalFallowTitle => '休閑（きゅうかん）';
 
   @override
-  String get journalFallowContent =>
-      '土地は休んでおり、次の二十四節気を待っています。\n少し歩き回って、違う景色を見てみましょう。';
+  String get journalFallowContent => '田んぼは休養中です。\n次の節気が来て、再び種を蒔くのを待ちましょう。';
 
   @override
   String get devControlTeleportReset => '現在の位置に戻る';
@@ -368,7 +367,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyKaohsiung139Grain => 'ジャポニカ米';
 
   @override
-  String get varietyTaichungSen10Name => '台中秈 10 號';
+  String get varietyTaichungSen10Name => '台中秈10号';
 
   @override
   String get varietyTaichungSen10Desc =>
@@ -388,7 +387,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyTaichungSen10Grain => 'インディカ米';
 
   @override
-  String get varietyKoshihikariName => '越光米 (Koshihikari)';
+  String get varietyKoshihikariName => 'コシヒカリ';
 
   @override
   String get varietyKoshihikariDesc =>
@@ -408,7 +407,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyKoshihikariGrain => 'ジャポニカ米';
 
   @override
-  String get varietyTaoyuan3Name => '桃園 3 號 (新香米)';
+  String get varietyTaoyuan3Name => '桃園3号';
 
   @override
   String get varietyTaoyuan3Desc => '北部著名的香米品種，散發淡淡的爆米花香與芋香。穀粒大且飽滿。 (日本語訳準備中)';
@@ -427,7 +426,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyTaoyuan3Grain => 'ジャポニカ米';
 
   @override
-  String get varietyKaohsiung147Name => '高雄 147 號 (香鑽)';
+  String get varietyKaohsiung147Name => '高雄147号';
 
   @override
   String get varietyKaohsiung147Desc =>
@@ -447,7 +446,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get varietyKaohsiung147Grain => 'ジャポニカ米';
 
   @override
-  String get varietyTainung67Name => '台農 67 號';
+  String get varietyTainung67Name => '台農67号';
 
   @override
   String get varietyTainung67Desc =>
@@ -465,4 +464,20 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get varietyTainung67Grain => 'ジャポニカ米';
+
+  @override
+  String get microSimInstruction => '光っている場所に苗を植えてください\n（光をタップ）';
+
+  @override
+  String get microSimCompleted => '今日の農作業は終わりました。\n水の加減もちょうど良いです。\n日常に戻りましょう。';
+
+  @override
+  String get journalPlantingTitle => '今日の農作業：田植え';
+
+  @override
+  String get journalPlantingContent =>
+      '水の加減がちょうど良く、苗を植える時期です。\n大変ですが、ここから全てが始まります。';
+
+  @override
+  String get journalPlantingButton => '田んぼへ行く';
 }

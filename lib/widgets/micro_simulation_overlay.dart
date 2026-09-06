@@ -1,3 +1,4 @@
+import '../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class MicroSimulationOverlay extends StatefulWidget {
@@ -66,10 +67,10 @@ class _MicroSimulationOverlayState extends State<MicroSimulationOverlay> {
       child: SafeArea(
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.all(32.0),
+            Padding(
+              padding: const EdgeInsets.all(32.0),
               child: Text(
-                "請在發光處插下秧苗\n(點擊光點)",
+                AppLocalizations.of(context)!.microSimInstruction,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
@@ -138,9 +139,9 @@ class _MicroSimulationOverlayState extends State<MicroSimulationOverlay> {
   Widget _buildCompletionMessage() {
     return Container(
       color: Colors.black.withValues(alpha: 0.8),
-      child: const Center(
+      child: Center(
         child: Text(
-          "今日農事已畢\n田水正好\n去忙你的吧。",
+          AppLocalizations.of(context)!.microSimCompleted,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,

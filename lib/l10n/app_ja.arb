@@ -85,8 +85,8 @@
   "journalNothingContent": "今日は畑に特別なことはなく、稲は静かに成長しています。\n\n「天に任せる」",
   "journalPrayButton": "天気予報が間違っている、土地神様に文句を言う",
   "journalCloseButton": "閉じる",
-  "journalFallowTitle": "休耕中",
-  "journalFallowContent": "土地は休んでおり、次の二十四節気を待っています。\n少し歩き回って、違う景色を見てみましょう。",
+  "journalFallowTitle": "休閑（きゅうかん）",
+  "journalFallowContent": "田んぼは休養中です。\n次の節気が来て、再び種を蒔くのを待ちましょう。",
   "devControlTeleportReset": "現在の位置に戻る",
   "devControlTeleportResetDesc": "現在他の地域をシミュレートしています。天候と品種は上書きされています。",
   "bwaTitle": "土地神の祠",
@@ -142,5 +142,10 @@
   "varietyTainung67Fact": "知識卡：雖然現在已經因為食味品質不如新品種而逐漸被淘汰，但它強悍的生命力曾拯救了無數農家的生計。 (日本語訳準備中)",
   "varietyTainung67Parents": "嘉農242號 / 台南5號",
   "varietyTainung67Blast": "抵抗性",
-  "varietyTainung67Grain": "ジャポニカ米"
+  "varietyTainung67Grain": "ジャポニカ米",
+  "microSimInstruction": "光っている場所に苗を植えてください\n（光をタップ）",
+  "microSimCompleted": "今日の農作業は終わりました。\n水の加減もちょうど良いです。\n日常に戻りましょう。",
+  "journalPlantingTitle": "今日の農作業：田植え",
+  "journalPlantingContent": "水の加減がちょうど良く、苗を植える時期です。\n大変ですが、ここから全てが始まります。",
+  "journalPlantingButton": "田んぼへ行く"
 }

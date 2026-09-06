@@ -619,13 +619,13 @@ abstract class AppLocalizations {
   /// No description provided for @journalFallowTitle.
   ///
   /// In zh, this message translates to:
-  /// **'休耕中'**
+  /// **'休養生息'**
   String get journalFallowTitle;
 
   /// No description provided for @journalFallowContent.
   ///
   /// In zh, this message translates to:
-  /// **'土地正在休息，等待下一個節氣的到來。\n這段時間，您可以到處走走，看看不一樣的風景。'**
+  /// **'田地正在休養生息。\n我們靜待下一個節氣到來，再重新播種。'**
   String get journalFallowContent;
 
   /// No description provided for @devControlTeleportReset.
@@ -963,6 +963,36 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'稉米'**
   String get varietyTainung67Grain;
+
+  /// No description provided for @microSimInstruction.
+  ///
+  /// In zh, this message translates to:
+  /// **'請在發光處插下秧苗\n(點擊光點)'**
+  String get microSimInstruction;
+
+  /// No description provided for @microSimCompleted.
+  ///
+  /// In zh, this message translates to:
+  /// **'今日農事已畢\n田水正好\n去忙你的吧。'**
+  String get microSimCompleted;
+
+  /// No description provided for @journalPlantingTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'今日農事：插秧'**
+  String get journalPlantingTitle;
+
+  /// No description provided for @journalPlantingContent.
+  ///
+  /// In zh, this message translates to:
+  /// **'田水正好，是時候把秧苗插下去了。\n雖然辛苦，但這是一切的開始。'**
+  String get journalPlantingContent;
+
+  /// No description provided for @journalPlantingButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'去田裡看看'**
+  String get journalPlantingButton;
 }
 
 class _AppLocalizationsDelegate
