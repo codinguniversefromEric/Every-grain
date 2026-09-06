@@ -149,7 +149,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutGithubButton => '💻 View Project on GitHub';
 
   @override
-  String get aboutRateButton => '⭐ 給予評價 (Rate this App)';
+  String get aboutRateButton => '⭐ Rate this App';
 
   @override
   String get aboutCraftedWith => 'Crafted with 🍚 in Taiwan';

@@ -46,7 +46,7 @@ class CollectionGrid extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black.withValues(alpha: 0.5),
-              fontSize: 10,
+              fontSize: 9,
               letterSpacing: 1.2,
             ),
           ),
@@ -215,14 +215,14 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
 
   Widget _buildBackRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1.0),
+      padding: const EdgeInsets.symmetric(vertical: 0.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '$label: ',
             style: const TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               color: Colors.white70,
               fontWeight: FontWeight.bold,
             ),
@@ -231,7 +231,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
             child: Text(
               value,
               style: const TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 color: Color(0xFFD4AF37), // Gold text
               ),
               overflow: TextOverflow.ellipsis,
