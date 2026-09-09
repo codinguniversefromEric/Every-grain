@@ -318,7 +318,7 @@ class _DeveloperControlsBottomSheetState
             const Divider(height: 32),
             
             // 4. Fine-grained metrics
-            const Text(
+            Text(
               loc.testerBioMetricsTitle,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
