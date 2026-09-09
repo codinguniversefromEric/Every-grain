@@ -85,3 +85,8 @@ App 會根據各種條件（例如節氣、地點、時間等）來呈現對應�
 7. **多國語系嚴格防呆 (Strict i18n Linting)**:
    - 每次完成任何 UI 或資料的修改後，必須執行 `grep -r -E "[\u4e00-\u9fa5]" lib/` 來檢查是否還有殘留寫死在程式碼中的中文。
    - 所有新增的文案（包含小工具、提示框、圖鑑）都必須同步寫入 `.arb` 檔案，確保在英文、日文語系下不會出現中文溢位或未翻譯的情況。
+
+8. **iOS 編譯假錯防呆 (iOS Build Error Misdiagnosis)**:
+   - 當 iOS 模擬器或實體機編譯時出現 `App.framework: (l)stat: No such file or directory` 或 `rsync child exited with status 23` 時，**絕對禁止**第一時間跑去清 Xcode 快取或重裝 CocoaPods。
+   - 這是因為 Xcode 的錯誤提示具有誤導性。真正的元凶通常是**底層的 Dart 程式碼有語法錯誤**（例如在動態翻譯字串前誤加了 `const`），導致 Flutter 先行崩潰無法產出 `App.framework`。
+   - **強制處理流程**：遇到此錯誤時，必須優先執行 `flutter analyze` 揪出 Dart 語法錯誤，確認無誤後才能歸咎於 Xcode 快取。
