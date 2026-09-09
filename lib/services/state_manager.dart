@@ -72,7 +72,9 @@ class StateManager extends ChangeNotifier {
       
     );
 
+    await audio.service.init();
     await env.initialize(_state!, progress);
+    audio.updateAmbience(_state!, crop.isTimeLapseMode);
     crop.startTimers(_state!, env, audio);
 
     _isLoading = false;
