@@ -298,48 +298,66 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
             children: [
               // 1. Living Sky Background
               Positioned.fill(
-                child: LivingSkyBackground(
-                  sunElevation: state.sunElevation,
-                  weatherMetrics: state.weatherMetrics,
+                child: RepaintBoundary(
+                  child: LivingSkyBackground(
+                    sunElevation: state.sunElevation,
+                    weatherMetrics: state.weatherMetrics,
+                  ),
                 ),
               ),
 
               // 1.3. Shooting Stars (Night only, behind clouds)
               if (state.dayPeriod == DayPhase.night)
-                const Positioned.fill(child: ShootingStarLayer()),
+                const Positioned.fill(
+                  child: RepaintBoundary(child: ShootingStarLayer()),
+                ),
 
               // 1.5. Drifting Clouds
-              Positioned.fill(
-                child: CloudLayer(
-                  isNight: state.dayPeriod == DayPhase.night,
-                  weather: state.weatherCondition,
+              if (state.dayPeriod != DayPhase.night)
+                Positioned.fill(
+                  child: RepaintBoundary(
+                    child: CloudLayer(
+                      isNight: state.dayPeriod == DayPhase.night,
+                      weather: state.weatherCondition,
+                    ),
+                  ),
                 ),
-              ),
 
               // 1.6. Rain Layer
-              Positioned.fill(
-                child: RainLayer(weather: state.weatherCondition),
-              ),
+              if (state.weatherCondition == WeatherCondition.rainy || state.weatherCondition == WeatherCondition.stormy)
+                Positioned.fill(
+                  child: RepaintBoundary(
+                    child: RainLayer(weather: state.weatherCondition),
+                  ),
+                ),
 
               // 1.8. Egrets (Daylight only)
               if (state.dayPeriod != DayPhase.night &&
                   state.weatherCondition == WeatherCondition.clear)
-                const Positioned.fill(child: EgretFlockLayer()),
+                const Positioned.fill(
+                  child: RepaintBoundary(child: EgretFlockLayer()),
+                ),
 
               // 2. Ambient Fireflies (only at night)
               if (state.dayPeriod == DayPhase.night)
-                const Positioned.fill(child: FirefliesLayer()),
+                const Positioned.fill(
+                  child: RepaintBoundary(child: FirefliesLayer()),
+                ),
 
               // 3. Morning/Evening Mist
               if (state.dayPeriod == DayPhase.morning ||
                   state.dayPeriod == DayPhase.evening)
-                const Positioned.fill(child: MistLayer()),
+                const Positioned.fill(
+                  child: RepaintBoundary(child: MistLayer()),
+                ),
 
               // 4. Scenery Biome Layer (Mountains, Ocean, Plains)
               Positioned.fill(
-                child: BiomeSceneryLayer(
-                  biome: state.currentBiome,
-                  dayPhase: state.dayPeriod,
+                child: RepaintBoundary(
+                  child: BiomeSceneryLayer(
+                    biome: state.currentBiome,
+                    dayPhase: state.dayPeriod,
+                  ),
                 ),
               ),
 
@@ -348,9 +366,11 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                 bottom: -20, // Let it bleed into the bottom
                 left: 0,
                 right: 0,
-                child: RicePlantLayer(
-                  growthStage: state.growthStage,
-                  variety: state.currentVariety,
+                child: RepaintBoundary(
+                  child: RicePlantLayer(
+                    growthStage: state.growthStage,
+                    variety: state.currentVariety,
+                  ),
                 ),
               ),
 
@@ -398,19 +418,25 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                   (state.growthStage == GrowthStage.tillering ||
                       state.growthStage == GrowthStage.heading ||
                       state.growthStage == GrowthStage.ripening))
-                const Positioned.fill(child: DragonflyLayer()),
+                const Positioned.fill(
+                  child: RepaintBoundary(child: DragonflyLayer()),
+                ),
 
               // 6. Water Ripples (Flooded Paddy Stages)
               if (state.growthStage == GrowthStage.fallow ||
                   state.growthStage == GrowthStage.seedling)
-                const Positioned.fill(child: WaterRippleLayer()),
+                const Positioned.fill(
+                  child: RepaintBoundary(child: WaterRippleLayer()),
+                ),
 
               // 6.5. Wind Gusts (Afternoon/Evening or Stormy)
               if (state.dayPeriod == DayPhase.afternoon ||
                   state.dayPeriod == DayPhase.evening ||
                   state.weatherCondition == WeatherCondition.stormy)
                 Positioned.fill(
-                  child: WindGustLayer(weather: state.weatherCondition),
+                  child: RepaintBoundary(
+                    child: WindGustLayer(weather: state.weatherCondition),
+                  ),
                 ),
 
               // 6.6. Full-screen Swipe to Harvest Detector

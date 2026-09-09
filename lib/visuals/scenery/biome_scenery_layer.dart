@@ -27,7 +27,24 @@ class _BiomeSceneryLayerState extends State<BiomeSceneryLayer>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 30),
-    )..repeat();
+    );
+    _updateAnimationState();
+  }
+
+  @override
+  void didUpdateWidget(covariant BiomeSceneryLayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.biome != widget.biome) {
+      _updateAnimationState();
+    }
+  }
+
+  void _updateAnimationState() {
+    if (widget.biome == SceneryBiome.coast || widget.biome == SceneryBiome.valley) {
+      if (!_controller.isAnimating) _controller.repeat();
+    } else {
+      if (_controller.isAnimating) _controller.stop();
+    }
   }
 
   @override
@@ -38,6 +55,19 @@ class _BiomeSceneryLayerState extends State<BiomeSceneryLayer>
 
   @override
   Widget build(BuildContext context) {
+    final needsAnimation = widget.biome == SceneryBiome.coast || widget.biome == SceneryBiome.valley;
+
+    if (!needsAnimation) {
+      return CustomPaint(
+        painter: _SceneryPainter(
+          biome: widget.biome,
+          dayPhase: widget.dayPhase,
+          animationValue: 0.0,
+        ),
+        size: Size.infinite,
+      );
+    }
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {

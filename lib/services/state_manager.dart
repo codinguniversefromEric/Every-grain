@@ -147,8 +147,21 @@ class StateManager extends ChangeNotifier {
     _updateAmbience();
   }
 
-  void pauseApp() => _ambientSound.pause();
-  void resumeApp() => _ambientSound.resume();
+  void pauseApp() {
+    _ambientSound.pause();
+    _simulationTimer?.cancel();
+    _timeLapseTimer?.cancel();
+  }
+  
+  void resumeApp() {
+    _ambientSound.resume();
+    _lastTickTime = DateTime.now();
+    if (_isTimeLapseMode) {
+      _startTimeLapseTimer();
+    } else {
+      _startSimulationTimer();
+    }
+  }
 
   @override
   void dispose() {
@@ -195,6 +208,32 @@ class StateManager extends ChangeNotifier {
     });
   }
 
+  void _startTimeLapseTimer() {
+    _timeLapseTimer?.cancel();
+    _timeLapseTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (_state != null && _state!.currentVariety != null) {
+        // Advance clock by 6 mins every 100ms
+        final virtualDelta = const Duration(minutes: 6);
+        _timeLapseClock = _timeLapseClock.add(virtualDelta);
+        
+        _state = CropSimulationEngine.tickSimulation(
+          _state!,
+          _state!.weatherMetrics,
+          _state!.currentVariety!,
+          virtualDelta, // send virtual delta to engine
+        );
+
+        final pos = _lastPosition ?? Position(
+            latitude: 24.5602, longitude: 120.8214, timestamp: DateTime.now(),
+            accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0, altitudeAccuracy: 0, headingAccuracy: 0);
+        
+        _state!.sunElevation = SolarCalculator.getSunElevation(pos.latitude, pos.longitude, _timeLapseClock);
+        _updateAmbience();
+        notifyListeners();
+      }
+    });
+  }
+
   void toggleTimeLapse() {
     _isTimeLapseMode = !_isTimeLapseMode;
     if (_isTimeLapseMode) {
@@ -202,29 +241,7 @@ class StateManager extends ChangeNotifier {
       _timeLapseTimer?.cancel();
       _lastTickTime = DateTime.now();
       _timeLapseClock = DateTime.now();
-      
-      _timeLapseTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-        if (_state != null && _state!.currentVariety != null) {
-          // Advance clock by 6 mins every 100ms
-          final virtualDelta = const Duration(minutes: 6);
-          _timeLapseClock = _timeLapseClock.add(virtualDelta);
-          
-          _state = CropSimulationEngine.tickSimulation(
-            _state!,
-            _state!.weatherMetrics,
-            _state!.currentVariety!,
-            virtualDelta, // send virtual delta to engine
-          );
-
-          final pos = _lastPosition ?? Position(
-              latitude: 24.5602, longitude: 120.8214, timestamp: DateTime.now(),
-              accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0, altitudeAccuracy: 0, headingAccuracy: 0);
-          
-          _state!.sunElevation = SolarCalculator.getSunElevation(pos.latitude, pos.longitude, _timeLapseClock);
-          _updateAmbience();
-          notifyListeners();
-        }
-      });
+      _startTimeLapseTimer();
     } else {
       _timeLapseTimer?.cancel();
       _lastTickTime = DateTime.now();
