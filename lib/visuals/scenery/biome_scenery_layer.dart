@@ -197,7 +197,7 @@ class _SceneryPainter extends CustomPainter {
       path.moveTo(0, size.height);
       path.lineTo(0, baseY - sin(i * 1.5) * 30);
       
-      for (double x = 0; x <= size.width + 40; x += 40) {
+      for (double x = 0; x <= size.width + 40; x += 2) {
         final y = baseY - sin(x * 0.02 + i) * 40 - cos(x * 0.01 + i * 2) * 20;
         path.lineTo(x, y);
       }
@@ -221,12 +221,12 @@ class _SceneryPainter extends CustomPainter {
     final path1 = Path()..moveTo(0, size.height);
     // Draw rugged peaks for Central Mountain Range
     path1.lineTo(0, size.height * 0.35);
-    path1.lineTo(size.width * 0.15, size.height * 0.15); // High peak
-    path1.lineTo(size.width * 0.3, size.height * 0.25);
-    path1.lineTo(size.width * 0.45, size.height * 0.1);  // Yushan (Jade Mountain) peak
-    path1.lineTo(size.width * 0.6, size.height * 0.3);
-    path1.lineTo(size.width * 0.8, size.height * 0.2);
-    path1.lineTo(size.width, size.height * 0.4);
+    path1.quadraticBezierTo(size.width * 0.08, size.height * 0.15, size.width * 0.15, size.height * 0.15); // Smooth High peak
+    path1.quadraticBezierTo(size.width * 0.22, size.height * 0.15, size.width * 0.3, size.height * 0.25);
+    path1.quadraticBezierTo(size.width * 0.38, size.height * 0.35, size.width * 0.45, size.height * 0.1);  // Smooth Yushan
+    path1.quadraticBezierTo(size.width * 0.52, size.height * -0.15, size.width * 0.6, size.height * 0.3);
+    path1.quadraticBezierTo(size.width * 0.7, size.height * 0.4, size.width * 0.8, size.height * 0.2);
+    path1.quadraticBezierTo(size.width * 0.9, size.height * 0.0, size.width, size.height * 0.4);
     path1.lineTo(size.width, size.height);
     canvas.drawPath(path1, mountainPaint1);
 
@@ -307,7 +307,7 @@ class _SceneryPainter extends CustomPainter {
       final wavePath = Path();
       wavePath.moveTo(0, waveY);
       
-      for (double x = 0; x <= size.width + 15; x += 10) {
+      for (double x = 0; x <= size.width + 15; x += 2) {
         // Complex wave function
         final y = waveY + sin(x * 0.03 + shift + w) * 5 + cos(x * 0.01 - shift * 2) * 3;
         wavePath.lineTo(x, y);

@@ -22,10 +22,10 @@ class CollectionGrid extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
+              crossAxisCount: 2,
               crossAxisSpacing: 16.0,
               mainAxisSpacing: 16.0,
-              childAspectRatio: 0.70, // slightly taller for back text
+              childAspectRatio: 0.75, // slightly taller for back text
             ),
             itemCount: allVarieties.length,
             itemBuilder: (context, index) {

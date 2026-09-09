@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 
 Future<T?> showBookModal<T>(BuildContext context, {required String title, required Widget content}) {
   return showGeneralDialog<T>(
@@ -132,7 +131,7 @@ class _BookModalContentState extends State<_BookModalContent> {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF5A4A42), // Dark brown leather/vintage cover
-        borderRadius: const BorderRadius.horizontal(right: Radius.circular(12)),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.5),
@@ -174,9 +173,9 @@ class _BookModalContentState extends State<_BookModalContent> {
       alignment: Alignment.center,
       transform: Matrix4.rotationY(pi), // flip horizontally so it's not mirrored
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Color(0xFFE8E3D9), // Inner cover color
-          borderRadius: BorderRadius.horizontal(left: Radius.circular(12)),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );
