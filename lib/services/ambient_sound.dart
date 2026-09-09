@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:just_audio/just_audio.dart';
+import 'package:audio_session/audio_session.dart';
 import '../models/field_state.dart';
 import '../models/weather_metrics.dart';
 import 'app_logger.dart';
@@ -22,6 +23,14 @@ class AmbientSoundService {
   Future<void> init() async {
     if (_isInitialized) return;
     _isInitialized = true;
+    
+    try {
+      final session = await AudioSession.instance;
+      await session.configure(const AudioSessionConfiguration.music());
+    } catch (e) {
+      AppLogger.w('Could not configure audio session: $e');
+    }
+
     await _ambientPlayer.setLoopMode(LoopMode.one);
     await _ambientPlayer.setVolume(0.3);
     _startOneShotTimer();
@@ -122,7 +131,9 @@ class AmbientSoundService {
       }
     }
     
-    _ambientPlayer.setVolume(targetVolume);
+    if (_ambientPlayer.volume != targetVolume) {
+      _ambientPlayer.setVolume(targetVolume);
+    }
   }
 
   void pause() {
