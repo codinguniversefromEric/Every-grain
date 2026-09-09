@@ -68,6 +68,10 @@ flutter test
 flutter analyze
 ```
 
+### 正式發布打包 (Release)
+如需打包雙平台正式版 (Android AAB / iOS IPA) 準備上架，請參考專屬指南：
+👉 [**發布與打包指南 (RELEASE_GUIDE.md)**](docs/RELEASE_GUIDE.md)
+
 ## 開發者控制面板 (Developer Controls)
 
 在開發模式 (`kDebugMode`) 下，畫面右上角會出現隱藏的扳手圖示。點擊可開啟控制面板，進行：
