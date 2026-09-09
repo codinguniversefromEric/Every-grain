@@ -163,8 +163,10 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.eco, color: widget.variety.visualTraits.stemColor, size: 48),
           const SizedBox(height: 12),
@@ -178,6 +180,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -199,16 +202,19 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
         ],
       ),
       padding: const EdgeInsets.all(12.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildBackRow(loc.tariGrowthDays, loc.growthDaysFormat(data.growthDays)),
-          _buildBackRow(loc.tariWeight, '${data.thousandGrainWeight}g'),
-          _buildBackRow(loc.tariType, data.localizedGrainType(loc, widget.variety)),
-          _buildBackRow(loc.tariBlast, data.localizedBlast(loc, widget.variety)),
-          _buildBackRow(loc.tariParents, data.localizedParents(loc, widget.variety)),
-        ],
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildBackRow(loc.tariGrowthDays, loc.growthDaysFormat(data.growthDays)),
+            _buildBackRow(loc.tariWeight, '${data.thousandGrainWeight}g'),
+            _buildBackRow(loc.tariType, data.localizedGrainType(loc, widget.variety)),
+            _buildBackRow(loc.tariBlast, data.localizedBlast(loc, widget.variety)),
+            _buildBackRow(loc.tariParents, data.localizedParents(loc, widget.variety)),
+          ],
+        ),
       ),
     );
   }
