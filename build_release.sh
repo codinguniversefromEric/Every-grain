@@ -7,6 +7,31 @@ echo "========================================"
 echo "🚀 準備進行 100% 乾淨的雙平台發布打包 🚀"
 echo "========================================"
 
+# --- 版號互動更新邏輯 ---
+CURRENT_VERSION_LINE=$(grep "^version: " pubspec.yaml)
+CURRENT_VERSION=$(echo $CURRENT_VERSION_LINE | awk '{print $2}')
+CURRENT_NAME=$(echo $CURRENT_VERSION | cut -d'+' -f1)
+CURRENT_BUILD=$(echo $CURRENT_VERSION | cut -d'+' -f2)
+
+NEW_BUILD=$((CURRENT_BUILD + 1))
+NEW_NAME=$CURRENT_NAME
+
+echo "🏷️ 目前 pubspec.yaml 中的版號為: $CURRENT_NAME (Build: $CURRENT_BUILD)"
+echo "即將自動將 Build 升級至: $NEW_BUILD"
+echo "請問需要一併修改主版號嗎？"
+read -p "(直接按 Enter 保持 $CURRENT_NAME，或輸入新版號如 2.0.2): " USER_NEW_NAME
+
+if [ ! -z "$USER_NEW_NAME" ]; then
+    NEW_NAME=$USER_NEW_NAME
+fi
+
+NEW_VERSION="${NEW_NAME}+${NEW_BUILD}"
+echo "📝 更新 pubspec.yaml 的版號為: $NEW_VERSION"
+
+# 適用於 macOS 的 sed 語法
+sed -i '' "s/^version: .*/version: $NEW_VERSION/" pubspec.yaml
+echo "----------------------------------------"
+
 echo "🧹 [1/5] 清理 Flutter 暫存檔與依賴..."
 flutter clean
 flutter pub get
