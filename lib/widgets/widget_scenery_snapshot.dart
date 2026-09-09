@@ -24,10 +24,13 @@ class WidgetScenerySnapshot extends StatelessWidget {
     final sunElevation = state.dayPeriod != DayPhase.night ? 45.0 : -45.0;
     
     // Provide Directionality to avoid errors since this renders outside app tree
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Container(
+    return MediaQuery(
+      data: const MediaQueryData(size: Size(400, 400)),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: DefaultTextStyle(
+          style: const TextStyle(fontFamily: 'Roboto', fontSize: 14),
+          child: Container(
         width: 400,
         height: 400,
         color: Colors.black,
@@ -100,6 +103,7 @@ class WidgetScenerySnapshot extends StatelessWidget {
           ],
         ),
       ),
+        ),
       ),
     );
   }

@@ -46,7 +46,7 @@ class CollectionGrid extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black.withValues(alpha: 0.5),
-              fontSize: 9,
+              fontSize: 13,
               letterSpacing: 1.2,
             ),
           ),
@@ -166,13 +166,13 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.eco, color: widget.variety.visualTraits.stemColor, size: 36),
+          Icon(Icons.eco, color: widget.variety.visualTraits.stemColor, size: 48),
           const SizedBox(height: 12),
           Text(
             widget.variety.localizedName(loc),
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF5D4037),
             ),
@@ -198,7 +198,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
           ),
         ],
       ),
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(12.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,14 +215,14 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
 
   Widget _buildBackRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 0.0),
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '$label: ',
             style: const TextStyle(
-              fontSize: 9,
+              fontSize: 13,
               color: Colors.white70,
               fontWeight: FontWeight.bold,
             ),
@@ -231,7 +231,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
             child: Text(
               value,
               style: const TextStyle(
-                fontSize: 9,
+                fontSize: 13,
                 color: Color(0xFFD4AF37), // Gold text
               ),
               overflow: TextOverflow.ellipsis,
