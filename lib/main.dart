@@ -196,7 +196,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
             if (context.mounted) {
               Navigator.pop(context);
             }
-            await _stateManager.initializeState(forceRefreshWeather: true);
+            await _stateManager.initializeState();
           },
           isTimeLapseActive: _stateManager.isTimeLapseMode,
           onToggleTimeLapse: _stateManager.toggleTimeLapse,
@@ -243,7 +243,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
             });
           },
           onPlowDeadCrop: () {
-            state.plowDeadCrop();
+            state.resetSeason();
           },
           onPrayToEarthGod: () {
             showDialog(
