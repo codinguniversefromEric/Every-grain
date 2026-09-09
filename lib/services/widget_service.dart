@@ -1,8 +1,10 @@
 import 'package:home_widget/home_widget.dart';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/field_state.dart';
 import '../widgets/widget_scenery_snapshot.dart';
+import '../l10n/app_localizations.dart';
 
 class WidgetService {
   static const String appGroupId = 'group.com.chia.riceJourney';
@@ -16,9 +18,13 @@ class WidgetService {
   static Future<void> updateWidget(FieldState? state, {bool hasUnreadJournal = false}) async {
     if (state == null) return;
 
+    final prefs = await SharedPreferences.getInstance();
+    final langCode = prefs.getString('pref_locale') ?? 'zh';
+    final loc = lookupAppLocalizations(Locale(langCode));
+
     // Convert enum values to simple strings for the widget to display
-    String stageText = _getStageText(state.growthStage);
-    String weatherText = _getWeatherText(state.weatherCondition);
+    String stageText = _getStageText(state.growthStage, loc);
+    String weatherText = _getWeatherText(state.weatherCondition, loc);
     
     await HomeWidget.saveWidgetData<String>('growth_stage', stageText);
     await HomeWidget.saveWidgetData<String>('weather', weatherText);
@@ -30,6 +36,7 @@ class WidgetService {
         WidgetScenerySnapshot(
           state: state,
           hasUnreadJournal: hasUnreadJournal,
+          loc: loc,
         ),
         logicalSize: const Size(400, 400),
         key: 'scenery_image',
@@ -45,24 +52,24 @@ class WidgetService {
     );
   }
 
-  static String _getStageText(GrowthStage stage) {
+  static String _getStageText(GrowthStage stage, AppLocalizations loc) {
     switch (stage) {
-      case GrowthStage.fallow: return '休耕中';
-      case GrowthStage.seedling: return '秧苗期';
-      case GrowthStage.tillering: return '分蘖期';
-      case GrowthStage.heading: return '抽穗期';
-      case GrowthStage.ripening: return '成熟期';
-      case GrowthStage.harvested: return '已收割';
-      case GrowthStage.dead: return '已枯萎';
+      case GrowthStage.fallow: return loc.widgetStageFallow;
+      case GrowthStage.seedling: return loc.widgetStageSeedling;
+      case GrowthStage.tillering: return loc.widgetStageTillering;
+      case GrowthStage.heading: return loc.widgetStageHeading;
+      case GrowthStage.ripening: return loc.widgetStageRipening;
+      case GrowthStage.harvested: return loc.widgetStageHarvested;
+      case GrowthStage.dead: return loc.widgetStageDead;
     }
   }
 
-  static String _getWeatherText(WeatherCondition condition) {
+  static String _getWeatherText(WeatherCondition condition, AppLocalizations loc) {
     switch (condition) {
-      case WeatherCondition.clear: return '晴朗';
-      case WeatherCondition.cloudy: return '多雲';
-      case WeatherCondition.rainy: return '有雨';
-      case WeatherCondition.stormy: return '雷雨';
+      case WeatherCondition.clear: return loc.widgetWeatherClear;
+      case WeatherCondition.cloudy: return loc.widgetWeatherCloudy;
+      case WeatherCondition.rainy: return loc.widgetWeatherRainy;
+      case WeatherCondition.stormy: return loc.widgetWeatherStormy;
     }
   }
 }

@@ -151,32 +151,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get aboutCraftedWith => '台湾で 🍚 と共に作られました';
 
   @override
-  String get testerControlsTitle => '測試員工具 (DevTools)';
+  String get testerControlsTitle => 'テスターツール (DevTools)';
 
   @override
-  String get testerControlsDesc => '快速穿梭時空，體驗完整的稻米旅程 (Time travel & testing).';
+  String get testerControlsDesc => 'タイムトラベルとテスト (Time travel & testing)';
 
   @override
-  String get testerLocationTitle => '🇹🇼 1. 台灣 (Location & Varieties)';
+  String get testerLocationTitle => '🇹🇼 1. 台湾 (Location & Varieties)';
 
   @override
-  String get testerLocationDesc =>
-      '瞬間移動會自動更新該地區的天氣與在地品種 (Updates local weather and variety).';
+  String get testerLocationDesc => 'テレポートすると、現地の天候と品種が自動的に更新されます。';
 
   @override
-  String get testerLocCurrent => '📍 回到目前真實位置 (Reset to Real Location)';
+  String get testerLocCurrent => '📍 現在地に戻る (Reset to Real Location)';
 
   @override
-  String get testerLocTaipei => '📍 台北 Taipei (北部 - 台稉9號)';
+  String get testerLocTaipei => '📍 台北 (北部 - 台稉9号)';
 
   @override
-  String get testerLocTaichung => '📍 台中 Taichung (中部 - 台中秈10號/台農71號)';
+  String get testerLocTaichung => '📍 台中 (中部 - 台中秈10号/台農71号)';
 
   @override
-  String get testerLocKaohsiung => '📍 高雄 Kaohsiung (南部 - 高雄147號)';
+  String get testerLocKaohsiung => '📍 高雄 (南部 - 高雄147号)';
 
   @override
-  String get testerLocTaitung => '📍 花東 Hualien/Taitung (東部 - 高雄139號)';
+  String get testerLocTaitung => '📍 花東 (東部 - 高雄139号)';
 
   @override
   String get testerGlobalTitle => '✈️ 2. 海外 (Global Weather)';
@@ -206,19 +205,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get testerTimeTitle => '⏳ 3. 時間 (Time Control)';
 
   @override
-  String get testerNextMonth => '快轉一個月 (Fast Forward 1 Month)';
+  String get testerNextMonth => '1ヶ月早送り (Fast Forward 1 Month)';
 
   @override
-  String get testerToNight => '切換至夜晚 (Switch to Night)';
+  String get testerToNight => '夜に切り替え (Switch to Night)';
 
   @override
-  String get testerToDay => '切換至白天 (Switch to Day)';
+  String get testerToDay => '昼に切り替え (Switch to Day)';
 
   @override
-  String get testerEventsTitle => '⛈️ 4. 事件與天氣 (Events & Weather)';
+  String get testerEventsTitle => '⛈️ 4. イベントと天候 (Events & Weather)';
 
   @override
-  String get testerForceHarvest => '強制進入收割期 (Force Harvest)';
+  String get testerForceHarvest => '収穫期を強制 (Force Harvest)';
 
   @override
   String get languageName => '言語 / Language';
@@ -227,13 +226,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get languageSystem => 'システム設定に従う';
 
   @override
-  String get testerLocTaoyuan => '📍 桃園 Taoyuan (北部 - 桃園3號)';
+  String get testerLocTaoyuan => '📍 桃園 (北部 - 桃園3号)';
 
   @override
-  String get testerLocTainan => '📍 台南 Tainan (南部 - 台南11號)';
+  String get testerLocTainan => '📍 台南 (南部 - 台南11号)';
 
   @override
-  String get testerLocYilan => '📍 宜蘭 Yilan (東部 - 越光米)';
+  String get testerLocYilan => '📍 宜蘭 (東部 - コシヒカリ)';
 
   @override
   String get collectionTitle => '台湾米パスポート';
@@ -481,4 +480,76 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get journalPlantingButton => '田んぼへ行く';
+
+  @override
+  String get testerBioMetricsTitle => '生物環境パラメータ (Bio Metrics)';
+
+  @override
+  String get testerTempLabel => '温度 (Temp)';
+
+  @override
+  String get testerHumLabel => '湿度 (Hum)';
+
+  @override
+  String get testerRainLabel => '降雨量 (Rain)';
+
+  @override
+  String get testerClearWeatherOverride =>
+      '天候のオーバーライドをクリア (Clear Weather Override)';
+
+  @override
+  String get testerUnlockAllCards => 'すべての品種カードをロック解除 (Unlock All Cards)';
+
+  @override
+  String get testerForceDead => '枯死を強制 (Force Dead)';
+
+  @override
+  String get testerResetField => '休耕地にリセット (Reset to Fallow)';
+
+  @override
+  String get grandpaHasLetterBadge => '● おじいちゃんの手紙';
+
+  @override
+  String get widgetStageFallow => '休耕中';
+
+  @override
+  String get widgetStageSeedling => '苗代期';
+
+  @override
+  String get widgetStageTillering => '分げつ期';
+
+  @override
+  String get widgetStageHeading => '出穂期';
+
+  @override
+  String get widgetStageRipening => '登熟期';
+
+  @override
+  String get widgetStageHarvested => '収穫済';
+
+  @override
+  String get widgetStageDead => '枯死';
+
+  @override
+  String get widgetWeatherClear => '晴れ';
+
+  @override
+  String get widgetWeatherCloudy => '曇り';
+
+  @override
+  String get widgetWeatherRainy => '雨';
+
+  @override
+  String get widgetWeatherStormy => '雷雨';
+
+  @override
+  String growthDaysFormat(int days) {
+    return '$days日';
+  }
+
+  @override
+  String get testerStopTimelapse => 'タイムラプス停止 (Stop Time-lapse)';
+
+  @override
+  String get testerStartTimelapse => '24時間タイムラプス (24h Time-lapse)';
 }

@@ -147,5 +147,35 @@
   "microSimCompleted": "今日農事已畢\n田水正好\n去忙你的吧。",
   "journalPlantingTitle": "今日農事：插秧",
   "journalPlantingContent": "田水正好，是時候把秧苗插下去了。\n雖然辛苦，但這是一切的開始。",
-  "journalPlantingButton": "去田裡看看"
+  "journalPlantingButton": "去田裡看看",
+  "testerBioMetricsTitle": "生物環境參數 (Bio Metrics)",
+  "testerTempLabel": "溫度 (Temp)",
+  "testerHumLabel": "濕度 (Hum)",
+  "testerRainLabel": "降雨 (Rain)",
+  "testerClearWeatherOverride": "清除天氣覆寫 (Clear Weather Override)",
+  "testerUnlockAllCards": "解鎖所有品種卡 (Unlock All Cards)",
+  "testerForceDead": "觸發枯萎死亡 (Force Dead)",
+  "testerResetField": "重新翻土 (Reset to Fallow)",
+  "grandpaHasLetterBadge": "● 阿公有信",
+  "widgetStageFallow": "休耕中",
+  "widgetStageSeedling": "秧苗期",
+  "widgetStageTillering": "分蘖期",
+  "widgetStageHeading": "抽穗期",
+  "widgetStageRipening": "成熟期",
+  "widgetStageHarvested": "已收割",
+  "widgetStageDead": "已枯萎",
+  "widgetWeatherClear": "晴朗",
+  "widgetWeatherCloudy": "多雲",
+  "widgetWeatherRainy": "有雨",
+  "widgetWeatherStormy": "雷雨",
+  "growthDaysFormat": "{days}天",
+  "@growthDaysFormat": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "testerStopTimelapse": "停止縮時 (Stop Time-lapse)",
+  "testerStartTimelapse": "一日縮時 (24h Time-lapse)"
 }

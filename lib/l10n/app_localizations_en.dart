@@ -492,4 +492,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get journalPlantingButton => 'Go to the field';
+
+  @override
+  String get testerBioMetricsTitle => 'Bio Metrics';
+
+  @override
+  String get testerTempLabel => 'Temp';
+
+  @override
+  String get testerHumLabel => 'Humidity';
+
+  @override
+  String get testerRainLabel => 'Rain';
+
+  @override
+  String get testerClearWeatherOverride => 'Clear Weather Override';
+
+  @override
+  String get testerUnlockAllCards => 'Unlock All Cards';
+
+  @override
+  String get testerForceDead => 'Force Dead';
+
+  @override
+  String get testerResetField => 'Reset to Fallow';
+
+  @override
+  String get grandpaHasLetterBadge => '● Grandpa';
+
+  @override
+  String get widgetStageFallow => 'Fallow';
+
+  @override
+  String get widgetStageSeedling => 'Seedling';
+
+  @override
+  String get widgetStageTillering => 'Tillering';
+
+  @override
+  String get widgetStageHeading => 'Heading';
+
+  @override
+  String get widgetStageRipening => 'Ripening';
+
+  @override
+  String get widgetStageHarvested => 'Harvested';
+
+  @override
+  String get widgetStageDead => 'Dead';
+
+  @override
+  String get widgetWeatherClear => 'Clear';
+
+  @override
+  String get widgetWeatherCloudy => 'Cloudy';
+
+  @override
+  String get widgetWeatherRainy => 'Rainy';
+
+  @override
+  String get widgetWeatherStormy => 'Stormy';
+
+  @override
+  String growthDaysFormat(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get testerStopTimelapse => 'Stop Time-lapse';
+
+  @override
+  String get testerStartTimelapse => '24h Time-lapse';
 }

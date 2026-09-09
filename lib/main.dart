@@ -94,19 +94,10 @@ class _RiceJourneyAppState extends State<RiceJourneyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Every Grain',
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       locale: _locale,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('zh', 'TW'),
-        Locale('en', ''),
-        Locale('ja', 'JP'),
-      ],
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,

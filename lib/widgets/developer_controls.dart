@@ -249,7 +249,9 @@ class _DeveloperControlsBottomSheetState
             const SizedBox(height: 12),
             ElevatedButton.icon(
               icon: Icon(widget.isTimeLapseActive ? Icons.stop : Icons.play_arrow),
-              label: Text(widget.isTimeLapseActive ? '停止縮時 (Stop Time-lapse)' : '一日縮時 (24h Time-lapse)'),
+              label: Text(widget.isTimeLapseActive
+                ? loc.testerStopTimelapse
+                : loc.testerStartTimelapse),
               onPressed: () {
                 widget.onToggleTimeLapse();
                 Navigator.pop(context);
@@ -272,7 +274,7 @@ class _DeveloperControlsBottomSheetState
               spacing: 8,
               children: [
                 ChoiceChip(
-                  label: const Text('Clear'),
+                  label: Text(loc.weatherClear),
                   selected: _localWeather == WeatherCondition.clear,
                   onSelected: (s) {
                     if (s) {
@@ -282,7 +284,7 @@ class _DeveloperControlsBottomSheetState
                   },
                 ),
                 ChoiceChip(
-                  label: const Text('Cloudy'),
+                  label: Text(loc.weatherCloudy),
                   selected: _localWeather == WeatherCondition.cloudy,
                   onSelected: (s) {
                     if (s) {
@@ -292,7 +294,7 @@ class _DeveloperControlsBottomSheetState
                   },
                 ),
                 ChoiceChip(
-                  label: const Text('Rainy'),
+                  label: Text(loc.weatherRainy),
                   selected: _localWeather == WeatherCondition.rainy,
                   onSelected: (s) {
                     if (s) {
@@ -302,7 +304,7 @@ class _DeveloperControlsBottomSheetState
                   },
                 ),
                 ChoiceChip(
-                  label: const Text('Stormy'),
+                  label: Text(loc.weatherStormy),
                   selected: _localWeather == WeatherCondition.stormy,
                   onSelected: (s) {
                     if (s) {
@@ -317,7 +319,7 @@ class _DeveloperControlsBottomSheetState
             
             // 4. Fine-grained metrics
             const Text(
-              '生物環境參數 (Bio Metrics)',
+              loc.testerBioMetricsTitle,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
@@ -326,7 +328,7 @@ class _DeveloperControlsBottomSheetState
               children: [
                 const Icon(Icons.thermostat, size: 20),
                 const SizedBox(width: 8),
-                Text('溫度 (Temp): ${_localMetrics.temperature.toStringAsFixed(1)}°C'),
+                Text('''${loc.testerTempLabel}: ${_localMetrics.temperature.toStringAsFixed(1)}°C'''),
               ],
             ),
             Slider(
@@ -353,7 +355,7 @@ class _DeveloperControlsBottomSheetState
               children: [
                 const Icon(Icons.water_drop, size: 20, color: Colors.blue),
                 const SizedBox(width: 8),
-                Text('濕度 (Hum): ${_localMetrics.humidity.toStringAsFixed(1)}%'),
+                Text('''${loc.testerHumLabel}: ${_localMetrics.humidity.toStringAsFixed(1)}%'''),
               ],
             ),
             Slider(
@@ -380,7 +382,7 @@ class _DeveloperControlsBottomSheetState
               children: [
                 const Icon(Icons.thunderstorm, size: 20, color: Colors.indigo),
                 const SizedBox(width: 8),
-                Text('降雨 (Rain): ${_localMetrics.precipitationIntensity.toStringAsFixed(1)} mm/h'),
+                Text('''${loc.testerRainLabel}: ${_localMetrics.precipitationIntensity.toStringAsFixed(1)} mm/h'''),
               ],
             ),
             Slider(
@@ -409,7 +411,7 @@ class _DeveloperControlsBottomSheetState
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.cloud_off),
-              label: const Text('清除天氣覆寫 (Clear Weather Override)'),
+              label: Text(loc.testerClearWeatherOverride),
               onPressed: () {
                 widget.onClearWeatherOverride();
                 Navigator.pop(context);
@@ -436,7 +438,7 @@ class _DeveloperControlsBottomSheetState
                 foregroundColor: Colors.purple.shade900,
               ),
               icon: const Icon(Icons.grid_view),
-              label: const Text('解鎖所有品種卡 (Unlock All Cards)'),
+              label: Text(loc.testerUnlockAllCards),
               onPressed: () {
                 widget.onUnlockAllCards();
                 Navigator.pop(context);
@@ -449,7 +451,7 @@ class _DeveloperControlsBottomSheetState
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.warning),
-              label: const Text('觸發枯萎死亡 (Force Dead)'),
+              label: Text(loc.testerForceDead),
               onPressed: () {
                 widget.onGrowthStageChanged(GrowthStage.dead);
                 Navigator.pop(context);
@@ -462,7 +464,7 @@ class _DeveloperControlsBottomSheetState
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.delete_sweep),
-              label: const Text('重新翻土 (Reset to Fallow)'),
+              label: Text(loc.testerResetField),
               onPressed: () {
                 widget.onResetField();
                 Navigator.pop(context);

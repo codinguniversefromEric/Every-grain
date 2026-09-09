@@ -4,7 +4,7 @@
 set -e
 
 echo "========================================"
-echo "🚀 準備進行 100% 乾淨的雙平台發布打包 🚀"
+echo "🚀 準備進行 iOS 本機發布打包與版號更新 🚀"
 echo "========================================"
 
 # --- 版號互動更新邏輯 ---
@@ -45,19 +45,22 @@ rm -f ios/Podfile.lock
 
 echo "📦 [3/5] 重新安裝 iOS Pod 依賴..."
 cd ios
-# 更新 repo 並重新安裝 Pod
-pod install --repo-update
+if [ -f "Podfile" ]; then
+    # 更新 repo 並重新安裝 Pod
+    pod install --repo-update
+else
+    echo "⚠️ 未找到 Podfile，將交由 Flutter build 自動生成與安裝..."
+fi
 cd ..
 
-echo "🤖 [4/5] 開始打包 Android (AAB)..."
-flutter build aab
-
-echo "🍎 [5/5] 開始打包 iOS (IPA / xcarchive)..."
+echo "🍎 [4/4] 開始打包 iOS (IPA / xcarchive)..."
 # 生成 xcarchive，讓你可以去 Xcode Organizer 匯出
 flutter build ipa
 
 echo "========================================"
-echo "✅ 打包完成！"
-echo "🤖 Android AAB 路徑: build/app/outputs/bundle/release/app-release.aab"
-echo "🍎 iOS: 請打開 Xcode，點選上方選單 Window -> Organizer 來將 App 上傳至 TestFlight 或 App Store。"
+echo "✅ iOS 打包完成！"
+echo "🍎 正在自動為你開啟 Xcode Organizer..."
+open build/ios/archive/Runner.xcarchive
+echo "🍎 iOS: 請在彈出的 Xcode Organizer 中，點選你的 Archive 並點擊右側的 'Distribute App' 上傳至 TestFlight 或 App Store。"
+echo "🤖 Android: 請記得將剛才變更的 pubspec.yaml 進行 Commit，並推播 v* 標籤（例如 v$NEW_VERSION）來觸發 GitHub Actions 自動打包 Android APK/AAB。"
 echo "========================================"

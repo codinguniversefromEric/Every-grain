@@ -468,4 +468,75 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get journalPlantingButton => '去田裡看看';
+
+  @override
+  String get testerBioMetricsTitle => '生物環境參數 (Bio Metrics)';
+
+  @override
+  String get testerTempLabel => '溫度 (Temp)';
+
+  @override
+  String get testerHumLabel => '濕度 (Hum)';
+
+  @override
+  String get testerRainLabel => '降雨 (Rain)';
+
+  @override
+  String get testerClearWeatherOverride => '清除天氣覆寫 (Clear Weather Override)';
+
+  @override
+  String get testerUnlockAllCards => '解鎖所有品種卡 (Unlock All Cards)';
+
+  @override
+  String get testerForceDead => '觸發枯萎死亡 (Force Dead)';
+
+  @override
+  String get testerResetField => '重新翻土 (Reset to Fallow)';
+
+  @override
+  String get grandpaHasLetterBadge => '● 阿公有信';
+
+  @override
+  String get widgetStageFallow => '休耕中';
+
+  @override
+  String get widgetStageSeedling => '秧苗期';
+
+  @override
+  String get widgetStageTillering => '分蘖期';
+
+  @override
+  String get widgetStageHeading => '抽穗期';
+
+  @override
+  String get widgetStageRipening => '成熟期';
+
+  @override
+  String get widgetStageHarvested => '已收割';
+
+  @override
+  String get widgetStageDead => '已枯萎';
+
+  @override
+  String get widgetWeatherClear => '晴朗';
+
+  @override
+  String get widgetWeatherCloudy => '多雲';
+
+  @override
+  String get widgetWeatherRainy => '有雨';
+
+  @override
+  String get widgetWeatherStormy => '雷雨';
+
+  @override
+  String growthDaysFormat(int days) {
+    return '$days天';
+  }
+
+  @override
+  String get testerStopTimelapse => '停止縮時 (Stop Time-lapse)';
+
+  @override
+  String get testerStartTimelapse => '一日縮時 (24h Time-lapse)';
 }

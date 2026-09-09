@@ -993,6 +993,144 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'去田裡看看'**
   String get journalPlantingButton;
+
+  /// No description provided for @testerBioMetricsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'生物環境參數 (Bio Metrics)'**
+  String get testerBioMetricsTitle;
+
+  /// No description provided for @testerTempLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'溫度 (Temp)'**
+  String get testerTempLabel;
+
+  /// No description provided for @testerHumLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'濕度 (Hum)'**
+  String get testerHumLabel;
+
+  /// No description provided for @testerRainLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'降雨 (Rain)'**
+  String get testerRainLabel;
+
+  /// No description provided for @testerClearWeatherOverride.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除天氣覆寫 (Clear Weather Override)'**
+  String get testerClearWeatherOverride;
+
+  /// No description provided for @testerUnlockAllCards.
+  ///
+  /// In zh, this message translates to:
+  /// **'解鎖所有品種卡 (Unlock All Cards)'**
+  String get testerUnlockAllCards;
+
+  /// No description provided for @testerForceDead.
+  ///
+  /// In zh, this message translates to:
+  /// **'觸發枯萎死亡 (Force Dead)'**
+  String get testerForceDead;
+
+  /// No description provided for @testerResetField.
+  ///
+  /// In zh, this message translates to:
+  /// **'重新翻土 (Reset to Fallow)'**
+  String get testerResetField;
+
+  /// No description provided for @grandpaHasLetterBadge.
+  ///
+  /// In zh, this message translates to:
+  /// **'● 阿公有信'**
+  String get grandpaHasLetterBadge;
+
+  /// No description provided for @widgetStageFallow.
+  ///
+  /// In zh, this message translates to:
+  /// **'休耕中'**
+  String get widgetStageFallow;
+
+  /// No description provided for @widgetStageSeedling.
+  ///
+  /// In zh, this message translates to:
+  /// **'秧苗期'**
+  String get widgetStageSeedling;
+
+  /// No description provided for @widgetStageTillering.
+  ///
+  /// In zh, this message translates to:
+  /// **'分蘖期'**
+  String get widgetStageTillering;
+
+  /// No description provided for @widgetStageHeading.
+  ///
+  /// In zh, this message translates to:
+  /// **'抽穗期'**
+  String get widgetStageHeading;
+
+  /// No description provided for @widgetStageRipening.
+  ///
+  /// In zh, this message translates to:
+  /// **'成熟期'**
+  String get widgetStageRipening;
+
+  /// No description provided for @widgetStageHarvested.
+  ///
+  /// In zh, this message translates to:
+  /// **'已收割'**
+  String get widgetStageHarvested;
+
+  /// No description provided for @widgetStageDead.
+  ///
+  /// In zh, this message translates to:
+  /// **'已枯萎'**
+  String get widgetStageDead;
+
+  /// No description provided for @widgetWeatherClear.
+  ///
+  /// In zh, this message translates to:
+  /// **'晴朗'**
+  String get widgetWeatherClear;
+
+  /// No description provided for @widgetWeatherCloudy.
+  ///
+  /// In zh, this message translates to:
+  /// **'多雲'**
+  String get widgetWeatherCloudy;
+
+  /// No description provided for @widgetWeatherRainy.
+  ///
+  /// In zh, this message translates to:
+  /// **'有雨'**
+  String get widgetWeatherRainy;
+
+  /// No description provided for @widgetWeatherStormy.
+  ///
+  /// In zh, this message translates to:
+  /// **'雷雨'**
+  String get widgetWeatherStormy;
+
+  /// No description provided for @growthDaysFormat.
+  ///
+  /// In zh, this message translates to:
+  /// **'{days}天'**
+  String growthDaysFormat(int days);
+
+  /// No description provided for @testerStopTimelapse.
+  ///
+  /// In zh, this message translates to:
+  /// **'停止縮時 (Stop Time-lapse)'**
+  String get testerStopTimelapse;
+
+  /// No description provided for @testerStartTimelapse.
+  ///
+  /// In zh, this message translates to:
+  /// **'一日縮時 (24h Time-lapse)'**
+  String get testerStartTimelapse;
 }
 
 class _AppLocalizationsDelegate

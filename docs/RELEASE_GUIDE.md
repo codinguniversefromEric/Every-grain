@@ -1,6 +1,6 @@
 # 發布與打包指南 (Release & Build Guide)
 
-本指南說明如何為「粒粒皆辛苦 (Rice Journey)」專案進行雙平台 (Android / iOS) 的正式版打包，並解釋打包腳本背後的快取原理。
+本指南說明如何為「粒粒皆辛苦 (Rice Journey)」專案進行正式版的打包發布，包含 **iOS 的本機自動化腳本**，以及 **Android 的 GitHub Actions 自動化 CI**，並解釋腳本背後的快取原理。
 
 ## 自動化打包腳本：`build_release.sh`
 
@@ -15,8 +15,8 @@
 ```
 
 執行完畢後：
-- **Android**: 將會在 `build/app/outputs/bundle/release/app-release.aab` 產出 AAB 檔案，可直接上傳至 Google Play Console。
-- **iOS**: 將會生成一份 `.xcarchive`，此時請打開 Xcode，點選上方選單的 **Window -> Organizer**，即可看到熱騰騰的 Archive，點擊 `Distribute App` 即可上傳至 TestFlight 或 App Store。
+- **iOS**: 將會生成 `.xcarchive`，腳本會自動幫你呼叫 Xcode 打開 Organizer 並匯入。請在彈出的視窗中點擊 `Distribute App` 即可上傳至 TestFlight 或 App Store。
+- **Android (GitHub Actions)**: 本機腳本執行完畢後，請記得將變更後的 `pubspec.yaml` 進行 `git commit`，接著建立並推播版號標籤（例如 `git tag v2.0.2` 然後 `git push origin v2.0.2`）。推播標籤後，雲端的 GitHub Actions 就會自動觸發並幫你完成 Android 版本的打包與發布。
 
 ---
 

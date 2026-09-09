@@ -69,7 +69,7 @@ flutter analyze
 ```
 
 ### 正式發布打包 (Release)
-如需打包雙平台正式版 (Android AAB / iOS IPA) 準備上架，請參考專屬指南：
+如需發布正式版（透過本機腳本更新版號與打包 iOS IPA，並透過 GitHub Actions 打包 Android AAB），請參考專屬指南：
 👉 [**發布與打包指南 (RELEASE_GUIDE.md)**](docs/RELEASE_GUIDE.md)
 
 ## 開發者控制面板 (Developer Controls)

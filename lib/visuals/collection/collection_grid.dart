@@ -203,7 +203,7 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildBackRow(loc.tariGrowthDays, '${data.growthDays}${loc.localeName == 'en' ? '' : '天'}'),
+          _buildBackRow(loc.tariGrowthDays, loc.growthDaysFormat(data.growthDays)),
           _buildBackRow(loc.tariWeight, '${data.thousandGrainWeight}g'),
           _buildBackRow(loc.tariType, data.localizedGrainType(loc, widget.variety)),
           _buildBackRow(loc.tariBlast, data.localizedBlast(loc, widget.variety)),

@@ -3,15 +3,18 @@ import '../models/field_state.dart';
 import '../models/weather_metrics.dart';
 import '../visuals/living_sky.dart';
 import '../visuals/scenery/biome_scenery_layer.dart';
+import '../l10n/app_localizations.dart';
 import 'rice_plant.dart';
 
 class WidgetScenerySnapshot extends StatelessWidget {
   final FieldState state;
   final bool hasUnreadJournal;
+  final AppLocalizations loc;
 
   const WidgetScenerySnapshot({
     super.key, 
     required this.state, 
+    required this.loc,
     this.hasUnreadJournal = false,
   });
 
@@ -87,9 +90,9 @@ class WidgetScenerySnapshot extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: Colors.greenAccent, width: 2),
                   ),
-                  child: const Text(
-                    '● 阿公有信',
-                    style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 24),
+                  child: Text(
+                    loc.grandpaHasLetterBadge,
+                    style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 24),
                   ),
                 ),
               ),
