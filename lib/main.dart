@@ -201,12 +201,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
           isTimeLapseActive: _stateManager.isTimeLapseMode,
           onToggleTimeLapse: _stateManager.toggleTimeLapse,
           onUnlockAllCards: () async {
-            await _stateManager.debugInjectUnlockedCards([
-              RiceVariety.tainan11,
-              RiceVariety.kaohsiung139,
-              RiceVariety.tainung71,
-              RiceVariety.taikeng9,
-            ]);
+            await _stateManager.debugInjectUnlockedCards(RiceVariety.allVarieties);
           },
           onResetField: _stateManager.resetSeason,
           onClearWeatherOverride: _stateManager.clearWeatherOverride,
@@ -274,18 +269,29 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     return ListenableBuilder(
       listenable: _stateManager,
       builder: (context, _) {
+        Widget currentContent;
         if (_stateManager.state == null) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          // Fake Splash Screen: Looks exactly like the native splash to provide seamless transition
+          currentContent = Scaffold(
+            key: const ValueKey('loading_splash'),
+            backgroundColor: const Color(0xFFFFF8E7),
+            body: Center(
+              child: Image.asset(
+                'assets/icon_foreground.png',
+                width: 250,
+                height: 250,
+                fit: BoxFit.contain,
+              ),
+            ),
           );
-        }
+        } else {
+          final state = _stateManager.state!;
+          final isHarvesting = _stateManager.isHarvesting;
 
-        final state = _stateManager.state!;
-        final isHarvesting = _stateManager.isHarvesting;
-
-        return Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Stack(
+          currentContent = Scaffold(
+            key: const ValueKey('ready_scenery'),
+            resizeToAvoidBottomInset: false,
+            body: Stack(
             children: [
               // 1. Living Sky Background
               Positioned.fill(
@@ -581,7 +587,15 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                   ),
                 ),
             ],
-          ),
+          ), // closes Stack
+        ); // closes Scaffold
+        }
+
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 1000),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          child: currentContent,
         );
       },
     );

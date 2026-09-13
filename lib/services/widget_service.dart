@@ -19,7 +19,15 @@ class WidgetService {
     if (state == null) return;
 
     final prefs = await SharedPreferences.getInstance();
-    final langCode = prefs.getString('pref_locale') ?? 'zh';
+    final savedLang = prefs.getString('pref_locale');
+    final systemLang = PlatformDispatcher.instance.locale.languageCode;
+    String langCode = savedLang ?? systemLang;
+    
+    // Ensure the resolved language is supported by our app, otherwise fallback to English
+    if (!AppLocalizations.supportedLocales.map((l) => l.languageCode).contains(langCode)) {
+      langCode = 'en';
+    }
+    
     final loc = lookupAppLocalizations(Locale(langCode));
 
     // Convert enum values to simple strings for the widget to display
