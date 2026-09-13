@@ -16,16 +16,16 @@ class CollectionGrid extends StatelessWidget {
 
     return Column(
       children: [
-        const SizedBox(height: 32), // space for close button
+        const SizedBox(height: 16),
         Expanded(
           child: GridView.builder(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 16.0,
-              mainAxisSpacing: 16.0,
-              childAspectRatio: 0.75, // slightly taller for back text
+              crossAxisSpacing: 20.0,
+              mainAxisSpacing: 24.0,
+              childAspectRatio: 0.6, // Taller cards to give text more breathing room
             ),
             itemCount: allVarieties.length,
             itemBuilder: (context, index) {
@@ -38,9 +38,29 @@ class CollectionGrid extends StatelessWidget {
             },
           ),
         ),
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+            child: Text(
+              loc.collectionHintText,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ),
         // Academic Attribution (Very Important)
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Text(
             loc.collectionSourceText,
             textAlign: TextAlign.center,
@@ -166,11 +186,17 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: SizedBox(
-          width: 180,
+          width: 200,
           child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.eco, color: widget.variety.visualTraits.stemColor, size: 48),
+          SizedBox(
+            width: 64,
+            height: 64,
+            child: CustomPaint(
+              painter: _SingleStalkPainter(widget.variety.visualTraits),
+            ),
+          ),
           const SizedBox(height: 12),
           Text(
             widget.variety.localizedName(loc),
@@ -204,19 +230,23 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
           ),
         ],
       ),
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0), // More outer padding
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: SizedBox(
-          width: 180,
+          width: 200, // Slightly wider before scaling down
           child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildBackRow(loc.tariGrowthDays, loc.growthDaysFormat(data.growthDays)),
+            const SizedBox(height: 8),
             _buildBackRow(loc.tariWeight, '${data.thousandGrainWeight}g'),
+            const SizedBox(height: 8),
             _buildBackRow(loc.tariType, data.localizedGrainType(loc, widget.variety)),
+            const SizedBox(height: 8),
             _buildBackRow(loc.tariBlast, data.localizedBlast(loc, widget.variety)),
+            const SizedBox(height: 8),
             _buildBackRow(loc.tariParents, data.localizedParents(loc, widget.variety)),
           ],
           ),
@@ -246,8 +276,6 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
                 fontSize: 13,
                 color: Color(0xFFD4AF37), // Gold text
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
             ),
           ),
         ],
@@ -255,3 +283,93 @@ class _CollectionCardState extends State<_CollectionCard> with SingleTickerProvi
     );
   }
 }
+
+class _SingleStalkPainter extends CustomPainter {
+  final VarietyVisualTraits traits;
+
+  _SingleStalkPainter(this.traits);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final baseX = size.width * 0.5;
+    final baseY = size.height * 0.9;
+    final stalkHeight = size.height * 0.7;
+
+    final stemColor = traits.stemColor;
+    
+    // 1. Draw stem
+    final stemPaint = Paint()
+      ..color = stemColor
+      ..strokeWidth = 3.0
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final stemPath = Path();
+    stemPath.moveTo(baseX, baseY);
+    
+    // Curve slightly to the right, droop down
+    final tipX = baseX + size.width * 0.2;
+    final tipY = baseY - stalkHeight + size.height * 0.2;
+    
+    stemPath.cubicTo(
+      baseX, baseY - stalkHeight * 0.5,
+      baseX + size.width * 0.3, baseY - stalkHeight * 0.8,
+      tipX, tipY
+    );
+    canvas.drawPath(stemPath, stemPaint);
+
+    // 2. Draw a couple of leaves
+    _drawLeaf(canvas, baseX + 2, baseY - stalkHeight * 0.3, true, stemColor);
+    _drawLeaf(canvas, baseX + 4, baseY - stalkHeight * 0.6, false, stemColor);
+
+    // 3. Draw grains
+    final grainPaint = Paint()
+      ..color = traits.ripeGrainColor
+      ..style = PaintingStyle.fill;
+      
+    final grainCount = 6;
+    for (int i = 0; i < grainCount; i++) {
+      final t = i / grainCount;
+      final grainX = tipX + sin(t * pi) * 12 + (i % 2 == 0 ? 2 : -2);
+      final grainY = tipY + t * 25 + (i % 2 == 0 ? 1 : -1);
+      
+      final radius = 3.5 * traits.grainSize;
+      
+      canvas.save();
+      canvas.translate(grainX, grainY);
+      // rotate grain slightly
+      canvas.rotate(0.2 + t * 0.5);
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset.zero,
+          width: radius * traits.grainRoundness,
+          height: radius,
+        ),
+        grainPaint,
+      );
+      canvas.restore();
+    }
+  }
+
+  void _drawLeaf(Canvas canvas, double x, double y, bool isLeft, Color color) {
+    final leafPaint = Paint()
+      ..color = color.withValues(alpha: 0.9)
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final dir = isLeft ? -1.0 : 1.0;
+    final leafPath = Path();
+    leafPath.moveTo(x, y);
+    leafPath.quadraticBezierTo(
+      x + dir * 15, y - 10,
+      x + dir * 25, y + 5,
+    );
+    canvas.drawPath(leafPath, leafPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _SingleStalkPainter oldDelegate) {
+    return oldDelegate.traits != traits;
+  }
+}
