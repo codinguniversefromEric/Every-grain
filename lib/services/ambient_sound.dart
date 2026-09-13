@@ -123,6 +123,12 @@ class AmbientSoundService {
 
     if (targetSound != _currentSound) {
       _currentSound = targetSound;
+      
+      // Prevent audio load interruption errors during fast integration tests
+      if (const String.fromEnvironment('DISABLE_AUDIO', defaultValue: 'false') == 'true') {
+        return;
+      }
+
       try {
         await _ambientPlayer.setAsset(targetSound);
         _ambientPlayer.play();

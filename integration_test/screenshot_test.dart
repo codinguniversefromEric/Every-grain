@@ -3,11 +3,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:rice_journey/main.dart' as app;
 import 'package:rice_journey/models/field_state.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Capture 5 App Store Screenshots', (WidgetTester tester) async {
+    // Force traditional Chinese locale for ASO screenshots
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('pref_locale', 'zh');
+
+    // Required for Android screenshots
+    try {
+      await binding.convertFlutterSurfaceToImage();
+    } catch (e) {
+      print('convertFlutterSurfaceToImage not supported or failed: $e');
+    }
+
     // Build the app
     app.isTakingScreenshot = true;
     app.main();
@@ -30,8 +41,10 @@ void main() {
     stateManager.updateDayPhase(DayPhase.morning);
     stateManager.updateWeather(WeatherCondition.clear);
 
-    // Pump animation frames (let ripples/clouds start)
-    await tester.pump(const Duration(seconds: 2));
+    // Pump multiple frames to ensure RicePlantLayer generation finishes
+    for (int i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
 
     // Take screenshot
     await binding.takeScreenshot('screenshot_1_seedling');
@@ -45,7 +58,9 @@ void main() {
     stateManager.updateDayPhase(DayPhase.evening);
     stateManager.updateWeather(WeatherCondition.stormy);
 
-    await tester.pump(const Duration(seconds: 2));
+    for (int i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
 
     await binding.takeScreenshot('screenshot_2_stormy');
     print('✅ Screenshot 2 taken: stormy heading');
@@ -62,42 +77,41 @@ void main() {
     stateManager.updateDayPhase(DayPhase.afternoon);
     stateManager.updateWeather(WeatherCondition.clear);
 
-    await tester.pump(const Duration(seconds: 2));
+    for (int i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
 
     await binding.takeScreenshot('screenshot_3_local_variety');
     print('✅ Screenshot 3 taken: kaohsiung 139 ripening');
 
     // -------------------------------------------------------------------------
-    // 截圖四：時間流逝
-    // 夜晚、晴天、分蘖期 (Tillering)，螢火蟲與流星
+    // 截圖四：時間陪伴
+    // 夜晚、晴天、分蘗期 (Tillering)
     // -------------------------------------------------------------------------
     stateManager.updateGrowthStage(GrowthStage.tillering);
     stateManager.updateDayPhase(DayPhase.night);
     stateManager.updateWeather(WeatherCondition.clear);
 
-    await tester.pump(const Duration(seconds: 2));
+    for (int i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
 
     await binding.takeScreenshot('screenshot_4_night_time');
     print('✅ Screenshot 4 taken: night tillering');
 
     // -------------------------------------------------------------------------
-    // 截圖五：收穫與感謝
-    // 觸發收割動畫，彈出知識卡
+    // 截圖五：極簡與禪意（收割）
+    // 白天、晴天、收割後 (Harvested) 且無對話框
     // -------------------------------------------------------------------------
-    stateManager.updateGrowthStage(GrowthStage.ripening);
-    stateManager.updateDayPhase(DayPhase.afternoon);
+    stateManager.updateGrowthStage(GrowthStage.harvested);
+    stateManager.updateDayPhase(DayPhase.morning);
+    stateManager.updateWeather(WeatherCondition.clear);
 
-    // Trigger harvest
-    stateManager.executeHarvest(() {
-      // Callback after harvest
-    });
+    for (int i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
 
-    // Wait for the harvest animation (2 seconds)
-    await tester.pump(const Duration(seconds: 2));
-    // Pump one more time to let the dialog render
-    await tester.pump(const Duration(milliseconds: 500));
-
-    await binding.takeScreenshot('screenshot_5_harvest_card');
-    print('✅ Screenshot 5 taken: harvest card');
+    await binding.takeScreenshot('screenshot_5_harvested_clean');
+    print('✅ Screenshot 5 taken: harvested clean');
   });
 }

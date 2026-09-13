@@ -380,10 +380,11 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                           opacity:
                               (0.5 +
                               0.5 * (1.0 - ((value * 2) % 1.0))), // Pulsing
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
+                          child: !isTakingScreenshot 
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
                                 AppLocalizations.of(context)!.swipeToHarvest,
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -393,11 +394,12 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                               ),
                               const SizedBox(width: 8),
                               const Icon(
-                                Icons.keyboard_double_arrow_right,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
+                                    Icons.keyboard_double_arrow_right,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              )
+                              : const SizedBox.shrink(),
                         );
                       },
                     ),
@@ -532,7 +534,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                 ),
 
               // Reset Location Button (UX Safety)
-              if (_stateManager.isTeleported)
+              if (_stateManager.isTeleported && !isTakingScreenshot)
                 Positioned(
                   top: 60,
                   left: 0,

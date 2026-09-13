@@ -31,18 +31,20 @@ class WidgetService {
     await HomeWidget.saveWidgetData<bool>('has_unread_journal', hasUnreadJournal);
 
     // Render snapshot
-    try {
-      await HomeWidget.renderFlutterWidget(
-        WidgetScenerySnapshot(
-          state: state,
-          hasUnreadJournal: hasUnreadJournal,
-          loc: loc,
-        ),
-        logicalSize: const Size(400, 400),
-        key: 'scenery_image',
-      );
-    } catch (e) {
-      debugPrint('Failed to render widget snapshot: $e');
+    if (const String.fromEnvironment('DISABLE_HOME_WIDGET', defaultValue: 'false') != 'true') {
+      try {
+        await HomeWidget.renderFlutterWidget(
+          WidgetScenerySnapshot(
+            state: state,
+            hasUnreadJournal: hasUnreadJournal,
+            loc: loc,
+          ),
+          logicalSize: const Size(400, 400),
+          key: 'scenery_image',
+        );
+      } catch (e) {
+        debugPrint('Failed to render widget snapshot: $e');
+      }
     }
 
     // Trigger update for both platforms
