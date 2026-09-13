@@ -30,10 +30,15 @@ class RiceWidgetProvider : HomeWidgetProvider() {
                     }
                 }
 
-                val pendingIntent = es.antonborri.home_widget.HomeWidgetLaunchIntent.getActivity(
+                val intent = android.content.Intent(context, MainActivity::class.java).apply {
+                    action = android.content.Intent.ACTION_MAIN
+                    addCategory(android.content.Intent.CATEGORY_LAUNCHER)
+                }
+                val pendingIntent = android.app.PendingIntent.getActivity(
                     context,
-                    MainActivity::class.java,
-                    Uri.parse("ricejourney://widget")
+                    0,
+                    intent,
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
                 )
                 setOnClickPendingIntent(R.id.widget_root, pendingIntent)
             }

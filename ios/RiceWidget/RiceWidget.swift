@@ -56,7 +56,6 @@ struct RiceWidgetEntryView : View {
                     .font(.system(size: 14))
             }
         }
-        .widgetURL(URL(string: "ricejourney://widget"))
     }
 
     var body: some View {
