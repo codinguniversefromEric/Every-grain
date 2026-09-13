@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class MistLayer extends StatefulWidget {
@@ -32,9 +33,12 @@ class _MistLayerState extends State<MistLayer>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        return CustomPaint(
-          painter: _MistPainter(_controller.value),
-          size: Size.infinite,
+        return ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+          child: CustomPaint(
+            painter: _MistPainter(_controller.value),
+            size: Size.infinite,
+          ),
         );
       },
     );
@@ -48,8 +52,7 @@ class _MistPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.15)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 50);
+      ..color = Colors.white.withValues(alpha: 0.15);
 
     // Draw several wide, soft blobs drifting right
     for (int i = 0; i < 3; i++) {

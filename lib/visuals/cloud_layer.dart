@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 
@@ -71,9 +72,12 @@ class _CloudLayerState extends State<CloudLayer>
     return AnimatedBuilder(
       animation: _driftController,
       builder: (context, child) {
-        return CustomPaint(
-          painter: _CloudPainter(_clouds, _driftController.value),
-          size: Size.infinite,
+        return ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 7.5, sigmaY: 7.5), // Matches MaskFilter radius 15
+          child: CustomPaint(
+            painter: _CloudPainter(_clouds, _driftController.value),
+            size: Size.infinite,
+          ),
         );
       },
     );
@@ -110,8 +114,7 @@ class _CloudPainter extends CustomPainter {
         ..color = (time > 0 ? const Color(0xFF90A4AE) : Colors.white)
             .withValues(
               alpha: c.opacity.clamp(0.0, 0.95),
-            ) // Darker if opacity is high
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15);
+            ); // Darker if opacity is high
 
       final rect = RRect.fromRectAndRadius(
         Rect.fromCenter(
