@@ -263,21 +263,21 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
               top: 100, left: 20,
               child: Transform.rotate(
                 angle: -0.15,
-                child: _buildRiceCard("台南11號", "Tainan 11", fontFamily, 'screenshot_1_seedling.png'),
+                child: _buildRiceCard("台南11號", "📍 嘉南平原", fontFamily, 'screenshot_1_seedling.png'),
               ),
             ),
             Positioned(
               top: 180, right: 10,
               child: Transform.rotate(
                 angle: 0.1,
-                child: _buildRiceCard("高雄139號", "Kaohsiung 139", fontFamily, 'screenshot_3_local_variety.png'),
+                child: _buildRiceCard("高雄139號", "📍 花東縱谷", fontFamily, 'screenshot_3_local_variety.png'),
               ),
             ),
             Positioned(
               top: 300, left: 30,
               child: Transform.rotate(
                 angle: -0.05,
-                child: _buildRiceCard("台稉9號", "Taichung 9", fontFamily, 'screenshot_2_stormy.png'),
+                child: _buildRiceCard("台稉9號", "📍 彰化西螺", fontFamily, 'screenshot_2_stormy.png'),
               ),
             ),
           ],
@@ -315,15 +315,16 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
     }
   }
 
-  Widget _buildRiceCard(String title, String subtitle, String fontFamily, String bg) {
+  Widget _buildRiceCard(String title, String location, String fontFamily, String bg) {
     return Container(
       width: 140, height: 180,
       decoration: BoxDecoration(
         color: const Color(0xFFF4EAD5),
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 10, offset: Offset(2, 5))],
+        boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 10, offset: Offset(2, 5))],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: ClipRRect(
@@ -333,11 +334,13 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontFamily: fontFamily, fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xFF5D4037))),
-                Text(subtitle, style: TextStyle(fontFamily: fontFamily, fontSize: 10, color: const Color(0xFF3E2723))),
+                Text(title, style: TextStyle(fontFamily: fontFamily, fontSize: 15, fontWeight: FontWeight.bold, color: const Color(0xFF5D4037))),
+                const SizedBox(height: 4),
+                Text(location, style: TextStyle(fontFamily: fontFamily, fontSize: 11, color: Colors.red.shade800, fontWeight: FontWeight.w600)),
               ],
             ),
           )
