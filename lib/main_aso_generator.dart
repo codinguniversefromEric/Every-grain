@@ -467,22 +467,22 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                           ),
                         ),
                         
-                        // Phone Mockup
+                        // Phone Mockup (Centered and shrunk for breathing room)
                         Positioned(
-                          top: 115,
-                          left: 20, 
+                          top: 130,
+                          left: 67.5, 
                           child: Container(
-                            width: 260,
-                            height: 462,
+                            width: 225,
+                            height: 400,
                             decoration: BoxDecoration(
                               color: Colors.black,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(16),
                               boxShadow: const [
-                                BoxShadow(color: Colors.black26, blurRadius: 15, offset: Offset(8, 12))
+                                BoxShadow(color: Colors.black26, blurRadius: 15, offset: Offset(0, 10))
                               ],
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(16),
                               child: _buildMockPhoneContent(_currentScreenIndex, fontFamily),
                             ),
                           ),
@@ -490,26 +490,26 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Phone Bezel
                         Positioned(
-                          top: 115, left: 20,
+                          top: 130, left: 67.5,
                           child: Container(
-                            width: 260, height: 462,
+                            width: 225, height: 400,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.black87, width: 5),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.black87, width: 4),
                             ),
                           ),
                         ),
                         
                         // Top Main Text
                         Positioned(
-                          top: 35, left: 0, right: 0,
+                          top: 35, left: 20, right: 20,
                           child: Text(
                             screenData['main']!,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: fontFamily,
                               fontSize: 26,
-                              height: 1.25,
+                              height: 1.3,
                               fontWeight: FontWeight.w900,
                               color: const Color(0xFF333333),
                             ),
@@ -518,14 +518,14 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Bottom Sub Text
                         Positioned(
-                          bottom: 20, left: 0, right: 0,
+                          bottom: 30, left: 20, right: 20,
                           child: Text(
                             screenData['sub']!,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: fontFamily,
-                              fontSize: 12,
-                              height: 1.4,
+                              fontSize: 13,
+                              height: 1.5,
                               color: const Color(0xFF555555),
                             ),
                           ),
@@ -533,23 +533,23 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Stamp overlapping the bottom right edge of the phone
                         Positioned(
-                          top: 535, // Phone ends at 577, stamp top at 535 overlaps perfectly
-                          left: 235, // Phone ends at 280, stamp left at 235 bleeds out
+                          top: 500, // Phone ends at 530, stamp overlaps bottom corner
+                          left: 245, // Phone ends at 292.5, stamp bleeds out
                           child: Transform.rotate(
                             angle: -0.15,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF2EBE1).withOpacity(0.9), 
+                                color: const Color(0xFFF2EBE1).withOpacity(0.95), 
                                 border: Border.all(color: Colors.red.shade800, width: 3),
                                 borderRadius: BorderRadius.circular(4),
-                                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(2, 4))],
                               ),
                               child: Text(
                                 screenData['stamp']!,
                                 style: TextStyle(
                                   fontFamily: fontFamily,
-                                  fontSize: 16,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red.shade800,
                                 ),
