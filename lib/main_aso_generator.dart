@@ -469,11 +469,11 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Phone Mockup
                         Positioned(
-                          top: 130,
+                          top: 115,
                           left: 20, 
                           child: Container(
                             width: 260,
-                            height: 480,
+                            height: 462,
                             decoration: BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(20),
@@ -490,9 +490,9 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Phone Bezel
                         Positioned(
-                          top: 130, left: 20,
+                          top: 115, left: 20,
                           child: Container(
-                            width: 260, height: 480,
+                            width: 260, height: 462,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(color: Colors.black87, width: 5),
@@ -518,7 +518,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Bottom Sub Text
                         Positioned(
-                          bottom: 25, left: 0, right: 0,
+                          bottom: 20, left: 0, right: 0,
                           child: Text(
                             screenData['sub']!,
                             textAlign: TextAlign.center,
@@ -533,8 +533,8 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Stamp overlapping the bottom right edge of the phone
                         Positioned(
-                          top: 550,
-                          left: 230,
+                          top: 535, // Phone ends at 577, stamp top at 535 overlaps perfectly
+                          left: 235, // Phone ends at 280, stamp left at 235 bleeds out
                           child: Transform.rotate(
                             angle: -0.15,
                             child: Container(
