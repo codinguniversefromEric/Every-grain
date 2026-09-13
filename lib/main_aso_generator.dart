@@ -126,7 +126,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
     await file.writeAsBytes(byteData.buffer.asUint8List());
   }
 
-  Widget _buildMockPhoneContent(int screenIndex, String fontFamily) {
+  Widget _buildMockPhoneContent(int screenIndex, String fontFamily, String locale) {
     // 依據不同的螢幕索引，渲染不同的假 UI 與斜切效果
     switch (screenIndex) {
       case 0: // Widget
@@ -140,20 +140,20 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             ),
             // App Icons Grid
             Positioned(
-              top: 50, left: 20, right: 20,
+              top: 50, left: 16, right: 16,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(4, (index) => Container(width: 50, height: 50, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(12)))),
+                children: List.generate(4, (index) => Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)))),
               ),
             ),
             // Rice Journey Widget Mock (Just a simple image widget as in the real app)
             Positioned(
-              top: 130, left: 20, right: 20,
+              top: 110, left: 16, right: 16,
               child: Container(
-                height: 240, // Square-ish proportion for the widget
+                height: 200, // Square-ish proportion for the widget
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 15, offset: const Offset(0, 8))],
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 15, offset: Offset(0, 8))],
                   image: DecorationImage(
                     image: FileImage(File('screenshots/screenshot_1_seedling.png')), 
                     fit: BoxFit.cover,
@@ -190,6 +190,12 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
           ],
         );
       case 2: // Diary
+        String diaryTitle = locale == 'en' ? "Grandpa's Diary" : (locale == 'ja' ? "おじいちゃんの日記" : "阿公的日誌");
+        String diaryText = locale == 'en' 
+            ? "Frost Descends. Raining today.\nWatch the water levels,\nthe seedlings grew...\n\n- K-139"
+            : (locale == 'ja' ? "霜降。今日は雨。\n田んぼの水位に注意、\n苗が少し伸びた...\n\n- 高雄139号" : "霜降。今日有雨。\n田裡的水位要注意，\n秧苗長高了一寸...\n\n- 高雄139號");
+        String closeBtn = locale == 'en' ? "Close" : (locale == 'ja' ? "閉じる" : "闔上");
+
         return Stack(
           children: [
             Image.file(File('screenshots/screenshot_3_local_variety.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
@@ -199,7 +205,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             ),
             Center(
               child: Container(
-                width: 200, height: 260,
+                width: 180, height: 260,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF4EAD5), // Match book_modal paperBackground
                   borderRadius: BorderRadius.circular(12),
@@ -214,25 +220,14 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                   children: [
                     const SizedBox(height: 8),
                     Text(
-                      "阿公的日誌",
-                      style: TextStyle(
-                        fontFamily: fontFamily,
-                        color: const Color(0xFF5D4037),
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
+                      diaryTitle,
+                      style: TextStyle(fontFamily: fontFamily, color: const Color(0xFF5D4037), fontSize: 16, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      "霜降。今日有雨。\n田裡的水位要注意，\n秧苗似乎長高了一寸...\n\n- 高雄139號",
-                      style: TextStyle(
-                        fontFamily: fontFamily,
-                        color: const Color(0xFF3E2723),
-                        fontSize: 12,
-                        height: 1.6,
-                      ),
+                      diaryText,
+                      style: TextStyle(fontFamily: fontFamily, color: const Color(0xFF3E2723), fontSize: 11, height: 1.6),
                     ),
                     const Spacer(),
                     OutlinedButton(
@@ -240,9 +235,9 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF5D4037),
                         side: const BorderSide(color: Color(0xFF5D4037)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                       ),
-                      child: Text("闔上", style: TextStyle(fontFamily: fontFamily, fontSize: 14, letterSpacing: 1)),
+                      child: Text(closeBtn, style: TextStyle(fontFamily: fontFamily, fontSize: 12)),
                     ),
                   ],
                 ),
@@ -251,6 +246,13 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
           ],
         );
       case 3: // Guide Cards
+        String t11 = locale == 'en' ? "Tainan 11" : (locale == 'ja' ? "台南11号" : "台南11號");
+        String t11Loc = locale == 'en' ? "📍 Jianan Plain" : "📍 嘉南平原";
+        String k139 = locale == 'en' ? "K-139" : (locale == 'ja' ? "高雄139号" : "高雄139號");
+        String k139Loc = locale == 'en' ? "📍 East Rift Valley" : (locale == 'ja' ? "📍 花東縦谷" : "📍 花東縱谷");
+        String tc9 = locale == 'en' ? "Taichung 9" : (locale == 'ja' ? "台稉9号" : "台稉9號");
+        String tc9Loc = locale == 'en' ? "📍 Changhua Xiluo" : "📍 彰化西螺";
+
         return Stack(
           children: [
             Image.file(File('screenshots/screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
@@ -263,26 +265,27 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
               top: 20, left: 10,
               child: Transform.rotate(
                 angle: -0.15,
-                child: _buildRiceCard("台南11號", "📍 嘉南平原", fontFamily, 'screenshot_1_seedling.png'),
+                child: _buildRiceCard(t11, t11Loc, fontFamily, 'screenshot_1_seedling.png'),
               ),
             ),
             Positioned(
               top: 110, right: -5,
               child: Transform.rotate(
                 angle: 0.1,
-                child: _buildRiceCard("高雄139號", "📍 花東縱谷", fontFamily, 'screenshot_3_local_variety.png'),
+                child: _buildRiceCard(k139, k139Loc, fontFamily, 'screenshot_3_local_variety.png'),
               ),
             ),
             Positioned(
               top: 220, left: 15,
               child: Transform.rotate(
                 angle: -0.05,
-                child: _buildRiceCard("台稉9號", "📍 彰化西螺", fontFamily, 'screenshot_2_stormy.png'),
+                child: _buildRiceCard(tc9, tc9Loc, fontFamily, 'screenshot_2_stormy.png'),
               ),
             ),
           ],
         );
       case 4: // Harvest
+        String harvestText = locale == 'en' ? "Harvest" : (locale == 'ja' ? "豊作" : "豐收");
         return Stack(
           children: [
             Image.file(File('screenshots/screenshot_5_harvested_clean.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
@@ -292,7 +295,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             ),
             Center(
               child: Container(
-                width: 150, height: 150,
+                width: 140, height: 140,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF4EAD5).withOpacity(0.95), // Match journal paper
                   shape: BoxShape.circle,
@@ -303,7 +306,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                   children: [
                     const Text("🍚", style: TextStyle(fontSize: 48)),
                     const SizedBox(height: 8),
-                    Text("豐收", style: TextStyle(fontFamily: fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: const Color(0xFF5D4037))),
+                    Text(harvestText, style: TextStyle(fontFamily: fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: const Color(0xFF5D4037))),
                   ],
                 ),
               ),
@@ -483,7 +486,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(16),
-                              child: _buildMockPhoneContent(_currentScreenIndex, fontFamily),
+                              child: _buildMockPhoneContent(_currentScreenIndex, fontFamily, _currentLocale),
                             ),
                           ),
                         ),
