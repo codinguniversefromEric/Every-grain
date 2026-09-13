@@ -199,39 +199,39 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             ),
             Center(
               child: Container(
-                width: 240, height: 320,
+                width: 200, height: 260,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF4EAD5), // Match book_modal paperBackground
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 20, offset: const Offset(10, 10))
+                    BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 15, offset: const Offset(5, 8))
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     Text(
                       "阿公的日誌",
                       style: TextStyle(
                         fontFamily: fontFamily,
                         color: const Color(0xFF5D4037),
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 2,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     Text(
                       "霜降。今日有雨。\n田裡的水位要注意，\n秧苗似乎長高了一寸...\n\n- 高雄139號",
                       style: TextStyle(
                         fontFamily: fontFamily,
                         color: const Color(0xFF3E2723),
-                        fontSize: 14,
-                        height: 1.8,
+                        fontSize: 12,
+                        height: 1.6,
                       ),
                     ),
                     const Spacer(),
@@ -240,9 +240,9 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF5D4037),
                         side: const BorderSide(color: Color(0xFF5D4037)),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: Text("闔上", style: TextStyle(fontFamily: fontFamily, fontSize: 16, letterSpacing: 1)),
+                      child: Text("闔上", style: TextStyle(fontFamily: fontFamily, fontSize: 14, letterSpacing: 1)),
                     ),
                   ],
                 ),
@@ -260,21 +260,21 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             ),
             // Floating cards
             Positioned(
-              top: 100, left: 20,
+              top: 20, left: 10,
               child: Transform.rotate(
                 angle: -0.15,
                 child: _buildRiceCard("台南11號", "📍 嘉南平原", fontFamily, 'screenshot_1_seedling.png'),
               ),
             ),
             Positioned(
-              top: 180, right: 10,
+              top: 110, right: -5,
               child: Transform.rotate(
                 angle: 0.1,
                 child: _buildRiceCard("高雄139號", "📍 花東縱谷", fontFamily, 'screenshot_3_local_variety.png'),
               ),
             ),
             Positioned(
-              top: 300, left: 30,
+              top: 220, left: 15,
               child: Transform.rotate(
                 angle: -0.05,
                 child: _buildRiceCard("台稉9號", "📍 彰化西螺", fontFamily, 'screenshot_2_stormy.png'),
@@ -292,18 +292,18 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             ),
             Center(
               child: Container(
-                width: 180, height: 180,
+                width: 150, height: 150,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF4EAD5).withOpacity(0.95), // Match journal paper
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: Colors.white30, blurRadius: 40, spreadRadius: 10)],
+                  boxShadow: const [BoxShadow(color: Colors.white30, blurRadius: 30, spreadRadius: 8)],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("🍚", style: TextStyle(fontSize: 60)),
-                    const SizedBox(height: 10),
-                    Text("豐收", style: TextStyle(fontFamily: fontFamily, fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFF5D4037))),
+                    const Text("🍚", style: TextStyle(fontSize: 48)),
+                    const SizedBox(height: 8),
+                    Text("豐收", style: TextStyle(fontFamily: fontFamily, fontSize: 20, fontWeight: FontWeight.bold, color: const Color(0xFF5D4037))),
                   ],
                 ),
               ),
@@ -383,12 +383,12 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                     child: Container(
                       width: fgWidth,
                       height: fgHeight,
-                      decoration: BoxDecoration(
+                        decoration: BoxDecoration(
                         color: Colors.black,
                         image: DecorationImage(
                           image: FileImage(File('screenshots/screenshot_3_local_variety.png')),
                           fit: BoxFit.cover,
-                          alignment: Alignment.bottomCenter,
+                          alignment: const Alignment(0, 0.6), // Avoid bottom navigation bar
                         ),
                       ),
                       child: Container(
