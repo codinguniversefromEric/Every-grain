@@ -4,13 +4,8 @@ import SwiftUI
 private let appGroupId = "group.com.chia.riceJourney"
 
 struct Provider: TimelineProvider {
-
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(
-            date: Date(),
-            imagePath: nil,
-            contextName: "placeholder"
-        )
+        SimpleEntry(date: Date(), imagePath: nil, contextName: "placeholder")
     }
 
     func getSnapshot(
@@ -19,13 +14,11 @@ struct Provider: TimelineProvider {
     ) {
         let userDefaults = UserDefaults(suiteName: appGroupId)
         let imagePath = userDefaults?.string(forKey: "scenery_image")
-
         let entry = SimpleEntry(
             date: Date(),
             imagePath: imagePath,
             contextName: context.isPreview ? "preview" : "snapshot"
         )
-
         completion(entry)
     }
 
@@ -35,19 +28,15 @@ struct Provider: TimelineProvider {
     ) {
         let userDefaults = UserDefaults(suiteName: appGroupId)
         let imagePath = userDefaults?.string(forKey: "scenery_image")
-
         let entry = SimpleEntry(
             date: Date(),
             imagePath: imagePath,
             contextName: "timeline"
         )
-
-        let nextUpdate = Calendar.current.date(
-            byAdding: .hour,
-            value: 1,
-            to: Date()
-        )!
-
+        
+        // 防呆：確保 date 計算不會導致 force unwrap crash
+        let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date().addingTimeInterval(3600)
+        
         let timeline = Timeline(
             entries: [entry],
             policy: .after(nextUpdate)
@@ -64,7 +53,6 @@ struct SimpleEntry: TimelineEntry {
 }
 
 struct RiceWidgetEntryView: View {
-
     var entry: Provider.Entry
     @Environment(\.widgetFamily) var family
 
@@ -76,11 +64,9 @@ struct RiceWidgetEntryView: View {
         }
         
         let url = URL(fileURLWithPath: originalPath)
-        let filename = url.lastPathComponent
-        
         let actualURL = containerURL
             .appendingPathComponent("home_widget")
-            .appendingPathComponent(filename)
+            .appendingPathComponent(url.lastPathComponent)
             
         if FileManager.default.fileExists(atPath: actualURL.path) {
             return actualURL.path
@@ -98,29 +84,31 @@ struct RiceWidgetEntryView: View {
         return UIImage(contentsOfFile: path)
     }
 
-    // 將診斷資訊顯示在畫面上，讓我們一眼看出 Small 與 Medium 的差異
     var diagnosticOverlay: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text("Ctx: \(entry.contextName)")
             Text("Fam: \(family == .systemSmall ? "Small" : "Medium")")
-            Text("Path: \(entry.imagePath != nil ? "OK" : "NIL")")
             
             if let path = resolvedImagePath {
                 let exists = FileManager.default.fileExists(atPath: path)
                 Text("File: \(exists ? "YES" : "NO")")
-                
                 if let img = UIImage(contentsOfFile: path) {
-                    Text("Img: \(Int(img.size.width))x\(Int(img.size.height))")
+                    Text("Img: \(Int(img.size.width))x") // 縮短字數避免 Small Widget 爆版
                 } else {
-                    Text("Img: LOAD FAIL")
+                    Text("Img: FAIL")
                 }
+            } else {
+                Text("Path: NIL")
             }
         }
-        .font(.system(size: 9, weight: .bold))
+        .font(.system(size: 10, weight: .bold))
         .foregroundColor(.green)
         .padding(4)
-        .background(Color.black.opacity(0.7))
+        .background(Color.black.opacity(0.6))
         .cornerRadius(4)
+        // 強制限制文字區塊不要撐破 Small Widget
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .clipped()
     }
 
     @ViewBuilder
@@ -129,17 +117,12 @@ struct RiceWidgetEntryView: View {
             Color.black
 
             if let image = uiImage {
-                // 套用使用者建議的 GeometryReader + scaledToFill 測試
-                GeometryReader { proxy in
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(
-                            width: proxy.size.width,
-                            height: proxy.size.height
-                        )
-                        .clipped()
-                }
+                // 移除 GeometryReader，改用最穩定的無限 frame + clipped
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
             } else {
                 VStack(spacing: 6) {
                     Image(systemName: "leaf.fill")
@@ -157,16 +140,10 @@ struct RiceWidgetEntryView: View {
                 )
             }
             
-            // 顯示診斷浮水印 (左上角)
-            VStack {
-                HStack {
-                    diagnosticOverlay
-                    Spacer()
-                }
-                Spacer()
-            }
-            .padding(8)
+            // 診斷 UI
+            diagnosticOverlay
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     var body: some View {
