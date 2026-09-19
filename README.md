@@ -5,7 +5,7 @@
 「一年一田、一季一冊」—— 這是一個真實、安靜、陪伴的台灣在地水稻文化 App。沒有廣告，沒有體力值，只有隨時間與真實天氣變化的稻田。  
 [![Buy Me A Boba](https://img.shields.io/badge/Donate-請我喝珍奶-CCA78C?style=for-the-badge&logo=coffeescript&logoColor=white)](https://codinguniversefromeric.bobaboba.me)
 [![TestFlight](https://img.shields.io/badge/iOS-TestFlight_Beta-0070c9?style=for-the-badge&logo=apple&logoColor=white)](https://testflight.apple.com/join/MpNSu2c8)
-[![Android](https://img.shields.io/badge/Android-Coming_Soon-3DDC84?style=for-the-badge&logo=android&logoColor=white)](#)
+[![Android](https://img.shields.io/badge/Android-Google_Play_Testing-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/apps/testing/com.chia.riceJourney)
 
 ## 技術棧 (Tech Stack)
 
