@@ -8,7 +8,8 @@ struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(
             date: Date(),
-            imagePath: nil
+            imagePath: nil,
+            contextName: "placeholder"
         )
     }
 
@@ -17,17 +18,12 @@ struct Provider: TimelineProvider {
         completion: @escaping (SimpleEntry) -> ()
     ) {
         let userDefaults = UserDefaults(suiteName: appGroupId)
-
-        let imagePath = userDefaults?.string(
-            forKey: "scenery_image"
-        )
-
-        print("🍚 Widget Snapshot")
-        print("imagePath:", imagePath ?? "nil")
+        let imagePath = userDefaults?.string(forKey: "scenery_image")
 
         let entry = SimpleEntry(
             date: Date(),
-            imagePath: imagePath
+            imagePath: imagePath,
+            contextName: context.isPreview ? "preview" : "snapshot"
         )
 
         completion(entry)
@@ -38,17 +34,12 @@ struct Provider: TimelineProvider {
         completion: @escaping (Timeline<Entry>) -> ()
     ) {
         let userDefaults = UserDefaults(suiteName: appGroupId)
-
-        let imagePath = userDefaults?.string(
-            forKey: "scenery_image"
-        )
-
-        print("🍚 Widget Timeline")
-        print("imagePath:", imagePath ?? "nil")
+        let imagePath = userDefaults?.string(forKey: "scenery_image")
 
         let entry = SimpleEntry(
             date: Date(),
-            imagePath: imagePath
+            imagePath: imagePath,
+            contextName: "timeline"
         )
 
         let nextUpdate = Calendar.current.date(
@@ -69,70 +60,67 @@ struct Provider: TimelineProvider {
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let imagePath: String?
+    let contextName: String
 }
 
 struct RiceWidgetEntryView: View {
 
     var entry: Provider.Entry
+    @Environment(\.widgetFamily) var family
 
     var resolvedImagePath: String? {
-        guard let originalPath = entry.imagePath else {
-            print("❌ original imagePath is nil in UserDefaults")
-            return nil
-        }
+        guard let originalPath = entry.imagePath else { return nil }
         
-        print("🔍 Original path from UserDefaults: \(originalPath)")
-        
-        // 由於 iOS App Group Container 的 UUID 在重新編譯或更新時會改變，
-        // 寫死在 UserDefaults 的絕對路徑會失效，必須動態重組路徑。
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) else {
-            print("❌ Failed to get containerURL for App Group: \(appGroupId)")
             return originalPath
         }
         
         let url = URL(fileURLWithPath: originalPath)
-        let filename = url.lastPathComponent // 預期為 scenery_image.png
+        let filename = url.lastPathComponent
         
-        // home_widget 預設會將檔案存在 app group 的 "home_widget" 子目錄中
         let actualURL = containerURL
             .appendingPathComponent("home_widget")
             .appendingPathComponent(filename)
             
-        print("🔍 Dynamically reconstructed path: \(actualURL.path)")
-        
         if FileManager.default.fileExists(atPath: actualURL.path) {
-            print("✅ File exists at reconstructed path")
             return actualURL.path
-        } else {
-            print("❌ File DOES NOT exist at reconstructed path")
         }
         
-        // Fallback: 檢查原本的路徑是否奇蹟般存在
         if FileManager.default.fileExists(atPath: originalPath) {
-            print("✅ File exists at original path")
             return originalPath
-        } else {
-            print("❌ File DOES NOT exist at original path")
         }
         
         return originalPath
     }
 
     var uiImage: UIImage? {
-        guard let path = resolvedImagePath else {
-            print("❌ resolvedImagePath is nil")
-            return nil
+        guard let path = resolvedImagePath else { return nil }
+        return UIImage(contentsOfFile: path)
+    }
+
+    // 將診斷資訊顯示在畫面上，讓我們一眼看出 Small 與 Medium 的差異
+    var diagnosticOverlay: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("Ctx: \(entry.contextName)")
+            Text("Fam: \(family == .systemSmall ? "Small" : "Medium")")
+            Text("Path: \(entry.imagePath != nil ? "OK" : "NIL")")
+            
+            if let path = resolvedImagePath {
+                let exists = FileManager.default.fileExists(atPath: path)
+                Text("File: \(exists ? "YES" : "NO")")
+                
+                if let img = UIImage(contentsOfFile: path) {
+                    Text("Img: \(Int(img.size.width))x\(Int(img.size.height))")
+                } else {
+                    Text("Img: LOAD FAIL")
+                }
+            }
         }
-
-        print("📷 Loading image from:", path)
-
-        guard let image = UIImage(contentsOfFile: path) else {
-            print("❌ UIImage failed to load from path: \(path)")
-            return nil
-        }
-
-        print("✅ Image loaded successfully")
-        return image
+        .font(.system(size: 9, weight: .bold))
+        .foregroundColor(.green)
+        .padding(4)
+        .background(Color.black.opacity(0.7))
+        .cornerRadius(4)
     }
 
     @ViewBuilder
@@ -141,10 +129,17 @@ struct RiceWidgetEntryView: View {
             Color.black
 
             if let image = uiImage {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipped()
+                // 套用使用者建議的 GeometryReader + scaledToFill 測試
+                GeometryReader { proxy in
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(
+                            width: proxy.size.width,
+                            height: proxy.size.height
+                        )
+                        .clipped()
+                }
             } else {
                 VStack(spacing: 6) {
                     Image(systemName: "leaf.fill")
@@ -161,6 +156,16 @@ struct RiceWidgetEntryView: View {
                     )
                 )
             }
+            
+            // 顯示診斷浮水印 (左上角)
+            VStack {
+                HStack {
+                    diagnosticOverlay
+                    Spacer()
+                }
+                Spacer()
+            }
+            .padding(8)
         }
     }
 
@@ -178,7 +183,6 @@ struct RiceWidgetEntryView: View {
 }
 
 struct RiceWidget: Widget {
-
     let kind: String = "RiceWidget"
 
     var body: some WidgetConfiguration {
@@ -199,10 +203,8 @@ struct RiceWidget: Widget {
 }
 
 extension WidgetConfiguration {
-
     func contentMarginsDisabledIfAvailable()
         -> some WidgetConfiguration {
-
         if #available(iOS 15.0, *) {
             return self.contentMarginsDisabled()
         } else {
