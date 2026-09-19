@@ -312,6 +312,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bwaResultNegative => '陰筊。\n\n土地公認為現在這樣最好。\n請順應天意。';
 
   @override
+  String get bwaResultStanding => '立筊。\n\n這是難得的筊象。\n請恭敬領受。';
+
+  @override
   String get tariGrowthDays => '日數';
 
   @override

@@ -130,6 +130,52 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
   late final ReviewService _reviewService;
   bool _showMicroSimulation = false;
 
+  Widget _buildCornerButton({
+  required IconData icon,
+  required bool enabled,
+  required String tooltip,
+  required VoidCallback onPressed,
+}) {
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: enabled ? onPressed : null,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2C2214).withValues(
+            alpha: enabled ? 0.55 : 0.3,
+          ),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: const Color(0xFFD4AF37).withValues(
+              alpha: enabled ? 0.45 : 0.15,
+            ),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Icon(
+          icon,
+          size: 22,
+          color: Colors.white.withValues(
+            alpha: enabled ? 0.75 : 0.25,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+
   @override
   void initState() {
     super.initState();
@@ -475,17 +521,41 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                   ),
                 ),
 
-              // 8. Low-profile About/Tip Jar Button
-              if (!isTakingScreenshot)
-                Positioned(
-                  bottom: 20,
-                  right: 20,
-                  child: SafeArea(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.spa,
-                        color: Colors.white.withValues(alpha: 0.3),
-                      ),
+           // ==========================================================================
+          // Bottom-right utility buttons
+          // ==========================================================================
+
+          if (!isTakingScreenshot)
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Collection
+                    _buildCornerButton(
+                      icon: Icons.grid_view,
+                      enabled: _stateManager.unlockedVarieties.isNotEmpty,
+                      tooltip: AppLocalizations.of(context)!.collectionTooltip,
+                      onPressed: () {
+                        showBookModal(
+                          context,
+                          title: AppLocalizations.of(context)!.collectionTitle,
+                          content: CollectionGrid(
+                            unlockedIds: _stateManager.unlockedVarieties,
+                          ),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // About
+                    _buildCornerButton(
+                      icon: Icons.info_outline,
+                      enabled: true,
+                      tooltip: AppLocalizations.of(context)!.aboutUs,
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -496,35 +566,12 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                           ),
                         );
                       },
-                      tooltip: AppLocalizations.of(context)!.aboutUs,
                     ),
-                  ),
+                  ],
                 ),
-                
-              // Collection Grid Button
-              if (!isTakingScreenshot)
-                Positioned(
-                  bottom: 20,
-                  right: 80,
-                  child: SafeArea(
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.grid_view,
-                        color: Colors.white.withValues(alpha: _stateManager.unlockedVarieties.isNotEmpty ? 0.8 : 0.3),
-                      ),
-                      onPressed: () {
-                        showBookModal(
-                          context,
-                          title: AppLocalizations.of(context)!.collectionTitle,
-                          content: CollectionGrid(
-                            unlockedIds: _stateManager.unlockedVarieties,
-                          ),
-                        );
-                      },
-                      tooltip: AppLocalizations.of(context)!.collectionTooltip,
-                    ),
-                  ),
-                ),
+              ),
+            ),
+
                 
               // 9. Farming Journal Button
               if (!isTakingScreenshot)

@@ -688,6 +688,12 @@ abstract class AppLocalizations {
   /// **'陰筊。\n\n土地公認為現在這樣最好。\n請順應天意。'**
   String get bwaResultNegative;
 
+  /// No description provided for @bwaResultStanding.
+  ///
+  /// In zh, this message translates to:
+  /// **'立筊。\n\n這是難得的筊象。\n請恭敬領受。'**
+  String get bwaResultStanding;
+
   /// No description provided for @tariGrowthDays.
   ///
   /// In zh, this message translates to:

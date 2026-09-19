@@ -97,6 +97,8 @@
   "bwaResultHoly": "聖筊！\n\n土地神が祈りを聞き入れました。\n天候が晴れに修正されました。",
   "bwaResultLaughing": "笑筊。\n\n土地神は笑って答えませんでした。\n自然には独自の計画があるのかもしれません。",
   "bwaResultNegative": "陰筊。\n\n土地神は現状が最善だと考えています。\n天意に従ってください。",
+  "bwaResultNegative": "陰筊（いんこう）。\n\n土地公は、今のままがよいと考えています。\n天の意に従ってください。",
+  "bwaResultStanding": "立筊（りっこう）。\n\nこれは珍しい筊象です。\n敬意をもって受け止めてください。",
   "tariGrowthDays": "日数",
   "tariWeight": "千粒重",
   "tariType": "形態",

@@ -315,7 +315,11 @@ class AppLocalizationsJa extends AppLocalizations {
       '笑筊。\n\n土地神は笑って答えませんでした。\n自然には独自の計画があるのかもしれません。';
 
   @override
-  String get bwaResultNegative => '陰筊。\n\n土地神は現状が最善だと考えています。\n天意に従ってください。';
+  String get bwaResultNegative =>
+      '陰筊（いんこう）。\n\n土地公は、今のままがよいと考えています。\n天の意に従ってください。';
+
+  @override
+  String get bwaResultStanding => '立筊（りっこう）。\n\nこれは珍しい筊象です。\n敬意をもって受け止めてください。';
 
   @override
   String get tariGrowthDays => '日数';

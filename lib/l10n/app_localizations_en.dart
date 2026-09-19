@@ -329,6 +329,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Negative Blocks.\n\nThe Earth God thinks it\'s best as it is.\nPlease follow the will of heaven.';
 
   @override
+  String get bwaResultStanding =>
+      'Standing Blocks.\n\nThis is a rare sign.\nPlease receive it with respect.';
+
+  @override
   String get tariGrowthDays => 'Days';
 
   @override
