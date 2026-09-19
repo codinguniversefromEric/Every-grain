@@ -237,6 +237,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get collectionTooltip => '圖鑑 (Collection)';
 
   @override
+  String get collectionHintText => '探索稻米品種，發現每一粒米背後的故事。';
+
+  @override
   String get collectionSourceText =>
       '學術數據授權 / 資料來源：\n農業部農業試驗所 (TARI) - 水稻品種資訊系統';
 

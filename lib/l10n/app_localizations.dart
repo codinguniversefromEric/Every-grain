@@ -544,6 +544,12 @@ abstract class AppLocalizations {
   /// **'圖鑑 (Collection)'**
   String get collectionTooltip;
 
+  /// No description provided for @collectionHintText.
+  ///
+  /// In zh, this message translates to:
+  /// **'探索稻米品種，發現每一粒米背後的故事。'**
+  String get collectionHintText;
+
   /// No description provided for @collectionSourceText.
   ///
   /// In zh, this message translates to:

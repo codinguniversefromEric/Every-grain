@@ -246,6 +246,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get collectionTooltip => 'Collection';
 
   @override
+  String get collectionHintText =>
+      'Explore rice varieties and discover the stories behind every grain.';
+
+  @override
   String get collectionSourceText =>
       'Academic Data Licensed from:\nTaiwan Agricultural Research Institute (TARI)';
 

@@ -72,6 +72,7 @@
   "testerLocYilan": "📍 宜蘭 Yilan (東部 - 越光米)",
   "collectionTitle": "Rice Passport",
   "collectionTooltip": "Collection",
+  "collectionHintText": "Explore rice varieties and discover the stories behind every grain.",
   "collectionSourceText": "Academic Data Licensed from:\nTaiwan Agricultural Research Institute (TARI)",
   "journalTitle": "Farm Journal",
   "journalTooltip": "Journal",

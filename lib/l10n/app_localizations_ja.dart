@@ -241,6 +241,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get collectionTooltip => '図鑑 (Collection)';
 
   @override
+  String get collectionHintText => 'お米の品種をめぐり、一粒一粒に込められた物語を見つけよう。';
+
+  @override
   String get collectionSourceText => '学術データライセンス提供：\n台湾農業試験所 (TARI)';
 
   @override
