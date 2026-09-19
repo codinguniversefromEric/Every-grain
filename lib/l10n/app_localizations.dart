@@ -544,6 +544,12 @@ abstract class AppLocalizations {
   /// **'圖鑑 (Collection)'**
   String get collectionTooltip;
 
+  /// No description provided for @collectionHintText.
+  ///
+  /// In zh, this message translates to:
+  /// **'💡 提示：在不同縣市種下稻米，並耐心等待一季的生長與收割，即可解鎖該地區專屬的品種圖鑑。'**
+  String get collectionHintText;
+
   /// No description provided for @collectionSourceText.
   ///
   /// In zh, this message translates to:

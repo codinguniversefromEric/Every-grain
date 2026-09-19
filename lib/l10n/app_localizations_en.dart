@@ -246,6 +246,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get collectionTooltip => 'Collection';
 
   @override
+  String get collectionHintText =>
+      '💡 Hint: Plant rice in different regions and patiently wait for the harvest to unlock local varieties.';
+
+  @override
   String get collectionSourceText =>
       'Academic Data Licensed from:\nTaiwan Agricultural Research Institute (TARI)';
 

@@ -237,6 +237,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get collectionTooltip => '圖鑑 (Collection)';
 
   @override
+  String get collectionHintText =>
+      '💡 提示：在不同縣市種下稻米，並耐心等待一季的生長與收割，即可解鎖該地區專屬的品種圖鑑。';
+
+  @override
   String get collectionSourceText =>
       '學術數據授權 / 資料來源：\n農業部農業試驗所 (TARI) - 水稻品種資訊系統';
 
