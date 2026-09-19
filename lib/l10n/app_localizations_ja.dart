@@ -241,8 +241,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get collectionTooltip => '図鑑 (Collection)';
 
   @override
-  String get collectionHintText =>
-      '💡 ヒント：異なる地域で稲を植え、収穫まで根気よく待つことで、その地域特有の品種をアンロックできます。';
+  String get collectionHintText => 'お米の品種をめぐり、一粒一粒に込められた物語を見つけよう。';
 
   @override
   String get collectionSourceText => '学術データライセンス提供：\n台湾農業試験所 (TARI)';

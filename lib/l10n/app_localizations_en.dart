@@ -247,7 +247,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get collectionHintText =>
-      '💡 Hint: Plant rice in different regions and patiently wait for the harvest to unlock local varieties.';
+      'Explore rice varieties and discover the stories behind every grain.';
 
   @override
   String get collectionSourceText =>

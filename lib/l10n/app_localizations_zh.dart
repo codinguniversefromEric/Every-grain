@@ -237,8 +237,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get collectionTooltip => '圖鑑 (Collection)';
 
   @override
-  String get collectionHintText =>
-      '💡 提示：在不同縣市種下稻米，並耐心等待一季的生長與收割，即可解鎖該地區專屬的品種圖鑑。';
+  String get collectionHintText => '探索稻米品種，發現每一粒米背後的故事。';
 
   @override
   String get collectionSourceText =>
