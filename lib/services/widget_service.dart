@@ -41,21 +41,34 @@ class WidgetService {
     // Render snapshot
     if (const String.fromEnvironment('DISABLE_HOME_WIDGET', defaultValue: 'false') != 'true') {
       try {
-        await HomeWidget.renderFlutterWidget(
+        debugPrint('🍚 Updating widget...');
+        
+        // Cache Busting 策略：為每次更新產生唯一的檔名，強制 iOS WidgetKit 放棄快取並重繪
+        final String uniqueKey = 'scenery_image_${DateTime.now().millisecondsSinceEpoch}';
+        
+        final String path = await HomeWidget.renderFlutterWidget(
           WidgetScenerySnapshot(
             state: state,
             hasUnreadJournal: hasUnreadJournal,
             loc: loc,
           ),
           logicalSize: const Size(400, 400),
-          key: 'scenery_image',
+          key: uniqueKey,
         );
+        
+        debugPrint('🍚 image rendered at: $path');
+        
+        // 由於檔名變了，我們必須告訴 Swift 新的路徑在哪裡
+        // Swift 那邊依然是讀取 'scenery_image' 這個鍵值，但內容變成了最新產生的絕對路徑
+        await HomeWidget.saveWidgetData<String>('scenery_image', path);
+        
       } catch (e) {
         debugPrint('Failed to render widget snapshot: $e');
       }
     }
 
     // Trigger update for both platforms
+    debugPrint('🍚 calling HomeWidget.updateWidget');
     await HomeWidget.updateWidget(
       name: androidWidgetName,
       iOSName: iosWidgetName,

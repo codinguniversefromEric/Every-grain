@@ -5,44 +5,34 @@ private let appGroupId = "group.com.chia.riceJourney"
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), imagePath: nil, contextName: "placeholder")
+        SimpleEntry(date: Date(), imagePath: nil, contextName: "placeholder", refreshId: nil)
     }
 
-    func getSnapshot(
-        in context: Context,
-        completion: @escaping (SimpleEntry) -> ()
-    ) {
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
         let userDefaults = UserDefaults(suiteName: appGroupId)
         let imagePath = userDefaults?.string(forKey: "scenery_image")
-        let entry = SimpleEntry(
-            date: Date(),
-            imagePath: imagePath,
-            contextName: context.isPreview ? "preview" : "snapshot"
-        )
+        let entry = SimpleEntry(date: Date(), imagePath: imagePath, contextName: context.isPreview ? "preview" : "snapshot", refreshId: nil)
         completion(entry)
     }
 
-    func getTimeline(
-        in context: Context,
-        completion: @escaping (Timeline<Entry>) -> ()
-    ) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         let userDefaults = UserDefaults(suiteName: appGroupId)
         let imagePath = userDefaults?.string(forKey: "scenery_image")
+        
+        print("🍚 RiceWidget getTimeline CALLED")
+        print("🍚 scenery_image =", imagePath ?? "NIL")
+        
+        // 加入一個唯一識別碼 (UUID)，強制 WidgetKit 知道這是一個全新的 Entry 狀態，避免 View 快取
         let entry = SimpleEntry(
             date: Date(),
             imagePath: imagePath,
-            contextName: "timeline"
+            contextName: "timeline",
+            refreshId: UUID().uuidString
         )
         
-        // 防呆：確保 date 計算不會導致 force unwrap crash
-        let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) ?? Date().addingTimeInterval(3600)
-        
-        let timeline = Timeline(
-            entries: [entry],
-            policy: .after(nextUpdate)
-        )
-
-        completion(timeline)
+        // 改用 .never：完全由 Flutter 端的 HomeWidget.updateWidget() 來控制更新
+        // 避免系統每小時自動喚醒消耗 WidgetKit 嚴格的每日更新配額 (Budget)
+        completion(Timeline(entries: [entry], policy: .never))
     }
 }
 
@@ -50,6 +40,7 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
     let imagePath: String?
     let contextName: String
+    let refreshId: String? // 用於 Cache Busting
 }
 
 struct RiceWidgetEntryView: View {
