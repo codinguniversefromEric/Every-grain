@@ -19,9 +19,6 @@ struct Provider: TimelineProvider {
         let userDefaults = UserDefaults(suiteName: appGroupId)
         let imagePath = userDefaults?.string(forKey: "scenery_image")
         
-        print("🍚 RiceWidget getTimeline CALLED")
-        print("🍚 scenery_image =", imagePath ?? "NIL")
-        
         // 加入一個唯一識別碼 (UUID)，強制 WidgetKit 知道這是一個全新的 Entry 狀態，避免 View 快取
         let entry = SimpleEntry(
             date: Date(),
@@ -75,33 +72,6 @@ struct RiceWidgetEntryView: View {
         return UIImage(contentsOfFile: path)
     }
 
-    var diagnosticOverlay: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("Ctx: \(entry.contextName)")
-            Text("Fam: \(family == .systemSmall ? "Small" : "Medium")")
-            
-            if let path = resolvedImagePath {
-                let exists = FileManager.default.fileExists(atPath: path)
-                Text("File: \(exists ? "YES" : "NO")")
-                if let img = UIImage(contentsOfFile: path) {
-                    Text("Img: \(Int(img.size.width))x") // 縮短字數避免 Small Widget 爆版
-                } else {
-                    Text("Img: FAIL")
-                }
-            } else {
-                Text("Path: NIL")
-            }
-        }
-        .font(.system(size: 10, weight: .bold))
-        .foregroundColor(.green)
-        .padding(4)
-        .background(Color.black.opacity(0.6))
-        .cornerRadius(4)
-        // 強制限制文字區塊不要撐破 Small Widget
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .clipped()
-    }
-
     @ViewBuilder
     var content: some View {
         ZStack {
@@ -130,9 +100,6 @@ struct RiceWidgetEntryView: View {
                     )
                 )
             }
-            
-            // 診斷 UI
-            diagnosticOverlay
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

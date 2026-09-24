@@ -84,7 +84,6 @@ class StateManager extends ChangeNotifier {
   void pauseApp() {
     crop.stopTimers();
     audio.pauseApp();
-    WidgetService.updateWidget(_state, hasUnreadJournal: !hasReadFirstLetter);
   }
 
   void resumeApp() {

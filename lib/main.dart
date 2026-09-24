@@ -197,13 +197,15 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused) {
+      // 只有在真正進入背景 (paused) 時才進行耗時的 Widget 更新，避免在 inactive (如拉下通知中心) 時狂刷
       _stateManager.pauseApp();
       WidgetService.updateWidget(
         _stateManager.state, 
         hasUnreadJournal: _stateManager.hasUnreadJournal
       );
+    } else if (state == AppLifecycleState.inactive) {
+      _stateManager.pauseApp();
     } else if (state == AppLifecycleState.resumed) {
       _stateManager.resumeApp();
     }
