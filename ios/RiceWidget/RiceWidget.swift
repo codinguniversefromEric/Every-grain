@@ -81,15 +81,21 @@ struct RiceWidgetEntryView: View {
         } else {
             ZStack {
                 Color.gray
-                VStack {
+                VStack(spacing: 2) {
                     Text("Image is nil").bold()
-                    Text("Path: \(entry.imagePath ?? "NIL")").font(.system(size: 8))
+                    Text("Path: \(entry.imagePath ?? "NIL")")
+                        .font(.system(size: 8))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                     if let rp = resolvedImagePath {
-                        Text("Resolved: \(rp)").font(.system(size: 8))
+                        Text("Resolved: \(rp)")
+                            .font(.system(size: 8))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
                         Text("Exists: \(FileManager.default.fileExists(atPath: rp) ? "YES" : "NO")").font(.system(size: 10))
                     }
                 }
-                .padding()
+                .padding(4)
             }
         }
     }
