@@ -74,34 +74,13 @@ struct RiceWidgetEntryView: View {
 
     @ViewBuilder
     var content: some View {
-        ZStack {
-            Color.black
-
-            if let image = uiImage {
-                // 移除 GeometryReader，改用最穩定的無限 frame + clipped
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-            } else {
-                VStack(spacing: 6) {
-                    Image(systemName: "leaf.fill")
-                        .font(.system(size: 24))
-
-                    Text("生長中...")
-                        .font(.system(size: 14))
-                }
-                .foregroundColor(
-                    Color(
-                        red: 212 / 255,
-                        green: 175 / 255,
-                        blue: 55 / 255
-                    )
-                )
-            }
+        if let image = uiImage {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+        } else {
+            Color.gray
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     var body: some View {
