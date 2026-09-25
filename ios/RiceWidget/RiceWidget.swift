@@ -108,13 +108,7 @@ struct RiceWidgetEntryView: View {
                     let exists = FileManager.default.fileExists(atPath: rp)
                     Text("File: \(exists ? "YES" : "NO")")
                     if exists {
-                        do {
-                            let attr = try FileManager.default.attributesOfItem(atPath: rp)
-                            let size = attr[.size] as? UInt64 ?? 0
-                            Text("Size: \(size)b")
-                        } catch {
-                            Text("Size: ERR")
-                        }
+                        Text("Size: \(getFileSize(path: rp))b")
                     }
                 }
             }
@@ -126,6 +120,15 @@ struct RiceWidgetEntryView: View {
             .unredacted()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    func getFileSize(path: String) -> UInt64 {
+        do {
+            let attr = try FileManager.default.attributesOfItem(atPath: path)
+            return attr[.size] as? UInt64 ?? 0
+        } catch {
+            return 0
+        }
     }
 
     var body: some View {
