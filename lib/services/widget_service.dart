@@ -44,8 +44,9 @@ class WidgetService {
         debugPrint('🍚 Updating widget...');
         
         // 修正 Storage Leak：使用固定檔名，不再每次產生新檔案。
-        // Swift 端已經有 UUID() cache busting 機制，不需要靠檔名來破壞快取。
-        final String uniqueKey = 'scenery_image_file';
+        // 使用 timestamp 確保檔名改變，強制 WidgetKit 重新讀取圖片 (Bypass cache)
+        // Swift 端會負責清理舊的檔案以防止 Storage Leak
+        final String uniqueKey = 'scenery_image_${DateTime.now().millisecondsSinceEpoch}';
         
         final String path = await HomeWidget.renderFlutterWidget(
           WidgetScenerySnapshot(

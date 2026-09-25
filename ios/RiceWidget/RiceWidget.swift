@@ -19,6 +19,20 @@ struct Provider: TimelineProvider {
         let userDefaults = UserDefaults(suiteName: appGroupId)
         let imagePath = userDefaults?.string(forKey: "scenery_image")
         
+        // 清理舊的圖片避免 Storage Leak
+        if let currentPath = imagePath, let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) {
+            let directoryURL = containerURL.appendingPathComponent("home_widget")
+            let currentFileName = URL(fileURLWithPath: currentPath).lastPathComponent
+            do {
+                let fileURLs = try FileManager.default.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
+                for fileURL in fileURLs {
+                    if fileURL.lastPathComponent.hasPrefix("scenery_image_") && fileURL.lastPathComponent != currentFileName {
+                        try? FileManager.default.removeItem(at: fileURL)
+                    }
+                }
+            } catch {}
+        }
+        
         // 加入一個唯一識別碼 (UUID)，強制 WidgetKit 知道這是一個全新的 Entry 狀態，避免 View 快取
         let entry = SimpleEntry(
             date: Date(),
@@ -133,7 +147,7 @@ struct RiceWidgetEntryView: View {
             return 0
         }
     }
-
+    
     var body: some View {
         if #available(iOS 17.0, *) {
             content
