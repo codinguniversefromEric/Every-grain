@@ -114,27 +114,6 @@ struct RiceWidgetEntryView: View {
                 )
                 .unredacted()
             }
-            
-            VStack(alignment: .leading) {
-                let formatter = DateFormatter()
-                let _ = formatter.dateFormat = "HH:mm:ss"
-                Text("Time: \(formatter.string(from: Date()))")
-                Text("Ctx: \(entry.contextName)")
-                Text("Path: \(entry.imagePath != nil ? "YES" : "NIL")")
-                if let rp = resolvedImagePath {
-                    let exists = FileManager.default.fileExists(atPath: rp)
-                    Text("File: \(exists ? "YES" : "NO")")
-                    if exists {
-                        Text("Size: \(getFileSize(path: rp))b")
-                    }
-                }
-            }
-            .font(.system(size: 10, weight: .bold))
-            .foregroundColor(.green)
-            .padding(4)
-            .background(Color.black.opacity(0.5))
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .unredacted()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

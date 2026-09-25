@@ -348,13 +348,6 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
           currentContent = Scaffold(
             key: const ValueKey('ready_scenery'),
             resizeToAvoidBottomInset: false,
-            floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-                debugPrint("MANUAL WIDGET UPDATE TRIGGERED");
-                await WidgetService.updateWidget(_stateManager.state, hasUnreadJournal: _stateManager.hasUnreadJournal);
-              },
-              child: const Icon(Icons.refresh),
-            ),
             body: Stack(
             children: [
               // 1. Living Sky Background
