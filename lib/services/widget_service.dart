@@ -41,12 +41,14 @@ class WidgetService {
     // Render snapshot
     if (const String.fromEnvironment('DISABLE_HOME_WIDGET', defaultValue: 'false') != 'true') {
       try {
-        debugPrint('🍚 Updating widget...');
-        
-        // 修正 Storage Leak：使用固定檔名，不再每次產生新檔案。
-        // 使用 timestamp 確保檔名改變，強制 WidgetKit 重新讀取圖片 (Bypass cache)
-        // Swift 端會負責清理舊的檔案以防止 Storage Leak
-        final String uniqueKey = 'scenery_image_${DateTime.now().millisecondsSinceEpoch}';
+        // 實作 Ping-Pong Buffering (A/B 切換) 來解決所有問題：
+        // 1. 路徑改變，強制 iOS WidgetKit 繞過快取
+        // 2. 避免覆寫同一個檔案導致 iOS 讀取到一半破圖 (Race Condition)
+        // 3. 最多只有兩個檔案，絕對不會有 Storage Leak
+        final prefs = await SharedPreferences.getInstance();
+        final bool useImageA = prefs.getBool('use_widget_image_a') ?? true;
+        final String uniqueKey = useImageA ? 'scenery_image_A' : 'scenery_image_B';
+        await prefs.setBool('use_widget_image_a', !useImageA);
         
         final String path = await HomeWidget.renderFlutterWidget(
           WidgetScenerySnapshot(
