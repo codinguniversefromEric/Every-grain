@@ -79,7 +79,18 @@ struct RiceWidgetEntryView: View {
                 .resizable()
                 .scaledToFill()
         } else {
-            Color.gray
+            ZStack {
+                Color.gray
+                VStack {
+                    Text("Image is nil").bold()
+                    Text("Path: \(entry.imagePath ?? "NIL")").font(.system(size: 8))
+                    if let rp = resolvedImagePath {
+                        Text("Resolved: \(rp)").font(.system(size: 8))
+                        Text("Exists: \(FileManager.default.fileExists(atPath: rp) ? "YES" : "NO")").font(.system(size: 10))
+                    }
+                }
+                .padding()
+            }
         }
     }
 
