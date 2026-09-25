@@ -102,6 +102,9 @@ struct RiceWidgetEntryView: View {
             }
             
             VStack(alignment: .leading) {
+                let formatter = DateFormatter()
+                let _ = formatter.dateFormat = "HH:mm:ss"
+                Text("Time: \(formatter.string(from: Date()))")
                 Text("Ctx: \(entry.contextName)")
                 Text("Path: \(entry.imagePath != nil ? "YES" : "NIL")")
                 if let rp = resolvedImagePath {
