@@ -98,7 +98,19 @@ struct RiceWidgetEntryView: View {
                         blue: 55 / 255
                     )
                 )
+                .unredacted()
             }
+            
+            VStack {
+                Text("Ctx: \(entry.contextName)")
+                Text("Path: \(entry.imagePath != nil ? "YES" : "NIL")")
+            }
+            .font(.system(size: 10, weight: .bold))
+            .foregroundColor(.green)
+            .padding(4)
+            .background(Color.black.opacity(0.5))
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .unredacted()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
