@@ -74,30 +74,33 @@ struct RiceWidgetEntryView: View {
 
     @ViewBuilder
     var content: some View {
-        if let image = uiImage {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-        } else {
-            ZStack {
-                Color.gray
-                VStack(spacing: 2) {
-                    Text("Image is nil").bold()
-                    Text("Path: \(entry.imagePath ?? "NIL")")
-                        .font(.system(size: 8))
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                    if let rp = resolvedImagePath {
-                        Text("Resolved: \(rp)")
-                            .font(.system(size: 8))
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                        Text("Exists: \(FileManager.default.fileExists(atPath: rp) ? "YES" : "NO")").font(.system(size: 10))
-                    }
+        ZStack {
+            Color.black
+
+            if let image = uiImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+            } else {
+                VStack(spacing: 6) {
+                    Image(systemName: "leaf.fill")
+                        .font(.system(size: 24))
+
+                    Text("生長中...")
+                        .font(.system(size: 14))
                 }
-                .padding(4)
+                .foregroundColor(
+                    Color(
+                        red: 212 / 255,
+                        green: 175 / 255,
+                        blue: 55 / 255
+                    )
+                )
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     var body: some View {
