@@ -183,9 +183,13 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     _reviewService = isBetaTestMode ? FakeReviewService() : NativeReviewService();
     globalStateManager = _stateManager;
     WidgetsBinding.instance.addObserver(this);
-    WidgetService.init();
     BackgroundService.init();
-    _stateManager.initializeState().then((_) {
+    
+    // 確保 App Group 初始化完成後，再觸發 Widget 更新，避免存到錯的 UserDefaults
+    Future.wait([
+      WidgetService.init(),
+      _stateManager.initializeState(),
+    ]).then((_) {
       if (mounted) {
         WidgetService.updateWidget(
           _stateManager.state, 

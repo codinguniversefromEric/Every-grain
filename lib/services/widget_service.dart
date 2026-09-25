@@ -59,12 +59,15 @@ class WidgetService {
         
         debugPrint('🍚 image rendered at: $path');
         
-        // 由於檔名變了，我們必須告訴 Swift 新的路徑在哪裡
-        // Swift 那邊依然是讀取 'scenery_image' 這個鍵值，但內容變成了最新產生的絕對路徑
-        await HomeWidget.saveWidgetData<String>('scenery_image', path);
+        try {
+          await HomeWidget.saveWidgetData<String>('scenery_image', path);
+          debugPrint('🍚 Successfully saved scenery_image to UserDefaults');
+        } catch (e) {
+          debugPrint('❌ FAILED to save scenery_image to UserDefaults: $e');
+        }
         
       } catch (e) {
-        debugPrint('Failed to render widget snapshot: $e');
+        debugPrint('❌ Failed to render widget snapshot: $e');
       }
     }
 
