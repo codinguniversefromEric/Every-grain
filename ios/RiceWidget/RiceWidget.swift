@@ -101,9 +101,22 @@ struct RiceWidgetEntryView: View {
                 .unredacted()
             }
             
-            VStack {
+            VStack(alignment: .leading) {
                 Text("Ctx: \(entry.contextName)")
                 Text("Path: \(entry.imagePath != nil ? "YES" : "NIL")")
+                if let rp = resolvedImagePath {
+                    let exists = FileManager.default.fileExists(atPath: rp)
+                    Text("File: \(exists ? "YES" : "NO")")
+                    if exists {
+                        do {
+                            let attr = try FileManager.default.attributesOfItem(atPath: rp)
+                            let size = attr[.size] as? UInt64 ?? 0
+                            Text("Size: \(size)b")
+                        } catch {
+                            Text("Size: ERR")
+                        }
+                    }
+                }
             }
             .font(.system(size: 10, weight: .bold))
             .foregroundColor(.green)
