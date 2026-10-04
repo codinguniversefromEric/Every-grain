@@ -604,12 +604,11 @@ class _SceneryPainter extends CustomPainter {
   void _drawCoastBeach(Canvas canvas, Size size, _SceneryPalette p, Random rng) {
     final beachPaint = Paint()..color = p.land.withValues(alpha: 0.75);
     final beach = Path()
-      ..moveTo(0, size.height * 0.58)
-      ..quadraticBezierTo(size.width * 0.3, size.height * 0.53, size.width * 0.55, size.height * 0.59)
-      ..quadraticBezierTo(size.width * 0.8, size.height * 0.64, size.width, size.height * 0.53)
-      ..lineTo(size.width, size.height * 0.62)
-      ..quadraticBezierTo(size.width * 0.75, size.height * 0.7, size.width * 0.52, size.height * 0.65)
-      ..quadraticBezierTo(size.width * 0.25, size.height * 0.59, 0, size.height * 0.65)
+      ..moveTo(0, size.height * 0.52)
+      ..quadraticBezierTo(size.width * 0.25, size.height * 0.48, size.width * 0.5, size.height * 0.57)
+      ..quadraticBezierTo(size.width * 0.75, size.height * 0.63, size.width * 0.9, size.height * 0.61)
+      ..quadraticBezierTo(size.width * 0.93, size.height * 0.60, size.width * 0.92, size.height * 0.64)
+      ..quadraticBezierTo(size.width * 0.6, size.height * 0.72, 0, size.height * 0.78)
       ..close();
     canvas.drawPath(beach, beachPaint);
   }

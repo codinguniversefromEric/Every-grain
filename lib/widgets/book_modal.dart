@@ -84,10 +84,11 @@ class _BookModalContentState extends State<_BookModalContent> {
       screen.height - 40,
     );
 
-    return Center(
-      child: SizedBox(
-        width: maxWidth,
-        height: maxHeight,
+    return SafeArea(
+      child: Center(
+        child: SizedBox(
+          width: maxWidth,
+          height: maxHeight,
         child: AnimatedBuilder(
           animation: widget.animation,
           builder: (context, child) {
@@ -163,6 +164,7 @@ class _BookModalContentState extends State<_BookModalContent> {
           },
         ),
       ),
+    ),
     );
   }
 

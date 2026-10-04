@@ -17,20 +17,50 @@ struct Provider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         let userDefaults = UserDefaults(suiteName: appGroupId)
-        let imagePath = userDefaults?.string(forKey: "scenery_image")
+        var entries: [SimpleEntry] = []
         
-        // 加入一個唯一識別碼 (UUID)，強制 WidgetKit 知道這是一個全新的 Entry 狀態，避免 View 快取
-        let entry = SimpleEntry(
-            date: Date(),
-            imagePath: imagePath,
-            contextName: "timeline",
-            refreshId: UUID().uuidString
-        )
+        if let manifestString = userDefaults?.string(forKey: "timeline_manifest"),
+           let data = manifestString.data(using: .utf8) {
+            do {
+                let manifest = try JSONDecoder().decode([TimelineManifestEntry].self, from: data)
+                let refreshId = UUID().uuidString
+                
+                for item in manifest {
+                    // time is in milliseconds since epoch
+                    let date = Date(timeIntervalSince1970: TimeInterval(item.time) / 1000.0)
+                    let entry = SimpleEntry(
+                        date: date,
+                        imagePath: item.imagePath,
+                        contextName: "timeline",
+                        refreshId: refreshId
+                    )
+                    entries.append(entry)
+                }
+            } catch {
+                print("Failed to decode timeline manifest: \(error)")
+            }
+        }
         
-        // 改用 .never：完全由 Flutter 端的 HomeWidget.updateWidget() 來控制更新
-        // 避免系統每小時自動喚醒消耗 WidgetKit 嚴格的每日更新配額 (Budget)
-        completion(Timeline(entries: [entry], policy: .never))
+        // Fallback如果解析失敗或剛更新完還沒有 manifest
+        if entries.isEmpty {
+            let imagePath = userDefaults?.string(forKey: "scenery_image")
+            let entry = SimpleEntry(
+                date: Date(),
+                imagePath: imagePath,
+                contextName: "timeline_fallback",
+                refreshId: UUID().uuidString
+            )
+            entries.append(entry)
+        }
+        
+        // 使用 .atEnd：當這批預測截圖（未來幾小時）用完後，再請系統喚醒我們
+        completion(Timeline(entries: entries, policy: .atEnd))
     }
+}
+
+struct TimelineManifestEntry: Codable {
+    let time: Int
+    let imagePath: String
 }
 
 struct SimpleEntry: TimelineEntry {

@@ -325,14 +325,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
           currentContent = Scaffold(
             key: const ValueKey('loading_splash'),
             backgroundColor: const Color(0xFFFFF8E7),
-            floatingActionButton: isBetaTestMode ? FloatingActionButton(
-        onPressed: () async {
-          debugPrint("MANUAL WIDGET UPDATE TRIGGERED");
-          await WidgetService.updateWidget(_stateManager.state, hasUnreadJournal: _stateManager.hasUnreadJournal);
-        },
-        child: const Icon(Icons.refresh),
-      ) : null,
-      body: Center(
+            body: Center(
               child: Image.asset(
                 'assets/icon_foreground.png',
                 width: 250,

@@ -1,5 +1,6 @@
 import 'package:home_widget/home_widget.dart';
 import 'dart:ui';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/field_state.dart';
@@ -38,39 +39,61 @@ class WidgetService {
     await HomeWidget.saveWidgetData<String>('weather', weatherText);
     await HomeWidget.saveWidgetData<bool>('has_unread_journal', hasUnreadJournal);
 
-    // Render snapshot
+    // Render snapshot timeline
     if (const String.fromEnvironment('DISABLE_HOME_WIDGET', defaultValue: 'false') != 'true') {
       try {
-        // 實作 Ping-Pong Buffering (A/B 切換) 來解決所有問題：
-        // 1. 路徑改變，強制 iOS WidgetKit 繞過快取
-        // 2. 避免覆寫同一個檔案導致 iOS 讀取到一半破圖 (Race Condition)
-        // 3. 最多只有兩個檔案，絕對不會有 Storage Leak
         final prefs = await SharedPreferences.getInstance();
-        final bool useImageA = prefs.getBool('use_widget_image_a') ?? true;
-        final String uniqueKey = useImageA ? 'scenery_image_A' : 'scenery_image_B';
-        await prefs.setBool('use_widget_image_a', !useImageA);
+        final bool useImageA = prefs.getBool('use_widget_timeline_a') ?? true;
+        final String prefix = useImageA ? 'A' : 'B';
+        await prefs.setBool('use_widget_timeline_a', !useImageA);
         
-        final String path = await HomeWidget.renderFlutterWidget(
-          WidgetScenerySnapshot(
-            state: state,
-            hasUnreadJournal: hasUnreadJournal,
-            loc: loc,
-          ),
-          logicalSize: const Size(400, 400),
-          key: uniqueKey,
-        );
-        
-        debugPrint('🍚 image rendered at: $path');
-        
-        try {
-          await HomeWidget.saveWidgetData<String>('scenery_image', path);
-          debugPrint('🍚 Successfully saved scenery_image to UserDefaults');
-        } catch (e) {
-          debugPrint('❌ FAILED to save scenery_image to UserDefaults: $e');
+        List<Map<String, dynamic>> timelineData = [];
+        final now = DateTime.now();
+
+        for (int i = 0; i < 4; i++) {
+          final targetTime = now.add(Duration(hours: i));
+          final futureState = state.clone();
+          
+          // Rough sun elevation prediction for the future hour
+          final hour = targetTime.hour;
+          if (hour > 6 && hour < 17) {
+            futureState.sunElevation = 45.0; // Day
+          } else if (hour == 17 || hour == 18 || hour == 5 || hour == 6) {
+            futureState.sunElevation = 0.0; // Twilight
+          } else {
+            futureState.sunElevation = -45.0; // Night
+          }
+
+          final String uniqueKey = 'scenery_timeline_${prefix}_$i';
+          
+          final String path = await HomeWidget.renderFlutterWidget(
+            WidgetScenerySnapshot(
+              state: futureState,
+              hasUnreadJournal: hasUnreadJournal,
+              loc: loc,
+            ),
+            logicalSize: const Size(400, 400),
+            key: uniqueKey,
+          );
+          
+          timelineData.add({
+            'time': targetTime.millisecondsSinceEpoch,
+            'imagePath': path,
+          });
         }
         
+        // Save the first image as the fallback scenery_image for Android and backwards compatibility
+        if (timelineData.isNotEmpty) {
+          await HomeWidget.saveWidgetData<String>('scenery_image', timelineData.first['imagePath'] as String);
+        }
+
+        // Save the JSON manifest for iOS WidgetKit
+        final String jsonManifest = jsonEncode(timelineData);
+        await HomeWidget.saveWidgetData<String>('timeline_manifest', jsonManifest);
+        
+        debugPrint('🍚 Successfully generated and saved widget timeline: $jsonManifest');
       } catch (e) {
-        debugPrint('❌ Failed to render widget snapshot: $e');
+        debugPrint('❌ Failed to render widget timeline snapshot: $e');
       }
     }
 

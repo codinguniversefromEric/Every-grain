@@ -93,4 +93,21 @@ class FieldState {
         break;
     }
   }
+
+  FieldState clone() {
+    return FieldState(
+      growthStage: growthStage,
+      currentBiome: currentBiome,
+      weatherMetrics: weatherMetrics,
+      sunElevation: sunElevation,
+      currentVariety: currentVariety,
+      vitality: vitality,
+      accumulatedBiomass: accumulatedBiomass,
+      waterStressLevel: waterStressLevel,
+      temperatureStressLevel: temperatureStressLevel,
+    )
+      ..weatherOverrideUntil = weatherOverrideUntil
+      ..overriddenMetrics = overriddenMetrics
+      ..nextPlantingAllowedAt = nextPlantingAllowedAt;
+  }
 }
