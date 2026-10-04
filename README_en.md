@@ -47,7 +47,7 @@ This project implements a robust dual-track weather API and fallback mechanism, 
 ```bash
 flutter run
 ```
-*(In debug mode, if no CWA API Key is provided, the weather module will automatically and silently fall back to default sunny weather)*
+*(In debug mode, if no CWA API Key is provided, the weather module will automatically and silently fall back to open-meteo)*
 
 ### Run Tests
 The project contains unit tests for the `services/` layer.
@@ -59,6 +59,10 @@ flutter test
 ```bash
 flutter analyze
 ```
+
+### Release Build
+To build for release (updating the version and packaging iOS IPA locally, and using GitHub Actions for Android AAB), please refer to the dedicated guide:
+👉 [**Release & Build Guide (RELEASE_GUIDE.md)**](docs/RELEASE_GUIDE.md)
 
 ## Developer Controls
 

@@ -47,7 +47,7 @@ graph TD
 ```bash
 flutter run
 ```
-*(開発モードでは、CWA API キーが提供されていない場合、天気モジュールは自動的にデフォルトの晴天にサイレントフォールバックします)*
+*(開発モードでは、CWA API キーが提供されていない場合、天気モジュールは自動的に open-meteo にサイレントフォールバックします)*
 
 ### テストの実行 (Tests)
 プロジェクトには `services/` レイヤーの単体テストが含まれています。
@@ -59,6 +59,10 @@ flutter test
 ```bash
 flutter analyze
 ```
+
+### リリースビルド (Release)
+正式版のリリース（ローカルスクリプトによるバージョン更新と iOS IPA のパッケージ化、および GitHub Actions を通じた Android AAB のパッケージ化）については、専用のガイドを参照してください：
+👉 [**リリースおよびパッケージ化ガイド (RELEASE_GUIDE.md)**](docs/RELEASE_GUIDE.md)
 
 ## 開発者向けコントロール (Developer Controls)
 
