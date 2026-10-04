@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 import '../models/weather_metrics.dart';
 import '../l10n/app_localizations.dart';
+import 'scenery_preview_page.dart';
 
 class DeveloperControlsBottomSheet extends StatefulWidget {
   final GrowthStage currentGrowthStage;
@@ -468,6 +469,22 @@ class _DeveloperControlsBottomSheetState
               onPressed: () {
                 widget.onResetField();
                 Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal.shade700,
+                foregroundColor: Colors.white,
+              ),
+              icon: const Icon(Icons.landscape),
+              label: const Text('Scenery Preview (All 12 Variants)'),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SceneryPreviewPage()),
+                );
               },
             ),
             const SizedBox(height: 24),

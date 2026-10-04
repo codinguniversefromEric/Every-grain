@@ -14,6 +14,7 @@ class AudioController {
       state.dayPeriod,
       state.growthStage,
       state.weatherMetrics,
+      state.currentBiome,
     );
   }
 
