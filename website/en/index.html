@@ -2,120 +2,216 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Rice Journey | Not just an App, it's a paddy field outside your window</title>
   <meta name="description" content="Rice Journey is a companion app for Taiwan's rice culture. Syncs with real weather, experience the changing of day, night, and seasons.">
-
-  <!-- Open Graph / Facebook / Threads / LINE -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://codinguniversefromeric.github.io/Every-grain/en/">
   <meta property="og:title" content="Rice Journey | Not just an App, it's a paddy field outside your window">
   <meta property="og:description" content="Rice Journey is a companion app for Taiwan's rice culture. Syncs with real weather, experience the changing of day, night, and seasons.">
   <meta property="og:image" content="https://codinguniversefromeric.github.io/Every-grain/assets/og-image.png">
-
-  <!-- Twitter / X -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://codinguniversefromeric.github.io/Every-grain/en/">
   <meta property="twitter:title" content="Rice Journey | Not just an App, it's a paddy field outside your window">
   <meta property="twitter:description" content="Rice Journey is a companion app for Taiwan's rice culture. Syncs with real weather, experience the changing of day, night, and seasons.">
   <meta property="twitter:image" content="https://codinguniversefromeric.github.io/Every-grain/assets/og-image.png">
-
-  <link rel="stylesheet" href="../css/style.css">
-
   <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; background-color: #121212; display: flex; justify-content: center; align-items: center; min-height: 100dvh; overflow: hidden; }
+    .app-frame { width: 100%; max-width: 414px; height: 100dvh; max-height: 896px; background-color: #2a3b32; overflow: hidden; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border-radius: 40px; border: 8px solid #222; }
+    @media (max-width: 450px) { .app-frame { border-radius: 0; border: none; max-width: 100%; max-height: 100dvh; } }
+    .parchment { background-color: #E9DFC8; background-image: radial-gradient(circle at center, transparent 0%, rgba(154, 128, 96, 0.15) 100%), url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.04"/></svg>'); border-top: 1px solid #C4A482; box-shadow: 0 -15px 40px rgba(0,0,0,0.3); }
+    .serif-tc { font-family: "Noto Serif TC", serif; }
+    .sheet-transition { transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    .carousel-container { display: flex; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); width: 400%; }
+    .carousel-page { width: 25%; flex-shrink: 0; }
+    .scenery-bg { background: linear-gradient(to bottom, #70836E 0%, #518A92 100%); position: relative; overflow: hidden; }
+    .mountain { position: absolute; bottom: 25%; width: 120%; height: 40%; background: linear-gradient(to bottom, #4A5D4E 0%, #354739 100%); border-radius: 100% 100% 0 0; left: -10%; }
+    .water { position: absolute; bottom: 0; width: 100%; height: 35%; background: linear-gradient(to bottom, #5B8A88 0%, #3A6361 100%); }
+    .rain { position: absolute; width: 1px; height: 40px; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.4)); animation: fall linear infinite; }
+    @keyframes fall { to { transform: translateY(100vh); } }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(154, 128, 96, 0.3); border-radius: 4px; }
+  </style>
 </head>
 <body>
-
-  <!-- Header -->
-  <header id="main-header">
-    <div class="container nav-container">
-      <div class="logo">Rice Journey</div>
-      <nav class="nav-links">
-        <a href="#features">Features</a>
-        <a href="privacy.html">Privacy Policy</a>
-        <div class="lang-switcher">
-          <a>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-            🇺🇸 English
-          </a>
-          <div class="lang-dropdown">
-            <a href="../index.html">🇹🇼 繁體中文</a>
-            <a href="index.html">🇺🇸 English</a>
-            <a href="../ja/index.html">🇯🇵 日本語</a>
+  <div class="app-frame">
+    <div class="absolute inset-0 scenery-bg" onclick="openSheet()">
+      <div class="absolute top-24 left-12 w-16 h-16 rounded-full bg-white/10 blur-md"></div>
+      <div class="absolute top-26 left-14 w-12 h-12 rounded-full bg-white/40 shadow-[0_0_30px_rgba(255,255,255,0.8)]"></div>
+      <div class="mountain" style="opacity: 0.6; bottom: 30%; height: 50%; left: -20%;"></div>
+      <div class="mountain" style="opacity: 0.8; bottom: 25%;"></div>
+      <div class="water">
+        <div class="absolute top-0 w-full h-1 bg-white/20 blur-sm"></div>
+        <div class="absolute bottom-[-10px] w-full flex justify-between px-2 opacity-80">
+          <svg width="40" height="150" viewBox="0 0 20 100"><path d="M10,100 Q5,50 15,0" fill="none" stroke="#7BA05B" stroke-width="2"/><path d="M10,100 Q15,60 5,20" fill="none" stroke="#7BA05B" stroke-width="1.5"/></svg>
+          <svg width="40" height="130" viewBox="0 0 20 100"><path d="M10,100 Q18,50 5,10" fill="none" stroke="#7BA05B" stroke-width="2"/></svg>
+          <svg width="40" height="160" viewBox="0 0 20 100"><path d="M10,100 Q2,40 18,5" fill="none" stroke="#7BA05B" stroke-width="2"/><path d="M10,100 Q15,70 8,30" fill="none" stroke="#7BA05B" stroke-width="1.5"/></svg>
+          <svg width="40" height="140" viewBox="0 0 20 100"><path d="M10,100 Q12,45 2,15" fill="none" stroke="#7BA05B" stroke-width="2"/></svg>
+          <svg width="40" height="155" viewBox="0 0 20 100"><path d="M10,100 Q5,50 15,0" fill="none" stroke="#7BA05B" stroke-width="2"/></svg>
+        </div>
+      </div>
+      <div id="rain-container" class="absolute inset-0 pointer-events-none"></div>
+      <div class="absolute inset-x-0 top-12 px-6 flex justify-between items-start pointer-events-none">
+        <div class="text-white/80 serif-tc drop-shadow-md">
+          <div class="text-sm tracking-widest mb-1">Chishang, Taitung</div>
+          <div class="text-xs opacity-70">Nov 23</div>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 pointer-events-auto cursor-pointer hover:bg-white/20 transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </div>
+      </div>
+      <div id="ambient-quote" class="absolute bottom-24 inset-x-0 text-center transition-opacity duration-500 pointer-events-none" style="opacity: 0.4;">
+        <p class="text-white serif-tc tracking-widest text-sm">Swipe up to open the journal</p>
+        <div class="mt-4 w-px h-8 bg-white/50 mx-auto"></div>
+      </div>
+    </div>
+    <div id="bottom-sheet" class="absolute inset-x-0 bottom-0 h-[65%] parchment rounded-t-3xl sheet-transition translate-y-full flex flex-col z-20">
+      <div class="w-full flex justify-center pt-5 pb-3 cursor-pointer" onclick="closeSheet()">
+        <div class="w-14 h-1.5 rounded-full bg-[#9A8060]/40"></div>
+      </div>
+      <div class="flex-1 overflow-hidden relative">
+        <div id="carousel" class="carousel-container h-full">
+          <!-- Page 1: Weather -->
+          <div class="carousel-page h-full p-6 sm:p-8 flex flex-col items-center justify-center relative">
+            <div class="absolute top-4 right-4 w-10 h-10 border border-[#9A8060]/40 text-[#9A8060] rounded-full flex items-center justify-center text-[10px] serif-tc [writing-mode:vertical-rl]">臺灣</div>
+            <h2 class="text-5xl serif-tc mb-3 text-[#3E2723] tracking-wider">霜降</h2>
+            <p class="text-sm text-[#9A8060] mb-10 tracking-[0.2em] uppercase">Frost Descent</p>
+            <div class="flex items-center gap-6 mb-10">
+              <div class="text-6xl font-light text-[#5D4037]">22°</div>
+              <div class="w-px h-16 bg-[#9A8060]/30"></div>
+              <div class="text-xl serif-tc text-[#5D4037] leading-loose">Gentle breeze<br>Soft rain</div>
+            </div>
+          </div>
+          <!-- Page 2: Journal -->
+          <div class="carousel-page h-full p-6 sm:p-8 flex flex-col items-center justify-center">
+            <div class="flex items-center gap-3 mb-8 w-full justify-center opacity-80">
+              <div class="h-px bg-[#9A8060]/30 flex-1 max-w-[40px]"></div>
+              <h2 class="text-xl serif-tc font-bold text-[#3E2723] tracking-widest">Farm Journal</h2>
+              <div class="h-px bg-[#9A8060]/30 flex-1 max-w-[40px]"></div>
+            </div>
+            <p class="text-lg sm:text-xl serif-tc leading-[2.5] text-center text-[#3E2723] mb-12">
+              Nothing special today,<br>the rice is growing quietly.
+            </p>
+            <p class="text-sm serif-tc text-[#665246]/80 italic tracking-widest">
+              "Time takes care of everything"
+            </p>
+            <button class="mt-auto mb-4 px-6 py-2.5 border border-[#9A8060]/60 text-[#665246] rounded-full text-sm hover:bg-[#9A8060]/10 transition-colors shadow-sm">
+              The forecast was wrong, blame the weatherman
+            </button>
+          </div>
+          <!-- Page 3: Collection -->
+          <div class="carousel-page h-full p-6 sm:p-8 flex flex-col">
+            <div class="flex items-center gap-3 mb-6 w-full justify-center opacity-80">
+              <div class="h-px bg-[#9A8060]/30 flex-1 max-w-[40px]"></div>
+              <h2 class="text-xl serif-tc font-bold text-[#3E2723] tracking-widest">Collection</h2>
+              <div class="h-px bg-[#9A8060]/30 flex-1 max-w-[40px]"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 sm:gap-4 flex-1 overflow-y-auto pr-1 custom-scrollbar pb-4">
+              <div class="border border-[#9A8060]/40 rounded-xl p-4 flex flex-col items-center bg-[#F2E9D6]/40 shadow-sm">
+                <div class="w-12 h-12 rounded-full border border-[#9A8060]/30 flex items-center justify-center mb-3 text-xl shadow-inner bg-white/20">🌾</div>
+                <div class="serif-tc font-bold text-[#3E2723] mb-1">Tainan No.11</div>
+                <div class="text-[10px] text-[#665246] tracking-widest text-center">King of Harvest</div>
+              </div>
+              <div class="border border-[#9A8060]/40 rounded-xl p-4 flex flex-col items-center bg-[#F2E9D6]/40 shadow-sm">
+                <div class="w-12 h-12 rounded-full border border-[#9A8060]/30 flex items-center justify-center mb-3 text-xl shadow-inner bg-white/20">🌾</div>
+                <div class="serif-tc font-bold text-[#3E2723] mb-1 text-center">Kaohsiung No.139</div>
+                <div class="text-[10px] text-[#665246] tracking-widest">Ugly Beauty</div>
+              </div>
+              <div class="border border-[#9A8060]/15 rounded-xl p-4 flex flex-col items-center opacity-50 bg-[#E9DFC8]/30">
+                <div class="w-12 h-12 rounded-full border border-[#9A8060]/10 flex items-center justify-center mb-3 text-[#9A8060]">?</div>
+                <div class="serif-tc text-[#665246] text-sm tracking-widest">Locked</div>
+              </div>
+              <div class="border border-[#9A8060]/15 rounded-xl p-4 flex flex-col items-center opacity-50 bg-[#E9DFC8]/30">
+                <div class="w-12 h-12 rounded-full border border-[#9A8060]/10 flex items-center justify-center mb-3 text-[#9A8060]">?</div>
+                <div class="serif-tc text-[#665246] text-sm tracking-widest">Locked</div>
+              </div>
+            </div>
+          </div>
+          <!-- Page 4: Download & About -->
+          <div class="carousel-page h-full p-6 sm:p-8 flex flex-col items-center justify-center">
+            <div class="flex items-center gap-3 mb-8 w-full justify-center opacity-80">
+              <div class="h-px bg-[#9A8060]/30 flex-1 max-w-[40px]"></div>
+              <h2 class="text-xl serif-tc font-bold text-[#3E2723] tracking-widest text-center">About & Download</h2>
+              <div class="h-px bg-[#9A8060]/30 flex-1 max-w-[40px]"></div>
+            </div>
+            <p class="text-sm serif-tc leading-relaxed text-center text-[#665246] mb-8">
+              Not just an App,<br>it's a rice paddy in your phone.<br>Feel the seasons and regain peace.
+            </p>
+            <div class="flex flex-col gap-4 w-full max-w-[200px]">
+              <a href="#" class="bg-[#3E2723] text-[#E9DFC8] py-3 px-4 rounded-xl text-center text-sm font-semibold tracking-wide hover:bg-[#2a1a17] transition-colors shadow-md">Download on App Store</a>
+              <a href="#" class="bg-[#3E2723] text-[#E9DFC8] py-3 px-4 rounded-xl text-center text-sm font-semibold tracking-wide hover:bg-[#2a1a17] transition-colors shadow-md">Get it on Google Play</a>
+            </div>
+            <div class="mt-auto flex gap-4 text-xs text-[#9A8060] font-medium tracking-wider">
+              <a href="../privacy.html" class="hover:text-[#3E2723] transition-colors border-b border-transparent hover:border-[#3E2723]">Privacy Policy</a>
+              <span>|</span>
+              <a href="../index.html" class="hover:text-[#3E2723] transition-colors">繁體中文</a>
+              <span>|</span>
+              <a href="../ja/index.html" class="hover:text-[#3E2723] transition-colors">日本語</a>
+            </div>
           </div>
         </div>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="hero container">
-    <div class="hero-content">
-      <div class="hero-text reveal">
-        <h1>Not just an App<br>It's a paddy field outside your window</h1>
-        <p>Real-time sync with Taiwan's weather and solar terms, without any intrusive tasks or ads.<br>Just peaceful insect chirps and rippling rice waves growing over time.</p>
       </div>
-      <div class="hero-visual reveal">
-        <div class="phone-mockup">
-          <div class="phone-screen">
-            <img src="../assets/screenshots/screenshot_1_seedling.png" alt="Seedling" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
-          </div>
-        </div>
-      </div>
-      <div class="download-buttons reveal">
-        <a href="https://testflight.apple.com/join/MpNSu2c8" target="_blank" class="download-badge">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0"></path><line x1="12" y1="2" x2="12" y2="12"></line><polyline points="9 9 12 12 15 9"></polyline></svg>
-          Join TestFlight Beta
-        </a>
-        <a href="https://play.google.com/apps/testing/com.chia.riceJourney" target="_blank" class="download-badge">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-          Join Google Play Testing
-        </a>
+      <div class="flex justify-center gap-3 pb-8 pt-2">
+        <div class="w-1.5 h-1.5 rounded-full bg-[#5D4037] cursor-pointer transition-colors" onclick="goToPage(0)" id="dot-0"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-[#9A8060]/40 cursor-pointer transition-colors" onclick="goToPage(1)" id="dot-1"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-[#9A8060]/40 cursor-pointer transition-colors" onclick="goToPage(2)" id="dot-2"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-[#9A8060]/40 cursor-pointer transition-colors" onclick="goToPage(3)" id="dot-3"></div>
       </div>
     </div>
-  </section>
-
-  <!-- Features Section -->
-  <section id="features" class="features">
-    <div class="container">
-      
-      <!-- Feature 1 -->
-      <div class="feature-row reveal">
-        <div class="feature-text">
-          <h2>Sharing the same sky<br>and weather with you</h2>
-          <p class="text-muted">Integrates real open data from the Central Weather Administration (CWA). When it rains outside your window, your rice field gets rain too. Accompanied by day-to-night ambient white noise, it's your best companion for work and sleep.</p>
-        </div>
-        <div class="feature-visual">
-          <img src="../assets/screenshots/screenshot_2_stormy.png" alt="Stormy Heading" style="width: 100%; max-width: 300px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-        </div>
-      </div>
-
-      <!-- Feature 2 -->
-      <div class="feature-row reveal">
-        <div class="feature-text">
-          <h2>Every grain of rice<br>has its own hometown</h2>
-          <p class="text-muted">Based on your physical GPS location, the App will plant the most representative local Taiwanese rice variety for you. From Taikeng No. 9 in the North to Kaohsiung No. 139 (Ugly Beauty) in the East. Unlock exclusive local knowledge cards upon harvest.</p>
-        </div>
-        <div class="feature-visual">
-          <img src="../assets/screenshots/screenshot_3_local_variety.png" alt="Local Variety" style="width: 100%; max-width: 300px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container footer-content">
-      <div class="logo">Rice Journey</div>
-      <div class="footer-links">
-        <a href="https://github.com/codinguniversefromEric/Every-grain" target="_blank">GitHub Open Source</a>
-        <a href="privacy.html">Privacy Policy</a>
-        <img class="visitor-badge" src="https://visitor-badge.laobi.icu/badge?page_id=codinguniversefromEric.Every-grain" alt="Visitor Count">
-      </div>
-    </div>
-  </footer>
-
-  <script src="../js/main.js"></script>
+  </div>
+  <script>
+    const sheet = document.getElementById('bottom-sheet');
+    const quote = document.getElementById('ambient-quote');
+    let isOpen = false;
+    function openSheet() { isOpen = true; sheet.classList.remove('translate-y-full'); quote.style.opacity = '0'; }
+    function closeSheet() { isOpen = false; sheet.classList.add('translate-y-full'); quote.style.opacity = '0.4'; }
+    let currentPage = 1; 
+    const carousel = document.getElementById('carousel');
+    const totalPages = 4;
+    function updateDots() {
+      for(let i=0; i<totalPages; i++) {
+        const dot = document.getElementById('dot-'+i);
+        if(i === currentPage) {
+          dot.classList.remove('bg-[#9A8060]/40'); dot.classList.add('bg-[#5D4037]', 'scale-125');
+        } else {
+          dot.classList.remove('bg-[#5D4037]', 'scale-125'); dot.classList.add('bg-[#9A8060]/40');
+        }
+      }
+    }
+    function goToPage(index) {
+      currentPage = index;
+      carousel.style.transform = `translateX(-${currentPage * 25}%)`;
+      updateDots();
+    }
+    goToPage(1);
+    let startX = 0, startY = 0;
+    function handleStart(clientX, clientY) { startX = clientX; startY = clientY; }
+    function handleEnd(clientX, clientY) {
+      let dx = clientX - startX, dy = clientY - startY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        if (dx < 0 && currentPage < totalPages - 1) goToPage(currentPage + 1); 
+        else if (dx > 0 && currentPage > 0) goToPage(currentPage - 1); 
+      }
+      if (dy > 80 && Math.abs(dy) > Math.abs(dx)) closeSheet();
+    }
+    sheet.addEventListener('touchstart', e => handleStart(e.changedTouches[0].screenX, e.changedTouches[0].screenY));
+    sheet.addEventListener('touchend', e => handleEnd(e.changedTouches[0].screenX, e.changedTouches[0].screenY));
+    sheet.addEventListener('mousedown', e => handleStart(e.clientX, e.clientY));
+    sheet.addEventListener('mouseup', e => handleEnd(e.clientX, e.clientY));
+    const rc = document.getElementById('rain-container');
+    for(let i=0; i<30; i++) {
+      let drop = document.createElement('div');
+      drop.className = 'rain';
+      drop.style.left = Math.random() * 100 + '%';
+      drop.style.top = (Math.random() * 100 - 100) + '%';
+      drop.style.animationDuration = (0.6 + Math.random() * 0.4) + 's';
+      drop.style.opacity = Math.random() * 0.6;
+      rc.appendChild(drop);
+    }
+  </script>
 </body>
 </html>
