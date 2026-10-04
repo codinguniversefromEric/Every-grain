@@ -55,7 +55,13 @@ cd ..
 
 echo "🍎 [4/4] 開始打包 iOS (IPA / xcarchive)..."
 # 生成 xcarchive，讓你可以去 Xcode Organizer 匯出
-flutter build ipa
+if [ -n "$CWA_API_KEY" ]; then
+    echo "🔑 已偵測到 CWA_API_KEY 環境變數，將注入至編譯設定中"
+    flutter build ipa --dart-define=CWA_API_KEY="$CWA_API_KEY"
+else
+    echo "⚠️ 未偵測到 CWA_API_KEY 環境變數，可能導致氣象資料無法正常獲取"
+    flutter build ipa
+fi
 
 echo "========================================"
 echo "✅ iOS 打包完成！"

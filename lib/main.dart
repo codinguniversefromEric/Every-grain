@@ -122,7 +122,7 @@ StateManager? globalStateManager;
 bool isTakingScreenshot = false;
 
 // ⚠️ 測試期間設為 true，正式上架生產環境前請改為 false
-const bool isBetaTestMode = true;
+const bool isBetaTestMode = false;
 
 class _RiceFieldScreenState extends State<RiceFieldScreen>
     with WidgetsBindingObserver {
