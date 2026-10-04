@@ -783,7 +783,8 @@ class _SceneryPainter extends CustomPainter {
         _drawTrees(canvas, size, p, rng,
             count: 3, y: h * 0.76, spread: w * 0.4, x0: w * 0.58);
       case LandscapeVariant.eastCoast:
-        _drawRailwayTrack(canvas, size, p);
+        _drawPalmTrees(canvas, p, rng,
+            count: 2, y: h * 0.72, spread: w * 0.3);
       case LandscapeVariant.southCoast:
         _drawPalmTrees(canvas, p, rng,
             count: 3, y: h * 0.62, spread: w * 0.45);
@@ -858,8 +859,7 @@ class _SceneryPainter extends CustomPainter {
       _drawHSRTrain(canvas, size, p, anim);
     }
 
-    if (variant == LandscapeVariant.centralValley ||
-        variant == LandscapeVariant.eastCoast) {
+    if (variant == LandscapeVariant.centralValley) {
       _drawTrain(canvas, size, p, anim);
     }
 
@@ -2051,7 +2051,6 @@ class _SceneryPainter extends CustomPainter {
 
   /// 鐵軌只畫在陸地上（海岸：沙灘內；山谷：河的右側）
   Path? _railClip(Size size) {
-    if (variant == LandscapeVariant.eastCoast) return _beachPath(size);
     if (variant == LandscapeVariant.centralValley) {
       return Path()
         ..addRect(Rect.fromLTWH(size.width * 0.56, 0, size.width, size.height));

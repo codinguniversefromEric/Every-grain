@@ -32,6 +32,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
   String _status = "Ready to generate Custom ASO screenshots";
 
   String _currentLocale = 'zh';
+  String _targetPlatform = 'iOS'; // 'iOS' or 'Android'
   int _currentScreenIndex = 0;
 
   final Map<String, Map<String, dynamic>> _storyboard = {
@@ -86,14 +87,14 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
               : "Generating [$locale] screen ${i + 1}/5...";
         });
         
-        await Future.delayed(const Duration(milliseconds: 1000));
+        await Future.delayed(const Duration(milliseconds: 2000));
         // Feature Graphic uses pixelRatio 2.0 (since UI is scaled by 0.5), Screenshots use 3.0
         final pixelRatio = i == 5 ? 2.0 : 3.0;
         final image = await _captureWidget(pixelRatio);
         if (image != null) {
           final filename = i == 5 
-              ? 'feature_graphic_$locale.png' 
-              : 'aso_${locale}_screen_${i + 1}.png';
+              ? 'feature_graphic_${locale}_${_targetPlatform.toLowerCase()}.png' 
+              : 'aso_${locale}_${_targetPlatform.toLowerCase()}_screen_${i + 1}.png';
           await _saveImage(image, filename);
         }
       }
@@ -119,7 +120,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
   Future<void> _saveImage(ui.Image image, String filename) async {
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     if (byteData == null) return;
-    final file = File('website/assets/screenshots/$filename');
+    final file = File('/Users/giyoshimiken/Documents/Every-grain/website/assets/screenshots/$filename');
     if (!await file.parent.exists()) {
       await file.parent.create(recursive: true);
     }
@@ -132,7 +133,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
       case 0: // Widget
         return Stack(
           children: [
-            Image.file(File('screenshots/screenshot_1_seedling.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_1_seedling.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             // Mock home screen blur
             BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
@@ -155,7 +156,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 15, offset: Offset(0, 8))],
                   image: DecorationImage(
-                    image: FileImage(File('screenshots/screenshot_1_seedling.png')), 
+                    image: FileImage(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_1_seedling.png')), 
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -167,16 +168,16 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
         return Stack(
           children: [
             // Bottom layer (Night)
-            Image.file(File('screenshots/screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             // Middle layer (Stormy)
             ClipPath(
               clipper: _DiagonalClipper(0.65),
-              child: Image.file(File('screenshots/screenshot_2_stormy.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+              child: Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_2_stormy.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             ),
             // Top layer (Sunny)
             ClipPath(
               clipper: _DiagonalClipper(0.35),
-              child: Image.file(File('screenshots/screenshot_1_seedling.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+              child: Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_1_seedling.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             ),
             // Split Lines
             CustomPaint(
@@ -198,7 +199,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
 
         return Stack(
           children: [
-            Image.file(File('screenshots/screenshot_3_local_variety.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_3_local_variety.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(color: Colors.black.withOpacity(0.3)),
@@ -255,7 +256,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
 
         return Stack(
           children: [
-            Image.file(File('screenshots/screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(color: Colors.black.withOpacity(0.3)),
@@ -288,7 +289,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
         String harvestText = locale == 'en' ? "Harvest" : (locale == 'ja' ? "豊作" : "豐收");
         return Stack(
           children: [
-            Image.file(File('screenshots/screenshot_5_harvested_clean.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_5_harvested_clean.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 3, sigmaY: 3),
               child: Container(color: Colors.black.withOpacity(0.2)),
@@ -333,7 +334,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             child: ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               // Align to bottom center to show the actual rice plant instead of empty sky
-              child: Image.file(File('screenshots/$bg'), fit: BoxFit.cover, width: double.infinity, alignment: Alignment.bottomCenter),
+              child: Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/$bg'), fit: BoxFit.cover, width: double.infinity, alignment: Alignment.bottomCenter),
             ),
           ),
           Padding(
@@ -389,7 +390,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         decoration: BoxDecoration(
                         color: Colors.black,
                         image: DecorationImage(
-                          image: FileImage(File('screenshots/screenshot_3_local_variety.png')),
+                          image: FileImage(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_3_local_variety.png')),
                           fit: BoxFit.cover,
                           alignment: const Alignment(0, 0.6), // Avoid bottom navigation bar
                         ),
@@ -428,19 +429,46 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
 
     // 原本的 5 張 ASO 截圖排版
     final screenData = config['screens'][_currentScreenIndex];
-    // Google Play requires strictly 9:16 ratio (1080 x 1920)
-    const double targetWidth = 1080 / 3; // 360
-    const double targetHeight = 1920 / 3; // 640
+    final bool isIOS = _targetPlatform == 'iOS';
+    final double targetWidth = isIOS ? (1284 / 3) : (1080 / 3);
+    final double targetHeight = isIOS ? (2778 / 3) : (1920 / 3);
+    
+    // Dynamic layout parameters based on platform
+    final double phoneTop = isIOS ? 180 : 130;
+    final double phoneLeft = isIOS ? 89 : 67.5;
+    final double phoneWidth = isIOS ? 250 : 225;
+    final double phoneHeight = isIOS ? 541 : 400;
+    final double textMainTop = isIOS ? 50 : 35;
+    final double textMainSize = isIOS ? 32 : 26;
+    final double textSubBottom = isIOS ? 50 : 30;
+    final double textSubSize = isIOS ? 16 : 13;
+    final double stampTop = isIOS ? 680 : 500;
+    final double stampLeft = isIOS ? 270 : 245;
+    final double stampSize = isIOS ? 18 : 15;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rice Journey Ultimate ASO Generator'),
         actions: [
           if (!_isGenerating)
+            DropdownButton<String>(
+              value: _targetPlatform,
+              dropdownColor: Colors.white,
+              items: ['iOS', 'Android'].map((platform) => DropdownMenuItem(
+                value: platform,
+                child: Text(platform, style: const TextStyle(fontWeight: FontWeight.bold)),
+              )).toList(),
+              onChanged: (val) {
+                if (val != null) setState(() => _targetPlatform = val);
+              },
+            ),
+          const SizedBox(width: 16),
+          if (!_isGenerating)
             IconButton(
               icon: const Icon(Icons.play_arrow),
               onPressed: _generateAllImages,
             ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Center(
@@ -472,11 +500,11 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Phone Mockup (Centered and shrunk for breathing room)
                         Positioned(
-                          top: 130,
-                          left: 67.5, 
+                          top: phoneTop,
+                          left: phoneLeft, 
                           child: Container(
-                            width: 225,
-                            height: 400,
+                            width: phoneWidth,
+                            height: phoneHeight,
                             decoration: BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(16),
@@ -493,9 +521,9 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Phone Bezel
                         Positioned(
-                          top: 130, left: 67.5,
+                          top: phoneTop, left: phoneLeft,
                           child: Container(
-                            width: 225, height: 400,
+                            width: phoneWidth, height: phoneHeight,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(color: Colors.black87, width: 4),
@@ -505,13 +533,13 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Top Main Text
                         Positioned(
-                          top: 35, left: 20, right: 20,
+                          top: textMainTop, left: 20, right: 20,
                           child: Text(
                             screenData['main']!,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: fontFamily,
-                              fontSize: 26,
+                              fontSize: textMainSize,
                               height: 1.3,
                               fontWeight: FontWeight.w900,
                               color: const Color(0xFF333333),
@@ -521,13 +549,13 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Bottom Sub Text
                         Positioned(
-                          bottom: 30, left: 20, right: 20,
+                          bottom: textSubBottom, left: 20, right: 20,
                           child: Text(
                             screenData['sub']!,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: fontFamily,
-                              fontSize: 13,
+                              fontSize: textSubSize,
                               height: 1.5,
                               color: const Color(0xFF555555),
                             ),
@@ -536,8 +564,8 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                         
                         // Stamp overlapping the bottom right edge of the phone
                         Positioned(
-                          top: 500, // Phone ends at 530, stamp overlaps bottom corner
-                          left: 245, // Phone ends at 292.5, stamp bleeds out
+                          top: stampTop, 
+                          left: stampLeft, 
                           child: Transform.rotate(
                             angle: -0.15,
                             child: Container(
@@ -552,7 +580,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                                 screenData['stamp']!,
                                 style: TextStyle(
                                   fontFamily: fontFamily,
-                                  fontSize: 15,
+                                  fontSize: stampSize,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red.shade800,
                                 ),
