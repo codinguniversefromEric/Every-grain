@@ -12,6 +12,8 @@ import 'controllers/audio_controller.dart';
 import 'controllers/environment_controller.dart';
 import 'controllers/crop_controller.dart';
 import 'widget_service.dart';
+import 'solar_calculator.dart';
+import 'simulation/crop_simulation_engine.dart';
 
 class StateManager extends ChangeNotifier {
   FieldState? _state;
@@ -82,14 +84,56 @@ class StateManager extends ChangeNotifier {
   }
 
   void pauseApp() {
-    crop.stopTimers();
-    audio.pauseApp();
+  crop.stopTimers();
+  audio.pauseApp();
+}
+
+Future<void> resumeApp() async {
+  final state = _state;
+  if (state == null) return;
+
+  final now = DateTime.now();
+  final elapsed = now.difference(crop.lastTickTime);
+  final pos = env.lastPosition;
+
+  if (!crop.isTimeLapseMode) {
+    // 1. 補上背景期間的生長
+    if (state.currentVariety != null && elapsed > Duration.zero) {
+      CropSimulationEngine.tickSimulation(
+        state, state.weatherMetrics, state.currentVariety!, elapsed,
+      );
+    }
+
+    // 2. 立刻重算太陽，不等 30 秒 tick
+    state.sunElevation = SolarCalculator.getSunElevation(
+      pos?.latitude ?? 23.5,
+      pos?.longitude ?? 121.0,
+      now,
+    );
+
+    // 3. 天氣覆寫到期就清掉
+    if (state.weatherOverrideUntil != null &&
+        now.isAfter(state.weatherOverrideUntil!)) {
+      state.weatherOverrideUntil = null;
+      state.overriddenMetrics = null;
+    }
+
+    // 4. 離開超過 15 分鐘就強制重抓天氣
+    if (state.weatherOverrideUntil == null &&
+        elapsed > const Duration(minutes: 15)) {
+      try {
+        state.weatherMetrics = await env.weatherService
+            .getCurrentWeather(pos, forceRefresh: true);
+      } catch (_) {
+        // getCurrentWeather 內部已有 fallback，這裡只是保險
+      }
+    }
   }
 
-  void resumeApp() {
-    crop.startTimers(_state!, env, audio);
-    audio.resumeApp(_state, crop.isTimeLapseMode);
-  }
+  crop.startTimers(state, env, audio);
+  audio.resumeApp(state, crop.isTimeLapseMode);
+  notifyListeners();
+}
 
   Future<void> markFirstLetterRead() async {
     await progress.setHasReadFirstLetter(true);

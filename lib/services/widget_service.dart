@@ -72,7 +72,8 @@ class WidgetService {
               hasUnreadJournal: hasUnreadJournal,
               loc: loc,
             ),
-            logicalSize: const Size(400, 400),
+            logicalSize: const Size(180, 180),
+            pixelRatio: 2.0,
             key: uniqueKey,
           );
           
