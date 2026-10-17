@@ -3,7 +3,7 @@
 [🇹🇼 繁體中文](README.md) | [🇺🇸 English](README_en.md) | [🇯🇵 日本語](README_ja.md)
 
 "One field a year, one story a season" — This is a real, quiet, companion app for Taiwan's local rice culture. No ads, no stamina mechanics, just a rice field that changes with time and real weather.
-[![Buy Me A Boba](https://img.shields.io/badge/Donate-Buy_Me_A_Boba-CCA78C?style=for-the-badge&logo=coffeescript&logoColor=white)](https://codinguniversefromeric.bobaboba.me)
+
 [![TestFlight](https://img.shields.io/badge/iOS-TestFlight_Beta-0070c9?style=for-the-badge&logo=apple&logoColor=white)](https://testflight.apple.com/join/MpNSu2c8)
 [![Android](https://img.shields.io/badge/Android-Google_Play_Testing-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/apps/testing/com.chia.riceJourney)
 
@@ -73,3 +73,6 @@ In debug mode (`kDebugMode`), a hidden wrench icon appears in the top right corn
 - Mock location (teleport)
 
 This feature is automatically stripped from the UI tree when building for release (`flutter build ios` or `flutter build apk`).
+
+### support
+[![Buy Me A Boba](https://img.shields.io/badge/Donate-Buy_Me_A_Boba-CCA78C?style=for-the-badge&logo=coffeescript&logoColor=white)](https://codinguniversefromeric.bobaboba.me)
