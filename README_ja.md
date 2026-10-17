@@ -73,3 +73,6 @@ flutter analyze
 - 位置情報のモック（テレポート）
 
 この機能は、リリースビルド (`flutter build ios` または `flutter build apk`) 時に UI ツリーから自動的に削除されます。
+
+### サポート
+[![Buy Me A Boba](https://img.shields.io/badge/Donate-タピオカミルクティーをご馳走する-CCA78C?style=for-the-badge&logo=coffeescript&logoColor=white)](https://codinguniversefromeric.bobaboba.me)
