@@ -85,27 +85,27 @@ Widget build(BuildContext context) {
                   ),
 
                 // Notification indicator
-                if (hasUnreadJournal)
-                  Positioned(
-                    top: 24,
-                    right: 24,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.6),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.greenAccent, width: 2),
-                      ),
-                      child: Text(
-                        loc.grandpaHasLetterBadge,
-                        style: const TextStyle(
-                          color: Colors.greenAccent,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                  ),
+              //   if (hasUnreadJournal)
+              //     Positioned(
+              //       top: 24,
+              //       right: 24,
+              //       child: Container(
+              //         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              //         decoration: BoxDecoration(
+              //           color: Colors.black.withValues(alpha: 0.6),
+              //           borderRadius: BorderRadius.circular(16),
+              //           border: Border.all(color: Colors.greenAccent, width: 2),
+              //         ),
+              //         child: Text(
+              //           loc.grandpaHasLetterBadge,
+              //           style: const TextStyle(
+              //             color: Colors.greenAccent,
+              //             fontWeight: FontWeight.bold,
+              //             fontSize: 24,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
               ],
             ),
           ),
