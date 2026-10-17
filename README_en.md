@@ -3,7 +3,7 @@
 [🇹🇼 繁體中文](README.md) | [🇺🇸 English](README_en.md) | [🇯🇵 日本語](README_ja.md)
 
 "One field a year, one story a season" — This is a real, quiet, companion app for Taiwan's local rice culture. No ads, no stamina mechanics, just a rice field that changes with time and real weather.
-
+[![License](https://img.shields.io/github/license/codinguniversefromEric/Every-grain)](LICENSE)
 [![TestFlight](https://img.shields.io/badge/iOS-TestFlight_Beta-0070c9?style=for-the-badge&logo=apple&logoColor=white)](https://testflight.apple.com/join/MpNSu2c8)
 [![Android](https://img.shields.io/badge/Android-Google_Play_Testing-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/apps/testing/com.chia.riceJourney)
 
