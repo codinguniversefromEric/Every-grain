@@ -4,6 +4,7 @@
 
 「一年に一つの田んぼ、一季に一つの物語」—— これは、台湾の稲作文化をテーマにしたリアルで静かな寄り添い型アプリです。広告やスタミナ制度はなく、時間と実際の天気とともに変化する田んぼがあるだけです。
 
+[![License](https://img.shields.io/github/license/codinguniversefromEric/Every-grain)](LICENSE)
 [![TestFlight](https://img.shields.io/badge/iOS-TestFlight_Beta-0070c9?style=for-the-badge&logo=apple&logoColor=white)](https://testflight.apple.com/join/MpNSu2c8)
 [![Android](https://img.shields.io/badge/Android-Google_Play_Testing-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/apps/testing/com.chia.riceJourney)
 
