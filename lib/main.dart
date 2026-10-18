@@ -186,28 +186,24 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     BackgroundService.init();
     
     // 確保 App Group 初始化完成後，再觸發 Widget 更新，避免存到錯的 UserDefaults
+       // 確保 App Group 初始化完成後，再觸發 Widget 更新，避免存到錯的 UserDefaults
     Future.wait([
       WidgetService.init(),
       _stateManager.initializeState(),
     ]).then((_) {
       if (mounted) {
-        WidgetService.updateWidget(
-          _stateManager.state, 
-          hasUnreadJournal: _stateManager.hasUnreadJournal
-        );
+        _stateManager.syncWidget();
       }
     });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.inactive) {
+      _stateManager.flushWidgetUpdate(); // 通常圖早就畫好了，這裡只補最後 2 秒內的變更
       _stateManager.pauseApp();
-      // 在 inactive 時提早開始截圖，避免 paused 時被 iOS 強制中斷導致截圖失敗
-      WidgetService.updateWidget(
-        _stateManager.state, 
-        hasUnreadJournal: _stateManager.hasUnreadJournal
-      );
+    } else if (state == AppLifecycleState.paused) {
+      _stateManager.pauseApp();          // 不在背景畫圖
     } else if (state == AppLifecycleState.resumed) {
       _stateManager.resumeApp();
     }

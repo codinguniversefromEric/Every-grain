@@ -14,10 +14,15 @@ import 'controllers/crop_controller.dart';
 import 'widget_service.dart';
 import 'solar_calculator.dart';
 import 'simulation/crop_simulation_engine.dart';
+import 'dart:async';
 
 class StateManager extends ChangeNotifier {
   FieldState? _state;
   bool _isLoading = true;
+  Timer? _widgetDebounce;
+  Future<void>? _widgetJob;
+  bool _widgetDirty = false;
+  String? _lastWidgetSignature;
 
   late final ProgressRepository progress;
   late final AudioController audio;
@@ -133,6 +138,7 @@ Future<void> resumeApp() async {
   crop.startTimers(state, env, audio);
   audio.resumeApp(state, crop.isTimeLapseMode);
   notifyListeners();
+  _scheduleWidgetUpdate(); 
 }
 
   Future<void> markFirstLetterRead() async {
@@ -144,6 +150,7 @@ Future<void> resumeApp() async {
     if (_state != null) {
       await crop.completePlanting(_state!, progress);
       notifyListeners();
+      _scheduleWidgetUpdate();
     }
   }
 
@@ -264,5 +271,67 @@ Future<void> resumeApp() async {
       audio.updateAmbience(_state!, crop.isTimeLapseMode);
       notifyListeners();
     }
+  }
+ /// 小工具畫面只跟這些東西有關，其餘變化（例如 30 秒 tick 的微小數值）不觸發重畫
+  String _widgetSignature() {
+    final s = _state!;
+    return [
+      s.growthStage,
+      s.weatherCondition,
+      s.currentBiome,
+      s.currentVariety?.id,
+      hasUnreadJournal,
+      DateTime.now().hour, // 跨小時要重排時間軸
+    ].join('|');
+  }
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    if (_state == null || _isLoading) return;
+    final sig = _widgetSignature();
+    if (sig == _lastWidgetSignature) return;
+    _lastWidgetSignature = sig;
+    _scheduleWidgetUpdate();
+  }
+
+  /// 立即更新；若正在畫，畫完後再補畫一次最新狀態
+  Future<void> syncWidget() async {
+    _widgetDebounce?.cancel();
+    if (_state == null) return;
+    if (_widgetJob != null) {
+      _widgetDirty = true;
+      return _widgetJob;
+    }
+    _widgetJob = () async {
+      do {
+        _widgetDirty = false;
+        await WidgetService.updateWidget(_state,
+            hasUnreadJournal: hasUnreadJournal);
+      } while (_widgetDirty);
+    }();
+    try {
+      await _widgetJob;
+    } finally {
+      _widgetJob = null;
+    }
+  }
+
+  /// 離開 App 時呼叫：只有「還有沒畫的變更」才畫
+  void flushWidgetUpdate() {
+    if (_widgetDebounce?.isActive ?? false) {
+      syncWidget();
+    }
+  }
+
+  void _scheduleWidgetUpdate() {
+    _widgetDebounce?.cancel();
+    _widgetDebounce = Timer(const Duration(seconds: 2), syncWidget);
+  }
+
+  @override
+  void dispose() {
+    _widgetDebounce?.cancel();
+    super.dispose();
   }
 }
