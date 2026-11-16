@@ -5,7 +5,7 @@ import '../models/field_state.dart';
 
 class VarietyService {
   /// Determines the local rice variety based on GPS coordinates.
-  static RiceVariety getVarietyForPosition(Position? position) {
+  static RiceVariety getVarietyForPosition(Position? position, {Random? random}) {
     if (position == null) {
       // Default to Taikeng 9 (North) if no GPS
       return RiceVariety.taikeng9;
@@ -13,7 +13,7 @@ class VarietyService {
 
     final lat = position.latitude;
     final lon = position.longitude;
-    final rand = Random().nextDouble();
+    final rand = (random ?? Random()).nextDouble();
 
     // 5% chance to get the legendary Tainung 67 anywhere in Taiwan
     if (rand < 0.05) {

@@ -1,85 +1,39 @@
-# 粒粒皆辛苦 (Rice Journey)
+# 粒粒皆辛苦 · Rice Journey
 
-[🇹🇼 繁體中文](README.md) | [🇺🇸 English](README_en.md) | [🇯🇵 日本語](README_ja.md)
+[English](README_en.md) · [日本語](README_ja.md) · [MIT 授權](LICENSE)
 
-「一年一田、一季一冊」—— 這是一個真實、安靜、陪伴的台灣在地水稻文化 App。沒有廣告，沒有體力值，只有隨時間與真實天氣變化的稻田。  
-[![License](https://img.shields.io/github/license/codinguniversefromEric/Every-grain)](LICENSE)
-[![TestFlight](https://img.shields.io/badge/iOS-TestFlight_Beta-0070c9?style=for-the-badge&logo=apple&logoColor=white)](https://testflight.apple.com/join/MpNSu2c8)
-[![Android](https://img.shields.io/badge/Android-Google_Play_Testing-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/apps/testing/com.chia.riceJourney)
+《粒粒皆辛苦》是以台灣稻作為主題的 Flutter 作品。從插秧到收割，稻株會隨時間生長，田裡的光線、天氣和環境聲也會跟著變化。App 裡有農事日誌，並提供 iOS 和 Android 的桌面稻田小工具。
 
-## 技術棧 (Tech Stack)
+這個作品想把稻作放回大學生和上班族的日常。午餐吃便當時，瞄一眼手機桌面上的田，看看那碗飯在收割以前，稻子可能是什麼模樣。
 
-- **Framework**: Flutter
-- **State Management**: 原生 `setState` + `ChangeNotifier` (於 `StateManager` 協調)
-- **多語系 (i18n)**: 全面採用 `.arb` 檔案架構 (如 `app_zh.arb`, `app_en.arb`, `app_ja.arb`) 進行語系隔離與多國語言支援。
-- **硬體與外部服務**:
-  - `geolocator`: 獲取定位以判斷南北部節氣與品種
-  - `just_audio`: 環境音效播放 (結合連續性動態音量與隨機 One-Shot 觸發)
-  - **天氣 API**: 雙軌制自動切換（台灣境內使用 CWA Open Data，海外使用 Open-Meteo），具備全域快取與靜默降級保護。
+![粒粒皆辛苦的秧苗期畫面](screenshots/screenshot_1_seedling.png)
 
-## 特色亮點 (Highlights)
+## 在本機執行
 
-1. **本地日照運算 (Solar Calculator)**
-   無須依賴額外的日出日落 API，完全透過本機的 GPS 座標與真實時間，利用純數學運算求出精確的太陽仰角。天空漸層與環境光影會隨著真實時間一分一秒**無縫且平滑地**漸變，且陰雨天會自動觸發真實的暗沉覆蓋。
+準備 Flutter stable 3.44.0 以上（內含 Dart 3.12.2 以上的 3.x 版本），並啟動 Android 模擬器、iOS 模擬器或接上開發用手機。可用 `flutter doctor` 檢查工具鏈，用 `flutter devices` 確認裝置。
 
-2. **零版權疑慮的程式化音效 (Procedural Audio)**
-   為確保專案 100% 開源自由度並徹底杜絕版權疑慮，應用內使用的特殊音效（如水滴聲、遠處悶雷）皆非使用任何有版權的素材庫，而是直接透過自製的 Python 腳本（利用指數衰減、頻率下沈與低通濾波白噪音）**純數學合成產生**。
+在 iOS 實機上測試時，請在 Xcode 設定自己的簽署團隊。測試 iOS 小工具時，也要讓 App 和小工具使用同一個已佈建的 App Group。
 
-## 專案架構 (Architecture)
-
-本專案採用職責分離的架構，確保高可維護性與效能：
-
-```mermaid
-graph TD
-    A["main.dart (UI 組裝)"] --> B[StateManager]
-    B --> C[WeatherService]
-    B --> E[AmbientSoundService]
-    B --> F[AgriculturalCalendar]
-    B --> G[VarietyService]
-    A --> H[Visual Layers]
-    H --> I["LivingSky, Clouds, Rain, etc."]
-    A --> J["RicePlant Layer"]
-```
-
-- **`lib/services/`**: 純業務邏輯與 API 串接，不依賴 UI。包含狀態管理、天氣、定位、節氣計算與環境音。
-- **`lib/visuals/`**: 獨立的視覺圖層，每個檔案負責一種天氣或大氣現象，如水紋、螢火蟲、雲朵等。
-- **`lib/theme/`**: 集中式的設計系統，管理顏色 (`app_colors.dart`)、常數 (`animation_constants.dart`) 與字串 (`strings.dart`)。
-- **`lib/widgets/`**: 可重用的 UI 元件。
-- **`lib/models/`**: 不可變的資料模型與列舉。
-
-## 開發環境與編譯指令
-
-本專案已實作完善的氣象 API 雙軌制與防呆機制，可直接執行而無需配置額外的金鑰。
-
-### 執行開發版 (Debug)
-```bash
+```sh
+git clone https://github.com/codinguniversefromEric/Every-grain.git
+cd Every-grain
+flutter pub get
 flutter run
 ```
-*(在開發模式下，如果沒有提供 CWA API Key，天氣模組會自動靜默改用open-meteo)*
 
-### 執行測試 (Tests)
-專案內含 `services/` 層的單元測試。
-```bash
-flutter test
-```
+預設可透過 Open-Meteo 取得天氣，使用苗栗座標作為無定位時的預設位置。若要測試台灣中央氣象署資料，可執行 `flutter run --dart-define=CWA_API_KEY=你的金鑰`。Debug 模式的右上角扳手可切換時段、天氣和生長階段。
 
-### 程式碼品質與 Linter
-```bash
-flutter analyze
-```
+## 程式碼導覽
 
-### 正式發布打包 (Release)
-如需發布正式版（透過本機腳本更新版號與打包 iOS IPA，並透過 GitHub Actions 打包 Android AAB），請參考專屬指南：
-👉 [**發布與打包指南 (RELEASE_GUIDE.md)**](docs/RELEASE_GUIDE.md)
+| 路徑 | 內容 |
+| --- | --- |
+| [lib/main.dart](lib/main.dart) | App 入口與稻田主畫面 |
+| [lib/services/](lib/services/) | 稻作模擬、天氣、音效、存檔與小工具更新 |
+| [lib/visuals/](lib/visuals/) | 天空、水面和天氣等視覺圖層 |
+| [lib/widgets/](lib/widgets/) | 農事日誌、收割畫面等介面元件 |
+| [lib/l10n/](lib/l10n/) | 繁體中文、英文與日文翻譯 |
+| [scripts/generate_audio.py](scripts/generate_audio.py) | 程式化音效的生成腳本 |
 
-## 開發者控制面板 (Developer Controls)
+## 貢獻
 
-在開發模式 (`kDebugMode`) 下，畫面右上角會出現隱藏的扳手圖示。點擊可開啟控制面板，進行：
-- 任意切換稻作生長階段
-- 改變日夜時段與天氣
-- 模擬位置（瞬間移動）
-
-此功能在 `flutter build ios` (Release) 打包時會自動從 UI 樹中移除。
-
-### 支持
-[![Buy Me A Boba](https://img.shields.io/badge/Donate-請我喝珍奶-CCA78C?style=for-the-badge&logo=coffeescript&logoColor=white)](https://codinguniversefromeric.bobaboba.me)
+歡迎回報問題或提交修正。請參考[貢獻指南](CONTRIBUTING.md)。[產品願景](docs/PRODUCT_VISION.md)記錄設計構想，[發布指南](docs/RELEASE_GUIDE.md)記錄原專案的打包流程。

@@ -1,5 +1,5 @@
 name: rice_journey
-description: "A new Flutter project."
+description: "A Taiwanese rice field simulation with weather, ambient sound, and a farming journal."
 publish_to: 'none'
 
 version: 2.1.0+27

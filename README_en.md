@@ -1,79 +1,28 @@
-# Rice Journey (粒粒皆辛苦)
+# Rice Journey · 粒粒皆辛苦
 
-[🇹🇼 繁體中文](README.md) | [🇺🇸 English](README_en.md) | [🇯🇵 日本語](README_ja.md)
+[繁體中文](README.md) · [日本語](README_ja.md) · [MIT License](LICENSE)
 
-"One field a year, one story a season" — This is a real, quiet, companion app for Taiwan's local rice culture. No ads, no stamina mechanics, just a rice field that changes with time and real weather.
+Rice Journey is a Flutter app about rice farming in Taiwan. The rice grows from transplanting to harvest as daylight, weather, and ambient sounds change. The app includes a farming journal and a rice field home-screen widget for iOS and Android.
 
-[![License](https://img.shields.io/github/license/codinguniversefromEric/Every-grain)](LICENSE)
-[![TestFlight](https://img.shields.io/badge/iOS-TestFlight_Beta-0070c9?style=for-the-badge&logo=apple&logoColor=white)](https://testflight.apple.com/join/MpNSu2c8)
-[![Android](https://img.shields.io/badge/Android-Google_Play_Testing-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/apps/testing/com.chia.riceJourney)
+The project explores how rice farming might fit into the everyday lives of university students and office workers. Over a lunchbox, a glance at the field on your home screen can bring to mind what the rice in your meal looked like before harvest.
 
-## Tech Stack
+![Rice Journey at the seedling stage](screenshots/screenshot_1_seedling.png)
 
-- **Framework**: Flutter
-- **State Management**: Native `setState` + `ChangeNotifier` (coordinated in `StateManager`)
-- **Internationalization (i18n)**: Fully utilizes `.arb` files (e.g. `app_zh.arb`, `app_en.arb`, `app_ja.arb`) for strict language isolation and multi-language support.
-- **Hardware & External Services**:
-  - `geolocator`: Retrieves location to determine regional solar terms and rice varieties
-  - `just_audio`: Ambient sound playback
-  - **Weather API**: Dual-track system (uses CWA Open Data in Taiwan, Open-Meteo overseas) with global caching and silent fallback protection.
+## Run locally
 
-## Architecture
+Use Flutter stable 3.44.0 or later with Dart 3.12.2 or a later 3.x version. Start an Android emulator or iOS simulator, or connect a development device. Run `flutter doctor` to check your setup and `flutter devices` to list available devices.
 
-This project adopts a separation of concerns architecture to ensure high maintainability and performance:
+For a physical iOS device, set your signing team in Xcode. To test the iOS widget, configure the app and widget to use the same provisioned App Group.
 
-```mermaid
-graph TD
-    A["main.dart (UI Assembly)"] --> B[StateManager]
-    B --> C[WeatherService]
-    B --> E[AmbientSoundService]
-    B --> F[AgriculturalCalendar]
-    B --> G[VarietyService]
-    A --> H[Visual Layers]
-    H --> I["LivingSky, Clouds, Rain, etc."]
-    A --> J["RicePlant Layer"]
-```
-
-- **`lib/services/`**: Pure business logic and API integrations, UI-independent. Includes state management, weather, location, solar calendar calculation, and ambient sounds.
-- **`lib/visuals/`**: Independent visual layers. Each file handles a specific weather or atmospheric phenomenon like water ripples, fireflies, clouds, etc.
-- **`lib/theme/`**: Centralized design system managing colors (`app_colors.dart`), constants (`animation_constants.dart`), and strings (`strings.dart`).
-- **`lib/widgets/`**: Reusable UI components.
-- **`lib/models/`**: Immutable data models and enums.
-
-## Development & Build Commands
-
-This project implements a robust dual-track weather API and fallback mechanism, meaning it can be run directly without configuring extra API keys.
-
-### Run in Debug Mode
-```bash
+```sh
+git clone https://github.com/codinguniversefromEric/Every-grain.git
+cd Every-grain
+flutter pub get
 flutter run
 ```
-*(In debug mode, if no CWA API Key is provided, the weather module will automatically and silently fall back to open-meteo)*
 
-### Run Tests
-The project contains unit tests for the `services/` layer.
-```bash
-flutter test
-```
+Open-Meteo works with the default configuration. When location is unavailable, the app uses coordinates in Miaoli, Taiwan. To try Taiwan's Central Weather Administration data, run `flutter run --dart-define=CWA_API_KEY=your_key`. In debug mode, use the wrench in the top-right corner to switch the time of day, weather, and growth stage.
 
-### Code Quality & Linter
-```bash
-flutter analyze
-```
+## Contributing
 
-### Release Build
-To build for release (updating the version and packaging iOS IPA locally, and using GitHub Actions for Android AAB), please refer to the dedicated guide:
-👉 [**Release & Build Guide (RELEASE_GUIDE.md)**](docs/RELEASE_GUIDE.md)
-
-## Developer Controls
-
-In debug mode (`kDebugMode`), a hidden wrench icon appears in the top right corner. Click to open the control panel to:
-- Instantly switch rice growth stages
-- Change time of day and weather conditions
-- Override battery levels
-- Mock location (teleport)
-
-This feature is automatically stripped from the UI tree when building for release (`flutter build ios` or `flutter build apk`).
-
-### support
-[![Buy Me A Boba](https://img.shields.io/badge/Donate-Buy_Me_A_Boba-CCA78C?style=for-the-badge&logo=coffeescript&logoColor=white)](https://codinguniversefromeric.bobaboba.me)
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development checks and how to report issues. The [code map](README.md#程式碼導覽) in the main README links to the app's main components.

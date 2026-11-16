@@ -1,79 +1,28 @@
-# Rice Journey (粒粒皆辛苦)
+# Rice Journey · 粒粒皆辛苦
 
-[🇹🇼 繁體中文](README.md) | [🇺🇸 English](README_en.md) | [🇯🇵 日本語](README_ja.md)
+[繁體中文](README.md) · [English](README_en.md) · [MIT ライセンス](LICENSE)
 
-「一年に一つの田んぼ、一季に一つの物語」—— これは、台湾の稲作文化をテーマにしたリアルで静かな寄り添い型アプリです。広告やスタミナ制度はなく、時間と実際の天気とともに変化する田んぼがあるだけです。
+Rice Journey は、台湾の稲作をテーマにした Flutter アプリです。田植えから収穫まで稲が育ち、時刻や天気に合わせて田んぼの光と環境音が変わります。農作業の日誌と、iOS・Android のホーム画面に置ける田んぼのウィジェットもあります。
 
-[![License](https://img.shields.io/github/license/codinguniversefromEric/Every-grain)](LICENSE)
-[![TestFlight](https://img.shields.io/badge/iOS-TestFlight_Beta-0070c9?style=for-the-badge&logo=apple&logoColor=white)](https://testflight.apple.com/join/MpNSu2c8)
-[![Android](https://img.shields.io/badge/Android-Google_Play_Testing-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/apps/testing/com.chia.riceJourney)
+大学生や会社員の日常に、稲作を身近に感じるひとときを作ることを目指しています。昼休みにお弁当を食べながらホーム画面の田んぼを眺めると、ごはんになる前の稲の姿を思い浮かべられます。
 
-## 技術スタック (Tech Stack)
+![苗の時期の田んぼ](screenshots/screenshot_1_seedling.png)
 
-- **Framework**: Flutter
-- **State Management**: ネイティブの `setState` + `ChangeNotifier` (`StateManager` で調整)
-- **多言語対応 (i18n)**: `.arb` ファイル構成（例: `app_zh.arb`, `app_en.arb`, `app_ja.arb`）を全面的に採用し、厳密な言語分離と多言語対応を実現。
-- **ハードウェアと外部サービス**:
-  - `geolocator`: 位置情報を取得し、地域による二十四節気の違いや稲の品種を判断
-  - `just_audio`: 環境音の再生
-  - **天気 API**: デュアルトラックシステム（台湾国内では CWA Open Data、海外では Open-Meteo を使用）、グローバルキャッシュとサイレントフォールバック保護機能を搭載。
+## ローカルで実行
 
-## アーキテクチャ (Architecture)
+Dart 3.12.2 以上の 3.x を含む Flutter stable 3.44.0 以降を用意し、Android エミュレーターか iOS シミュレーターを起動するか、開発用端末を接続してください。環境の確認には `flutter doctor`、端末の一覧には `flutter devices` を使います。
 
-このプロジェクトは、高い保守性とパフォーマンスを確保するため、関心の分離（Separation of Concerns）アーキテクチャを採用しています：
+iOS 実機では Xcode で自分の署名チームを設定してください。ウィジェットを試す場合は、アプリとウィジェットに同じプロビジョニング済みの App Group を設定します。
 
-```mermaid
-graph TD
-    A["main.dart (UI 構築)"] --> B[StateManager]
-    B --> C[WeatherService]
-    B --> E[AmbientSoundService]
-    B --> F[AgriculturalCalendar]
-    B --> G[VarietyService]
-    A --> H[Visual Layers]
-    H --> I["LivingSky, Clouds, Rain, etc."]
-    A --> J["RicePlant Layer"]
-```
-
-- **`lib/services/`**: UI に依存しない純粋なビジネスロジックと API 連携。状態管理、天気、位置情報、二十四節気の計算、環境音を含みます。
-- **`lib/visuals/`**: 独立した視覚レイヤー。各ファイルが水面の波紋、ホタル、雲など特定の天気や大気現象を担当します。
-- **`lib/theme/`**: 色（`app_colors.dart`）、定数（`animation_constants.dart`）、文字列（`strings.dart`）を一元管理するデザインシステム。
-- **`lib/widgets/`**: 再利用可能な UI コンポーネント。
-- **`lib/models/`**: 不変 (Immutable) なデータモデルと列挙型。
-
-## 開発とビルドコマンド
-
-このプロジェクトは堅牢な天気 API デュアルトラックシステムとフォールバックメカニズムを実装しているため、追加の API キーを設定することなく直接実行できます。
-
-### 開発モードで実行 (Debug)
-```bash
+```sh
+git clone https://github.com/codinguniversefromEric/Every-grain.git
+cd Every-grain
+flutter pub get
 flutter run
 ```
-*(開発モードでは、CWA API キーが提供されていない場合、天気モジュールは自動的に open-meteo にサイレントフォールバックします)*
 
-### テストの実行 (Tests)
-プロジェクトには `services/` レイヤーの単体テストが含まれています。
-```bash
-flutter test
-```
+標準設定では Open-Meteo から天気を取得します。位置情報を取得できない場合は台湾の苗栗の座標を使います。台湾の中央気象署のデータを試す場合は `flutter run --dart-define=CWA_API_KEY=your_key` を実行してください。デバッグモードでは、右上のレンチアイコンから時刻・天気・成長段階を切り替えられます。
 
-### コード品質と Linter
-```bash
-flutter analyze
-```
+## 貢献
 
-### リリースビルド (Release)
-正式版のリリース（ローカルスクリプトによるバージョン更新と iOS IPA のパッケージ化、および GitHub Actions を通じた Android AAB のパッケージ化）については、専用のガイドを参照してください：
-👉 [**リリースおよびパッケージ化ガイド (RELEASE_GUIDE.md)**](docs/RELEASE_GUIDE.md)
-
-## 開発者向けコントロール (Developer Controls)
-
-開発モード (`kDebugMode`) では、画面右上に隠しアイコン（レンチ）が表示されます。クリックしてコントロールパネルを開くと、以下の操作が可能です：
-- 稲の成長段階の即時切り替え
-- 昼夜の時間帯と天候の変更
-- バッテリー残量のオーバーライド
-- 位置情報のモック（テレポート）
-
-この機能は、リリースビルド (`flutter build ios` または `flutter build apk`) 時に UI ツリーから自動的に削除されます。
-
-### サポート
-[![Buy Me A Boba](https://img.shields.io/badge/Donate-タピオカミルクティーをご馳走する-CCA78C?style=for-the-badge&logo=coffeescript&logoColor=white)](https://codinguniversefromeric.bobaboba.me)
+開発時の確認手順やバグ報告については、[貢献ガイド](CONTRIBUTING.md)を参照してください。主なコードの場所は、[繁体字中国語版の README](README.md#程式碼導覽)にまとめています。

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rice_journey/services/variety_service.dart';
@@ -23,11 +25,14 @@ void main() {
         altitudeAccuracy: 0,
         headingAccuracy: 0,
       );
-      final variety = VarietyService.getVarietyForPosition(pos);
+      final variety = VarietyService.getVarietyForPosition(
+        pos,
+        random: Random(0),
+      );
       expect(variety, RiceVariety.kaohsiung139);
     });
 
-    test('returns Taikeng 9 for North Taiwan', () {
+    test('returns Taoyuan 3 for North Taiwan', () {
       final pos = Position(
         latitude: 25.0,
         longitude: 121.5,
@@ -40,8 +45,11 @@ void main() {
         altitudeAccuracy: 0,
         headingAccuracy: 0,
       );
-      final variety = VarietyService.getVarietyForPosition(pos);
-      expect(variety, RiceVariety.taikeng9);
+      final variety = VarietyService.getVarietyForPosition(
+        pos,
+        random: Random(0),
+      );
+      expect(variety, RiceVariety.taoyuan3);
     });
 
     test('returns Tainung 71 for Central Taiwan', () {
@@ -57,13 +65,16 @@ void main() {
         altitudeAccuracy: 0,
         headingAccuracy: 0,
       );
-      final variety = VarietyService.getVarietyForPosition(pos);
+      final variety = VarietyService.getVarietyForPosition(
+        pos,
+        random: Random(0),
+      );
       expect(variety, RiceVariety.tainung71);
     });
 
     test('returns Tainan 11 for South Taiwan', () {
       final pos = Position(
-        latitude: 22.0,
+        latitude: 23.1,
         longitude: 120.5,
         timestamp: DateTime.now(),
         accuracy: 0,
@@ -74,7 +85,10 @@ void main() {
         altitudeAccuracy: 0,
         headingAccuracy: 0,
       );
-      final variety = VarietyService.getVarietyForPosition(pos);
+      final variety = VarietyService.getVarietyForPosition(
+        pos,
+        random: Random(0),
+      );
       expect(variety, RiceVariety.tainan11);
     });
   });
