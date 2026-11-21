@@ -41,7 +41,9 @@ class JournalDialog extends StatelessWidget {
         if (onPlowDeadCrop != null) onPlowDeadCrop!();
         Navigator.of(context).pop();
       };
-    } else if (state?.growthStage == GrowthStage.fallow && state?.nextPlantingAllowedAt != null && DateTime.now().isBefore(state!.nextPlantingAllowedAt!)) {
+    } else if (state?.growthStage == GrowthStage.fallow &&
+        state?.nextPlantingAllowedAt != null &&
+        DateTime.now().isBefore(state!.nextPlantingAllowedAt!)) {
       title = loc.journalFallowTitle;
       content = loc.journalFallowContent;
     } else if (needsPlanting) {
@@ -59,60 +61,59 @@ class JournalDialog extends StatelessWidget {
       }
     }
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: 32), // space for close button
-        Text(
-          title,
-          style: const TextStyle(
-            color: Color(0xFF5D4037),
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: 32), // space for close button
+          Text(
+            title,
+            style: const TextStyle(
+              color: Color(0xFF5D4037),
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 24),
-        Text(
-          content,
-          style: const TextStyle(
-            color: Color(0xFF3E2723),
-            fontSize: 16,
-            height: 1.8,
-          ),
-        ),
-        const SizedBox(height: 32),
-        OutlinedButton(
-          onPressed: action,
-          style: OutlinedButton.styleFrom(
-            foregroundColor: const Color(0xFF5D4037),
-            side: const BorderSide(color: Color(0xFF5D4037)),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          child: Text(
-            buttonText,
-            style: const TextStyle(fontSize: 16, letterSpacing: 1),
-          ),
-        ),
-        if (showPrayButton) ...[
-          const SizedBox(height: 16),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              if (onPrayToEarthGod != null) onPrayToEarthGod!();
-            },
-            child: Text(
-              loc.journalPrayButton,
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
+          const SizedBox(height: 24),
+          Text(
+            content,
+            style: const TextStyle(
+              color: Color(0xFF3E2723),
+              fontSize: 16,
+              height: 1.8,
             ),
           ),
+          const SizedBox(height: 32),
+          OutlinedButton(
+            onPressed: action,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF5D4037),
+              side: const BorderSide(color: Color(0xFF5D4037)),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            child: Text(
+              buttonText,
+              style: const TextStyle(fontSize: 16, letterSpacing: 1),
+            ),
+          ),
+          if (showPrayButton) ...[
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (onPrayToEarthGod != null) onPrayToEarthGod!();
+              },
+              child: Text(
+                loc.journalPrayButton,
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+            ),
+          ],
         ],
-      ],
-    ),
+      ),
     );
   }
 }

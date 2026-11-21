@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class MistLayer extends StatefulWidget {
@@ -30,29 +29,25 @@ class _MistLayerState extends State<MistLayer>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return ImageFiltered(
-          imageFilter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-          child: CustomPaint(
-            painter: _MistPainter(_controller.value),
-            size: Size.infinite,
-          ),
-        );
-      },
-    );
+    return CustomPaint(painter: _MistPainter(_controller), size: Size.infinite);
   }
 }
 
 class _MistPainter extends CustomPainter {
-  final double progress;
-  _MistPainter(this.progress);
+  final Animation<double> animation;
+  _MistPainter(this.animation) : super(repaint: animation);
+
+  static const _gradient = RadialGradient(
+    colors: [Color(0x26FFFFFF), Color(0x00FFFFFF)],
+  );
 
   @override
   void paint(Canvas canvas, Size size) {
+    final progress = animation.value;
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.15);
+      ..shader = _gradient.createShader(
+        Rect.fromCircle(center: Offset.zero, radius: 1),
+      );
 
     // Draw several wide, soft blobs drifting right
     for (int i = 0; i < 3; i++) {
@@ -61,17 +56,15 @@ class _MistPainter extends CustomPainter {
           ((progress * speed + (i * 0.33)) % 1.0) * (size.width + 400) - 200;
       double yWobble = sin(progress * pi * 2 + i) * 20;
 
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(xOffset, size.height * 0.75 + yWobble),
-          width: size.width * 0.8,
-          height: 150,
-        ),
-        paint,
-      );
+      canvas.save();
+      canvas.translate(xOffset, size.height * 0.75 + yWobble);
+      canvas.scale(size.width * 0.4, 85);
+      canvas.drawCircle(Offset.zero, 1, paint);
+      canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _MistPainter oldDelegate) =>
+      oldDelegate.animation != animation;
 }

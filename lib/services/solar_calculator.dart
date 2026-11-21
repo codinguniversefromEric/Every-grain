@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 
 class SolarCalculator {
+  static const defaultLatitude = 24.5602;
+  static const defaultLongitude = 120.8214;
+
   /// Calculates the sun's elevation angle (in degrees) for a given location and time.
   /// 
   /// Positive values mean the sun is above the horizon (day).

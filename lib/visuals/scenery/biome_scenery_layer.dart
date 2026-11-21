@@ -38,17 +38,6 @@ enum LandscapeVariant {
   eastCoast,
 }
 
-/// 用於快取靜態路徑繪製，避免每幀重建 Path
-class SceneryCache {
-  ui.Picture? picture;
-  String key = '';
-
-  void dispose() {
-    picture?.dispose();
-    picture = null;
-  }
-}
-
 // =============================================================================
 // 聚落點綴的版面配置（純函式：只由 variant + seed 決定，靜態與動態層共用）
 // =============================================================================
@@ -306,7 +295,6 @@ class _BiomeSceneryLayerState extends State<BiomeSceneryLayer>
   late LandscapeVariant _variant;
   late int _seed;
   late _SceneLayout _layout;
-  final SceneryCache _cache = SceneryCache();
 
   // 每個 Session 隨機分配各 Biome 的 Seed，確保同一開啟期間地貌穩定，但每次開啟有驚喜
   static final Map<SceneryBiome, int> _sessionSeeds = {
@@ -407,32 +395,35 @@ class _BiomeSceneryLayerState extends State<BiomeSceneryLayer>
   @override
   void dispose() {
     _controller.dispose();
-    _cache.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return CustomPaint(
-            painter: _SceneryPainter(
-              biome: widget.biome,
-              dayPhase: widget.dayPhase,
-              variant: _variant,
-              animationValue: _controller.value,
-              seed: _seed,
-              layout: _layout,
-              cache: _cache,
-            ),
-            size: Size.infinite,
-          );
-        },
-      ),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        RepaintBoundary(
+          child: CustomPaint(isComplex: true, painter: _painter()),
+        ),
+        RepaintBoundary(
+          child: CustomPaint(
+            willChange: _controller.isAnimating,
+            painter: _painter(animation: _controller),
+          ),
+        ),
+      ],
     );
   }
+
+  _SceneryPainter _painter({Animation<double>? animation}) => _SceneryPainter(
+    biome: widget.biome,
+    dayPhase: widget.dayPhase,
+    variant: _variant,
+    seed: _seed,
+    layout: _layout,
+    animation: animation,
+  );
 }
 
 // =============================================================================
@@ -461,20 +452,19 @@ class _SceneryPainter extends CustomPainter {
   final SceneryBiome biome;
   final DayPhase dayPhase;
   final LandscapeVariant variant;
-  final double animationValue;
+  final Animation<double>? animation;
+  double get animationValue => animation?.value ?? 0;
   final int seed;
   final _SceneLayout layout;
-  final SceneryCache cache;
 
   _SceneryPainter({
     required this.biome,
     required this.dayPhase,
     required this.variant,
-    required this.animationValue,
+    this.animation,
     required this.seed,
     required this.layout,
-    required this.cache,
-  });
+  }) : super(repaint: animation);
 
   bool get isNight => dayPhase == DayPhase.night;
   bool get isEvening => dayPhase == DayPhase.evening;
@@ -618,24 +608,11 @@ class _SceneryPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final p = _palette();
 
-    final currentKey =
-        '${variant.name}_${size.width}x${size.height}_${dayPhase.name}_$seed';
-
-    if (cache.key != currentKey || cache.picture == null) {
-      final recorder = ui.PictureRecorder();
-      final recordCanvas = Canvas(recorder);
-      _drawStaticScene(recordCanvas, size, p);
-
-      cache.picture?.dispose();
-      cache.picture = recorder.endRecording();
-      cache.key = currentKey;
+    if (animation == null) {
+      _drawStaticScene(canvas, size, p);
+    } else {
+      _drawDynamicScene(canvas, size, p);
     }
-
-    if (cache.picture != null) {
-      canvas.drawPicture(cache.picture!);
-    }
-
-    _drawDynamicScene(canvas, size, p);
   }
 
   // ===========================================================================
@@ -3680,7 +3657,7 @@ class _SceneryPainter extends CustomPainter {
         oldDelegate.dayPhase != dayPhase ||
         oldDelegate.variant != variant ||
         oldDelegate.seed != seed ||
-        oldDelegate.animationValue != animationValue;
+        oldDelegate.animation != animation;
   }
 
   _SceneryPalette _palette() {

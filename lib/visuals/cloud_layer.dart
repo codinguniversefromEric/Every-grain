@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 
@@ -69,17 +68,9 @@ class _CloudLayerState extends State<CloudLayer>
   Widget build(BuildContext context) {
     if (widget.isNight) return const SizedBox.shrink(); // No clouds at night
 
-    return AnimatedBuilder(
-      animation: _driftController,
-      builder: (context, child) {
-        return ImageFiltered(
-          imageFilter: ImageFilter.blur(sigmaX: 7.5, sigmaY: 7.5), // Matches MaskFilter radius 15
-          child: CustomPaint(
-            painter: _CloudPainter(_clouds, _driftController.value),
-            size: Size.infinite,
-          ),
-        );
-      },
+    return CustomPaint(
+      painter: _CloudPainter(_clouds, _driftController),
+      size: Size.infinite,
     );
   }
 }
@@ -103,31 +94,32 @@ class _Cloud {
 
 class _CloudPainter extends CustomPainter {
   final List<_Cloud> clouds;
-  final double time;
-  _CloudPainter(this.clouds, this.time);
+  final Animation<double> animation;
+  _CloudPainter(this.clouds, this.animation) : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) {
+    final time = animation.value;
+    final paint = Paint();
     for (final c in clouds) {
       final xPos = ((c.xStart + time * c.speed) % 1.4) - 0.2; // Wraps around
-      final paint = Paint()
-        ..color = (time > 0 ? const Color(0xFF90A4AE) : Colors.white)
-            .withValues(
-              alpha: c.opacity.clamp(0.0, 0.95),
-            ); // Darker if opacity is high
-
-      final rect = RRect.fromRectAndRadius(
-        Rect.fromCenter(
-          center: Offset(xPos * size.width, c.yPosition * size.height),
-          width: c.width,
-          height: c.height,
-        ),
-        Radius.circular(c.height),
-      );
-      canvas.drawRRect(rect, paint);
+      const cloudColor = Color(0xFF90A4AE);
+      paint.shader = RadialGradient(
+        colors: [
+          cloudColor.withValues(alpha: c.opacity),
+          cloudColor.withValues(alpha: 0),
+        ],
+        stops: const [0.35, 1],
+      ).createShader(Rect.fromCircle(center: Offset.zero, radius: 1));
+      canvas.save();
+      canvas.translate(xPos * size.width, c.yPosition * size.height);
+      canvas.scale(c.width / 2 + 10, c.height / 2 + 10);
+      canvas.drawCircle(Offset.zero, 1, paint);
+      canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(covariant _CloudPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _CloudPainter oldDelegate) =>
+      oldDelegate.clouds != clouds || oldDelegate.animation != animation;
 }

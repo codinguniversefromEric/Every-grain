@@ -241,6 +241,13 @@ class _CollectionCardState
       return _buildLockedCard();
     }
 
+    final front = RepaintBoundary(child: _buildFront());
+    final back = Transform(
+      alignment: Alignment.center,
+      transform: Matrix4.rotationY(pi),
+      child: RepaintBoundary(child: _buildBack()),
+    );
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: _flipCard,
@@ -256,15 +263,7 @@ class _CollectionCardState
             transform: Matrix4.identity()
               ..setEntry(3, 2, 0.0012)
               ..rotateY(angle),
-            child: isBackVisible
-                ? Transform(
-                    alignment: Alignment.center,
-                    transform:
-                        Matrix4.identity()
-                          ..rotateY(pi),
-                    child: _buildBack(),
-                  )
-                : _buildFront(),
+            child: isBackVisible ? back : front,
           );
         },
       ),

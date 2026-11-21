@@ -54,8 +54,8 @@ class CropController {
       
       // Update sun
       state.sunElevation = SolarCalculator.getSunElevation(
-        env.lastPosition?.latitude ?? 23.5, 
-        env.lastPosition?.longitude ?? 121.0, 
+        env.lastPosition?.latitude ?? SolarCalculator.defaultLatitude,
+        env.lastPosition?.longitude ?? SolarCalculator.defaultLongitude,
         now
       );
 
@@ -86,8 +86,8 @@ class CropController {
       
       // Update sun
       state.sunElevation = SolarCalculator.getSunElevation(
-        env.lastPosition?.latitude ?? 23.5, 
-        env.lastPosition?.longitude ?? 121.0, 
+        env.lastPosition?.latitude ?? SolarCalculator.defaultLatitude,
+        env.lastPosition?.longitude ?? SolarCalculator.defaultLongitude,
         timeLapseClock
       );
       

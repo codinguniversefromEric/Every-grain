@@ -16,10 +16,7 @@ void callbackDispatcher() {
       await WidgetService.init();
       
       // Update the widget with the latest state
-      await WidgetService.updateWidget(
-        stateManager.state, 
-        hasUnreadJournal: stateManager.hasUnreadJournal
-      );
+      await stateManager.syncWidget();
       
       debugPrint("Background task completed successfully");
       return true;

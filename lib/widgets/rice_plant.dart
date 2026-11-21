@@ -114,30 +114,20 @@ class _RicePlantLayerState extends State<RicePlantLayer>
     }
 
     if (widget.growthStage == GrowthStage.fallow) {
-      return AnimatedBuilder(
-        animation: _windController,
-        builder: (context, child) {
-          return CustomPaint(
-            painter: _WaterPainter(_windController.value),
-            size: const Size(double.infinity, 300),
-          );
-        },
+      return CustomPaint(
+        painter: _WaterPainter(_windController),
+        size: const Size(double.infinity, 300),
       );
     }
 
-    return AnimatedBuilder(
-      animation: _windController,
-      builder: (context, child) {
-        return CustomPaint(
-          painter: _PaddyFieldPainter(
-            stalks: _stalks,
-            windTime: _windController.value,
-            growthStage: widget.growthStage,
-            traits: _traits,
-          ),
-          size: const Size(double.infinity, 300),
-        );
-      },
+    return CustomPaint(
+      painter: _PaddyFieldPainter(
+        stalks: _stalks,
+        animation: _windController,
+        growthStage: widget.growthStage,
+        traits: _traits,
+      ),
+      size: const Size(double.infinity, 300),
     );
   }
 }
@@ -166,16 +156,18 @@ class _RiceStalk {
 
 class _PaddyFieldPainter extends CustomPainter {
   final List<_RiceStalk> stalks;
-  final double windTime;
+  final Animation<double> animation;
   final GrowthStage growthStage;
   final VarietyVisualTraits traits;
 
   _PaddyFieldPainter({
     required this.stalks,
-    required this.windTime,
+    required this.animation,
     required this.growthStage,
     required this.traits,
-  });
+  }) : super(repaint: animation);
+
+  double get windTime => animation.value;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -341,8 +333,10 @@ class _PaddyFieldPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PaddyFieldPainter oldDelegate) {
-    return oldDelegate.windTime != windTime ||
-        oldDelegate.growthStage != growthStage;
+    return oldDelegate.animation != animation ||
+        oldDelegate.stalks != stalks ||
+        oldDelegate.growthStage != growthStage ||
+        oldDelegate.traits != traits;
   }
 }
 
@@ -375,11 +369,12 @@ class _StubblePainter extends CustomPainter {
 
 /// Fallow season: flooded paddy with animated ripples
 class _WaterPainter extends CustomPainter {
-  final double time;
-  _WaterPainter(this.time);
+  final Animation<double> animation;
+  _WaterPainter(this.animation) : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) {
+    final time = animation.value;
     final waterPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
@@ -413,5 +408,6 @@ class _WaterPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _WaterPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _WaterPainter oldDelegate) =>
+      oldDelegate.animation != animation;
 }

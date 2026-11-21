@@ -21,7 +21,7 @@ class EnvironmentController {
   EnvironmentController(this.notifyListeners);
 
   Future<void> initialize(FieldState state, ProgressRepository progressRepo) async {
-    // 1. Initial Position (Fallback to Taipei)
+    // 1. Initial position
     Position? position = await AgriculturalCalendar.getPosition();
     lastPosition = position;
     if (position != null) {
@@ -35,12 +35,11 @@ class EnvironmentController {
 
     state.currentVariety = VarietyService.getVarietyForPosition(position);
     state.currentBiome = VarietyService.getBiomeForPosition(position);
-    if (position != null) {
-      state.sunElevation = SolarCalculator.getSunElevation(
-          position.latitude, position.longitude, DateTime.now());
-    } else {
-      state.sunElevation = 45.0; // fallback daytime
-    }
+    state.sunElevation = SolarCalculator.getSunElevation(
+      position?.latitude ?? SolarCalculator.defaultLatitude,
+      position?.longitude ?? SolarCalculator.defaultLongitude,
+      DateTime.now(),
+    );
     
     // 2. Initial Weather
     if (progressRepo.weatherOverrideUntil != null) {

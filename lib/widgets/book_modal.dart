@@ -5,9 +5,8 @@ Future<T?> showBookModal<T>(
   BuildContext context, {
   required String title,
   required Widget content,
-}) {
-  return showGeneralDialog<T>(
-    context: context,
+}) async {
+  final route = RawDialogRoute<T>(
     pageBuilder: (context, animation, secondaryAnimation) {
       return _BookModalContent(
         title: title,
@@ -18,30 +17,12 @@ Future<T?> showBookModal<T>(
     barrierDismissible: true,
     barrierLabel: 'Close Book',
     barrierColor: Colors.black.withValues(alpha: 0.72),
-    transitionDuration: const Duration(milliseconds: 900),
-    transitionBuilder: (
-      context,
-      animation,
-      secondaryAnimation,
-      child,
-    ) {
-      final curve = CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-      );
-
-      return FadeTransition(
-        opacity: curve,
-        child: ScaleTransition(
-          scale: Tween<double>(
-            begin: 0.88,
-            end: 1.0,
-          ).animate(curve),
-          child: child,
-        ),
-      );
-    },
+    transitionDuration: const Duration(milliseconds: 850),
+    transitionBuilder: (context, animation, secondaryAnimation, child) => child,
   );
+  final result = await Navigator.of(context, rootNavigator: true).push(route);
+  await route.completed;
+  return result;
 }
 
 class _BookModalContent extends StatefulWidget {
@@ -65,106 +46,98 @@ class _BookModalContentState extends State<_BookModalContent> {
   static const leatherLight = Color(0xFF674638);
 
   static const paper = Color(0xFFE9DFC8);
-  static const paperLight = Color(0xFFF2E9D6);
   static const ink = Color(0xFF3D2A20);
-  static const fadedInk = Color(0xFF665246);
   static const oldGold = Color(0xFF9A7A42);
 
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
 
-    final maxWidth = min(
-      520.0,
-      screen.width - 28,
-    );
+    final maxWidth = min(520.0, screen.width - 28);
 
-    final maxHeight = min(
-      820.0,
-      screen.height - 40,
-    );
+    final maxHeight = min(820.0, screen.height - 40);
 
     return SafeArea(
       child: Center(
         child: SizedBox(
           width: maxWidth,
           height: maxHeight,
-        child: AnimatedBuilder(
-          animation: widget.animation,
-          builder: (context, child) {
-            final openProgress = Interval(
-              0.20,
-              1.0,
-              curve: Curves.easeInOutCubic,
-            ).transform(widget.animation.value);
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // ==========================================================
+                // Book shadow
+                // ==========================================================
 
-            final angle = openProgress * pi;
-
-            final isCoverFront = angle <= pi / 2;
-
-            return Padding(
-              padding: const EdgeInsets.all(14),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // ==========================================================
-                  // Book shadow
-                  // ==========================================================
-
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: Container(
-                        margin: const EdgeInsets.only(
-                          top: 8,
-                          left: 4,
-                          right: 2,
-                          bottom: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.65),
-                              blurRadius: 30,
-                              spreadRadius: 4,
-                              offset: const Offset(8, 14),
-                            ),
-                          ],
-                        ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                        top: 8,
+                        left: 4,
+                        right: 2,
+                        bottom: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.65),
+                            blurRadius: 30,
+                            spreadRadius: 4,
+                            offset: const Offset(8, 14),
+                          ),
+                        ],
                       ),
                     ),
                   ),
+                ),
 
-                  // ==========================================================
-                  // Book interior
-                  // ==========================================================
+                // ==========================================================
+                // Book interior
+                // ==========================================================
+                Positioned.fill(
+                  child: RepaintBoundary(child: _buildBookInterior()),
+                ),
 
-                  Positioned.fill(
-                    child: _buildBookInterior(),
-                  ),
-
-                  // ==========================================================
-                  // Front cover
-                  // ==========================================================
-
-                  Positioned.fill(
-                    child: Transform(
-                      alignment: Alignment.centerLeft,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.0018)
-                        ..rotateY(angle),
-                      child: isCoverFront
-                          ? _buildCoverFront()
-                          : _buildCoverBack(),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+                // ==========================================================
+                // Front cover
+                // ==========================================================
+                Positioned.fill(child: _buildAnimatedCover()),
+              ],
+            ),
+          ),
         ),
       ),
-    ),
+    );
+  }
+
+  Widget _buildAnimatedCover() {
+    final front = RepaintBoundary(child: _buildCoverFront());
+    final back = RepaintBoundary(child: _buildCoverBack());
+
+    return AnimatedBuilder(
+      animation: widget.animation,
+      builder: (context, child) {
+        const lift = Interval(0, 0.22, curve: Curves.easeOutCubic);
+        const turn = Interval(0.16, 1, curve: Curves.easeInOutCubic);
+        final progress = widget.animation.value;
+        final turnProgress = turn.transform(progress);
+        final angle = turnProgress * pi;
+        final liftOffset = -8 * lift.transform(progress) * (1 - turnProgress);
+        return IgnorePointer(
+          child: Transform(
+            alignment: Alignment.centerLeft,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.0018)
+              ..setEntry(1, 3, liftOffset)
+              ..rotateY(angle),
+            child: angle <= pi / 2 ? front : back,
+          ),
+        );
+      },
     );
   }
 
@@ -195,16 +168,11 @@ class _BookModalContentState extends State<_BookModalContent> {
             // Paper background
             // ---------------------------------------------------------------
 
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _OldPaperPainter(),
-              ),
-            ),
+            Positioned.fill(child: CustomPaint(painter: _OldPaperPainter())),
 
             // ---------------------------------------------------------------
             // Inner border
             // ---------------------------------------------------------------
-
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.all(9),
@@ -223,22 +191,14 @@ class _BookModalContentState extends State<_BookModalContent> {
             // ---------------------------------------------------------------
             // Content
             // ---------------------------------------------------------------
-
             Positioned.fill(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  20,
-                  20,
-                  18,
-                ),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
                 child: Material(
                   color: Colors.transparent,
                   child: Stack(
                     children: [
-                      Positioned.fill(
-                        child: widget.content,
-                      ),
+                      Positioned.fill(child: widget.content),
 
                       // Close button
                       Positioned(
@@ -248,11 +208,7 @@ class _BookModalContentState extends State<_BookModalContent> {
                           color: Colors.transparent,
                           child: IconButton(
                             tooltip: 'Close',
-                            icon: const Icon(
-                              Icons.close,
-                              color: ink,
-                              size: 21,
-                            ),
+                            icon: const Icon(Icons.close, color: ink, size: 21),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
@@ -282,17 +238,10 @@ class _BookModalContentState extends State<_BookModalContent> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            leatherLight,
-            leather,
-            leatherDark,
-          ],
+          colors: [leatherLight, leather, leatherDark],
         ),
 
-        border: Border.all(
-          color: const Color(0xFF211610),
-          width: 2,
-        ),
+        border: Border.all(color: const Color(0xFF211610), width: 2),
 
         boxShadow: [
           BoxShadow(
@@ -310,15 +259,12 @@ class _BookModalContentState extends State<_BookModalContent> {
           // ================================================================
 
           Positioned.fill(
-            child: CustomPaint(
-              painter: _LeatherTexturePainter(),
-            ),
+            child: CustomPaint(painter: _LeatherTexturePainter()),
           ),
 
           // ================================================================
           // Double golden border
           // ================================================================
-
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -352,13 +298,9 @@ class _BookModalContentState extends State<_BookModalContent> {
           // ================================================================
           // Cover content
           // ================================================================
-
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 34,
-                vertical: 40,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 40),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -373,7 +315,6 @@ class _BookModalContentState extends State<_BookModalContent> {
                   // --------------------------------------------------------
                   // Title
                   // --------------------------------------------------------
-
                   Text(
                     widget.title,
                     textAlign: TextAlign.center,
@@ -415,29 +356,18 @@ class _BookModalContentState extends State<_BookModalContent> {
           // ================================================================
           // Aged corners
           // ================================================================
-
-          Positioned(
-            top: 10,
-            left: 10,
-            child: _CornerDecoration(),
-          ),
+          Positioned(top: 10, left: 10, child: _CornerDecoration()),
 
           Positioned(
             top: 10,
             right: 10,
-            child: Transform.scale(
-              scaleX: -1,
-              child: _CornerDecoration(),
-            ),
+            child: Transform.scale(scaleX: -1, child: _CornerDecoration()),
           ),
 
           Positioned(
             bottom: 10,
             left: 10,
-            child: Transform.scale(
-              scaleY: -1,
-              child: _CornerDecoration(),
-            ),
+            child: Transform.scale(scaleY: -1, child: _CornerDecoration()),
           ),
 
           Positioned(
@@ -468,20 +398,13 @@ class _BookModalContentState extends State<_BookModalContent> {
 
           color: const Color(0xFF39271F),
 
-          border: Border.all(
-            color: const Color(0xFF211610),
-            width: 2,
-          ),
+          border: Border.all(color: const Color(0xFF211610), width: 2),
         ),
 
         child: Stack(
           children: [
             Positioned.fill(
-              child: CustomPaint(
-                painter: _LeatherTexturePainter(
-                  darker: true,
-                ),
-              ),
+              child: CustomPaint(painter: _LeatherTexturePainter(darker: true)),
             ),
 
             Positioned.fill(
@@ -533,11 +456,7 @@ class _OldSeal extends StatelessWidget {
             ),
           ),
           child: const Center(
-            child: Icon(
-              Icons.grass,
-              size: 38,
-              color: Color(0xFFD1B16B),
-            ),
+            child: Icon(Icons.grass, size: 38, color: Color(0xFFD1B16B)),
           ),
         ),
       ),
@@ -555,19 +474,14 @@ class _CornerDecoration extends StatelessWidget {
     return SizedBox(
       width: 28,
       height: 28,
-      child: CustomPaint(
-        painter: _CornerPainter(),
-      ),
+      child: CustomPaint(painter: _CornerPainter()),
     );
   }
 }
 
 class _CornerPainter extends CustomPainter {
   @override
-  void paint(
-    Canvas canvas,
-    Size size,
-  ) {
+  void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = const Color(0xFFD1B16B).withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
@@ -577,28 +491,15 @@ class _CornerPainter extends CustomPainter {
 
     path.moveTo(2, size.height);
     path.lineTo(2, 7);
-    path.quadraticBezierTo(
-      2,
-      2,
-      7,
-      2,
-    );
+    path.quadraticBezierTo(2, 2, 7, 2);
 
-    path.lineTo(
-      size.width,
-      2,
-    );
+    path.lineTo(size.width, 2);
 
-    canvas.drawPath(
-      path,
-      paint,
-    );
+    canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(
-    covariant CustomPainter oldDelegate,
-  ) {
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
   }
 }
@@ -609,18 +510,11 @@ class _CornerPainter extends CustomPainter {
 
 class _OldPaperPainter extends CustomPainter {
   @override
-  void paint(
-    Canvas canvas,
-    Size size,
-  ) {
+  void paint(Canvas canvas, Size size) {
     // Base paper color
-    final background = Paint()
-      ..color = const Color(0xFFE9DFC8);
+    final background = Paint()..color = const Color(0xFFE9DFC8);
 
-    canvas.drawRect(
-      Offset.zero & size,
-      background,
-    );
+    canvas.drawRect(Offset.zero & size, background);
 
     // Slightly darker edges
     final edgeGradient = RadialGradient(
@@ -633,14 +527,9 @@ class _OldPaperPainter extends CustomPainter {
     );
 
     final edgePaint = Paint()
-      ..shader = edgeGradient.createShader(
-        Offset.zero & size,
-      );
+      ..shader = edgeGradient.createShader(Offset.zero & size);
 
-    canvas.drawRect(
-      Offset.zero & size,
-      edgePaint,
-    );
+    canvas.drawRect(Offset.zero & size, edgePaint);
 
     // Old paper stains
     final stainPaint = Paint()
@@ -654,11 +543,7 @@ class _OldPaperPainter extends CustomPainter {
 
       final radius = 1 + random.nextDouble() * 3;
 
-      canvas.drawCircle(
-        Offset(x, y),
-        radius,
-        stainPaint,
-      );
+      canvas.drawCircle(Offset(x, y), radius, stainPaint);
     }
 
     // Faint horizontal paper fibers
@@ -678,9 +563,7 @@ class _OldPaperPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(
-    covariant CustomPainter oldDelegate,
-  ) {
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
   }
 }
@@ -692,20 +575,13 @@ class _OldPaperPainter extends CustomPainter {
 class _LeatherTexturePainter extends CustomPainter {
   final bool darker;
 
-  _LeatherTexturePainter({
-    this.darker = false,
-  });
+  _LeatherTexturePainter({this.darker = false});
 
   @override
-  void paint(
-    Canvas canvas,
-    Size size,
-  ) {
+  void paint(Canvas canvas, Size size) {
     final random = Random(42);
 
-    final color = darker
-        ? const Color(0xFF9A7258)
-        : const Color(0xFFB48A68);
+    final color = darker ? const Color(0xFF9A7258) : const Color(0xFFB48A68);
 
     final paint = Paint()
       ..color = color.withValues(alpha: 0.045)
@@ -720,10 +596,7 @@ class _LeatherTexturePainter extends CustomPainter {
 
       canvas.drawLine(
         Offset(x, y),
-        Offset(
-          x + length,
-          y + (random.nextDouble() - 0.5) * 2,
-        ),
+        Offset(x + length, y + (random.nextDouble() - 0.5) * 2),
         paint,
       );
     }
@@ -736,18 +609,12 @@ class _LeatherTexturePainter extends CustomPainter {
       final x = random.nextDouble() * size.width;
       final y = random.nextDouble() * size.height;
 
-      canvas.drawCircle(
-        Offset(x, y),
-        8 + random.nextDouble() * 18,
-        stainPaint,
-      );
+      canvas.drawCircle(Offset(x, y), 8 + random.nextDouble() * 18, stainPaint);
     }
   }
 
   @override
-  bool shouldRepaint(
-    covariant CustomPainter oldDelegate,
-  ) {
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
   }
 }

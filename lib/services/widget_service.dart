@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/field_state.dart';
 import '../widgets/widget_scenery_snapshot.dart';
 import '../l10n/app_localizations.dart';
+import 'solar_calculator.dart';
 
 class WidgetService {
   static const String appGroupId = 'group.com.chia.riceJourney';
@@ -16,7 +17,12 @@ class WidgetService {
     await HomeWidget.setAppGroupId(appGroupId);
   }
 
-  static Future<void> updateWidget(FieldState? state, {bool hasUnreadJournal = false}) async {
+  static Future<void> updateWidget(
+    FieldState? state, {
+    bool hasUnreadJournal = false,
+    double? latitude,
+    double? longitude,
+  }) async {
     if (state == null) return;
 
     final prefs = await SharedPreferences.getInstance();
@@ -50,19 +56,17 @@ class WidgetService {
         List<Map<String, dynamic>> timelineData = [];
         final now = DateTime.now();
 
-        for (int i = 0; i < 4; i++) {
+        // Android only reads the current image. WidgetKit reads the timeline.
+        final snapshotCount = defaultTargetPlatform == TargetPlatform.iOS ? 4 : 1;
+        for (int i = 0; i < snapshotCount; i++) {
           final targetTime = now.add(Duration(hours: i));
           final futureState = state.clone();
           
-          // Rough sun elevation prediction for the future hour
-          final hour = targetTime.hour;
-          if (hour > 6 && hour < 17) {
-            futureState.sunElevation = 45.0; // Day
-          } else if (hour == 17 || hour == 18 || hour == 5 || hour == 6) {
-            futureState.sunElevation = 0.0; // Twilight
-          } else {
-            futureState.sunElevation = -45.0; // Night
-          }
+          futureState.sunElevation = SolarCalculator.getSunElevation(
+            latitude ?? SolarCalculator.defaultLatitude,
+            longitude ?? SolarCalculator.defaultLongitude,
+            targetTime,
+          );
 
           final String uniqueKey = 'scenery_timeline_${prefix}_$i';
           

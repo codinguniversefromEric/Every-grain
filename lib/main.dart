@@ -22,7 +22,6 @@ import 'visuals/mist_layer.dart';
 import 'visuals/wind_gust_layer.dart';
 import 'visuals/egret_flock_layer.dart';
 
-import 'widgets/widget_scenery_snapshot.dart';
 import 'widgets/rice_plant.dart';
 import 'widgets/developer_controls.dart';
 import 'widgets/harvest_dialog.dart';
@@ -35,7 +34,6 @@ import 'services/review/review_service.dart';
 import 'services/review/native_review_service.dart';
 import 'services/review/fake_review_service.dart';
 
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
@@ -123,12 +121,15 @@ bool isTakingScreenshot = false;
 
 // ⚠️ 測試期間設為 true，正式上架生產環境前請改為 false
 const bool isBetaTestMode = false;
+const bool showDeveloperControls =
+    kDebugMode || isBetaTestMode || bool.fromEnvironment('SHOW_DEVELOPER_CONTROLS');
 
 class _RiceFieldScreenState extends State<RiceFieldScreen>
     with WidgetsBindingObserver {
   late final StateManager _stateManager;
   late final ReviewService _reviewService;
   bool _showMicroSimulation = false;
+  bool _isBookOpen = false;
 
   Widget _buildCornerButton({
   required IconData icon,
@@ -269,10 +270,19 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
     );
   }
 
+  Future<void> _openBook({required String title, required Widget content}) async {
+    if (_isBookOpen) return;
+    setState(() => _isBookOpen = true);
+    try {
+      await showBookModal(context, title: title, content: content);
+    } finally {
+      if (mounted) setState(() => _isBookOpen = false);
+    }
+  }
+
   void _openJournal() {
     final state = _stateManager;
-    showBookModal(
-      context,
+    _openBook(
       title: !state.hasReadFirstLetter ? AppLocalizations.of(context)!.journalGrandpaTitle : AppLocalizations.of(context)!.journalTitle,
       content: JournalDialog(
           isFirstLetter: !state.hasReadFirstLetter,
@@ -432,25 +442,27 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                           opacity:
                               (0.5 +
                               0.5 * (1.0 - ((value * 2) % 1.0))), // Pulsing
-                          child: !isTakingScreenshot 
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                          child: !isTakingScreenshot
+                              ? Wrap(
+                                  alignment: WrapAlignment.center,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 8,
                                   children: [
                                     Text(
-                                AppLocalizations.of(context)!.swipeToHarvest,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(
-                                    Icons.keyboard_double_arrow_right,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              )
+                                      AppLocalizations.of(context)!.swipeToHarvest,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        letterSpacing: 2,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.keyboard_double_arrow_right,
+                                      color: Colors.white,
+                                    ),
+                                  ],
+                                )
                               : const SizedBox.shrink(),
                         );
                       },
@@ -505,7 +517,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                 ),
 
               // 7. Developer Controls (Beta Test Mode or Debug Mode)
-              if ((kDebugMode || isBetaTestMode) && !isTakingScreenshot)
+              if (showDeveloperControls && !isTakingScreenshot)
                 Positioned(
                   top: 20,
                   right: 20,
@@ -539,8 +551,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                       enabled: _stateManager.unlockedVarieties.isNotEmpty,
                       tooltip: AppLocalizations.of(context)!.collectionTooltip,
                       onPressed: () {
-                        showBookModal(
-                          context,
+                        _openBook(
                           title: AppLocalizations.of(context)!.collectionTitle,
                           content: CollectionGrid(
                             unlockedIds: _stateManager.unlockedVarieties,
@@ -576,7 +587,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
               // 9. Farming Journal Button
               if (!isTakingScreenshot)
                 Positioned(
-                  top: (kDebugMode || isBetaTestMode) ? 80 : 20,
+                  top: showDeveloperControls ? 80 : 20,
                   left: 20,
                   child: SafeArea(
                     child: JournalButton(
@@ -638,11 +649,14 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
         ); // closes Scaffold
         }
 
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 1000),
-          switchInCurve: Curves.easeIn,
-          switchOutCurve: Curves.easeOut,
-          child: currentContent,
+        return TickerMode(
+          enabled: !_isBookOpen,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 1000),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            child: currentContent,
+          ),
         );
       },
     );
