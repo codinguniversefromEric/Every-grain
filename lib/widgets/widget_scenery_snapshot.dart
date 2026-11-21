@@ -20,9 +20,6 @@ class WidgetScenerySnapshot extends StatelessWidget {
 
   @override
 Widget build(BuildContext context) {
-  // Provide a mocked sun elevation for snapshot
-  final sunElevation = state.dayPeriod != DayPhase.night ? 45.0 : -45.0;
-
   return Directionality(
     textDirection: TextDirection.ltr,
     child: DefaultTextStyle(
@@ -40,7 +37,7 @@ Widget build(BuildContext context) {
               children: [
                 // Sky
                 LivingSkyBackground(
-                  sunElevation: sunElevation,
+                  sunElevation: state.sunElevation,
                   weatherMetrics: WeatherMetrics(
                     temperature: 25.0,
                     humidity: 70.0,

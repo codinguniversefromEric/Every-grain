@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:geolocator/geolocator.dart';
 import '../models/field_state.dart';
 import '../models/rice_variety.dart';
 import '../models/weather_metrics.dart';
-import 'agricultural_calendar.dart';
 import 'ambient_sound.dart';
 import 'weather_service.dart';
 
@@ -111,8 +109,8 @@ Future<void> resumeApp() async {
 
     // 2. 立刻重算太陽，不等 30 秒 tick
     state.sunElevation = SolarCalculator.getSunElevation(
-      pos?.latitude ?? 23.5,
-      pos?.longitude ?? 121.0,
+      pos?.latitude ?? SolarCalculator.defaultLatitude,
+      pos?.longitude ?? SolarCalculator.defaultLongitude,
       now,
     );
 
@@ -280,6 +278,8 @@ Future<void> resumeApp() async {
       s.weatherCondition,
       s.currentBiome,
       s.currentVariety?.id,
+      env.lastPosition?.latitude,
+      env.lastPosition?.longitude,
       hasUnreadJournal,
       DateTime.now().hour, // 跨小時要重排時間軸
     ].join('|');
@@ -306,8 +306,13 @@ Future<void> resumeApp() async {
     _widgetJob = () async {
       do {
         _widgetDirty = false;
-        await WidgetService.updateWidget(_state,
-            hasUnreadJournal: hasUnreadJournal);
+        final position = env.lastPosition;
+        await WidgetService.updateWidget(
+          _state,
+          hasUnreadJournal: hasUnreadJournal,
+          latitude: position?.latitude,
+          longitude: position?.longitude,
+        );
       } while (_widgetDirty);
     }();
     try {
