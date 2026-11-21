@@ -6,6 +6,7 @@ import 'widget_service.dart';
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
+    if (WidgetService.foregroundSnapshotsOnly) return true;
     try {
       debugPrint("Native called background task: $task");
       // Initialize what we need
@@ -29,9 +30,14 @@ void callbackDispatcher() {
 
 class BackgroundService {
   static const String taskName = "updateWidgetTask";
+  static const String _uniqueTaskName = "widget_update";
 
   static Future<void> init() async {
     if (kIsWeb) return;
+    if (WidgetService.foregroundSnapshotsOnly) {
+      await Workmanager().cancelByUniqueName(_uniqueTaskName);
+      return;
+    }
     
     await Workmanager().initialize(
       callbackDispatcher,
@@ -40,7 +46,7 @@ class BackgroundService {
 
     // Schedule a periodic task every 15 minutes (minimum for Android)
     await Workmanager().registerPeriodicTask(
-      "widget_update",
+      _uniqueTaskName,
       taskName,
       frequency: const Duration(minutes: 15),
       constraints: Constraints(
