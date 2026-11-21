@@ -2,6 +2,8 @@ import 'package:home_widget/home_widget.dart';
 import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart' show TickerMode;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/field_state.dart';
 import '../widgets/widget_scenery_snapshot.dart';
@@ -13,6 +15,15 @@ class WidgetService {
   static const String androidWidgetName = 'RiceWidgetProvider';
   static const String iosWidgetName = 'RiceWidget';
 
+  // Android debug and profile builds enable Impeller. Keep their image capture
+  // on the foreground engine until background capture is validated on-device.
+  static bool get foregroundSnapshotsOnly =>
+      !kIsWeb && !kReleaseMode && defaultTargetPlatform == TargetPlatform.android;
+
+  static bool get _canCapture =>
+      !foregroundSnapshotsOnly ||
+      SchedulerBinding.instance.lifecycleState == AppLifecycleState.resumed;
+
   static Future<void> init() async {
     await HomeWidget.setAppGroupId(appGroupId);
   }
@@ -23,7 +34,7 @@ class WidgetService {
     double? latitude,
     double? longitude,
   }) async {
-    if (state == null) return;
+    if (state == null || !_canCapture) return;
 
     final prefs = await SharedPreferences.getInstance();
     final savedLang = prefs.getString('pref_locale');
@@ -56,7 +67,10 @@ class WidgetService {
         List<Map<String, dynamic>> timelineData = [];
         final now = DateTime.now();
 
-        for (int i = 0; i < 4; i++) {
+        // Android only reads the current image. WidgetKit reads the timeline.
+        final snapshotCount = defaultTargetPlatform == TargetPlatform.iOS ? 4 : 1;
+        for (int i = 0; i < snapshotCount; i++) {
+          if (!_canCapture) return;
           final targetTime = now.add(Duration(hours: i));
           final futureState = state.clone();
           
@@ -69,10 +83,13 @@ class WidgetService {
           final String uniqueKey = 'scenery_timeline_${prefix}_$i';
           
           final String path = await HomeWidget.renderFlutterWidget(
-            WidgetScenerySnapshot(
-              state: futureState,
-              hasUnreadJournal: hasUnreadJournal,
-              loc: loc,
+            TickerMode(
+              enabled: false,
+              child: WidgetScenerySnapshot(
+                state: futureState,
+                hasUnreadJournal: hasUnreadJournal,
+                loc: loc,
+              ),
             ),
             logicalSize: const Size(180, 180),
             pixelRatio: 2.0,
