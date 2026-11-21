@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import '../models/field_state.dart';
 
@@ -13,7 +14,8 @@ class WindGustLayer extends StatefulWidget {
 class _WindGustLayerState extends State<WindGustLayer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  _Gust? _currentGust;
+  Duration? _gustStart;
+  final _gustProgress = ValueNotifier<double?>(null);
   final Random _rng = Random();
 
   @override
@@ -34,17 +36,18 @@ class _WindGustLayerState extends State<WindGustLayer>
       probability = 0.03;
     }
 
-    if (_currentGust == null && _rng.nextDouble() < probability) {
-      _currentGust = _Gust(startTime: DateTime.now());
+    final now = _controller.lastElapsedDuration ?? Duration.zero;
+    if (_gustStart == null && _rng.nextDouble() < probability) {
+      _gustStart = now;
     }
-
-    if (_currentGust != null) {
-      final elapsed = DateTime.now()
-          .difference(_currentGust!.startTime)
-          .inMilliseconds;
-      if (elapsed > 2000) {
-        // gust lasts 2 seconds
-        _currentGust = null;
+    final start = _gustStart;
+    if (start != null) {
+      final elapsed = (now - start).inMilliseconds / 2000;
+      if (elapsed >= 1) {
+        _gustStart = null;
+        _gustProgress.value = null;
+      } else {
+        _gustProgress.value = elapsed;
       }
     }
   }
@@ -52,55 +55,43 @@ class _WindGustLayerState extends State<WindGustLayer>
   @override
   void dispose() {
     _controller.dispose();
+    _gustProgress.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return CustomPaint(
-          painter: _WindGustPainter(_currentGust),
-          size: Size.infinite,
-        );
-      },
+    return CustomPaint(
+      painter: _WindGustPainter(_gustProgress),
+      size: Size.infinite,
     );
   }
 }
 
-class _Gust {
-  final DateTime startTime;
-  _Gust({required this.startTime});
-}
-
 class _WindGustPainter extends CustomPainter {
-  final _Gust? gust;
-  _WindGustPainter(this.gust);
+  final ValueListenable<double?> progress;
+  _WindGustPainter(this.progress) : super(repaint: progress);
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (gust == null) return;
-
-    final elapsed =
-        DateTime.now().difference(gust!.startTime).inMilliseconds / 2000.0;
-    if (elapsed > 1.0) return;
+    final elapsed = progress.value;
+    if (elapsed == null) return;
 
     // Fade in and out
-    double opacity = sin(elapsed * pi) * 0.4;
+    final opacity = sin(elapsed * pi) * 0.4;
 
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: opacity)
+      ..color = Colors.white.withValues(alpha: opacity * 0.55)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
+    final dustPaint = Paint()
+      ..color = Colors.white.withValues(alpha: opacity * 1.5);
 
     // Draw 3 swooping bezier curves moving across
-    double progress = elapsed; // 0 to 1
-
     for (int i = 0; i < 3; i++) {
       double startX =
-          size.width * 1.2 - (progress * size.width * 1.5) - (i * 50);
+          size.width * 1.2 - (elapsed * size.width * 1.5) - (i * 50);
       double startY = size.height * (0.6 + i * 0.1);
 
       Path path = Path();
@@ -114,13 +105,12 @@ class _WindGustPainter extends CustomPainter {
       canvas.drawPath(path, paint);
 
       // tiny dust particles
-      final dustPaint = Paint()
-        ..color = Colors.white.withValues(alpha: opacity * 1.5);
       canvas.drawCircle(Offset(startX - 50, startY + 10), 1.5, dustPaint);
       canvas.drawCircle(Offset(startX - 150, startY - 20), 1.0, dustPaint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _WindGustPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
