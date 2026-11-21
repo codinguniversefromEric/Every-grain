@@ -118,13 +118,21 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
   }
 
   Future<void> _saveImage(ui.Image image, String filename) async {
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    if (byteData == null) return;
-    final file = File('/Users/giyoshimiken/Documents/Every-grain/website/assets/screenshots/$filename');
-    if (!await file.parent.exists()) {
-      await file.parent.create(recursive: true);
+    try {
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) return;
+      
+      // 這裡必須改成你的 Windows 實際路徑，並使用雙反斜線
+      final file = File('C:\\Users\\ericw\\Documents\\Every-grain\\website\\assets\\screenshots\\$filename');
+      
+      if (!await file.parent.exists()) {
+        await file.parent.create(recursive: true);
+      }
+      await file.writeAsBytes(byteData.buffer.asUint8List());
+      print('成功產生並儲存: $filename'); 
+    } catch (e) {
+      print('儲存 $filename 時發生錯誤: $e'); 
     }
-    await file.writeAsBytes(byteData.buffer.asUint8List());
   }
 
   Widget _buildMockPhoneContent(int screenIndex, String fontFamily, String locale) {
@@ -133,7 +141,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
       case 0: // Widget
         return Stack(
           children: [
-            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_1_seedling.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File(r'C:\Users\ericw\Documents\Every-grain\screenshots\screenshot_1_seedling.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             // Mock home screen blur
             BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
@@ -156,7 +164,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 15, offset: Offset(0, 8))],
                   image: DecorationImage(
-                    image: FileImage(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_1_seedling.png')), 
+                    image: FileImage(File(r'C:\Users\ericw\Documents\Every-grain\screenshots\screenshot_1_seedling.png')), 
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -168,16 +176,16 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
         return Stack(
           children: [
             // Bottom layer (Night)
-            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File(r'C:\Users\ericw\Documents\Every-grain\screenshots\screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             // Middle layer (Stormy)
             ClipPath(
               clipper: _DiagonalClipper(0.65),
-              child: Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_2_stormy.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+              child: Image.file(File(r'C:\Users\ericw\Documents\Every-grain\screenshots\screenshot_2_stormy.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             ),
             // Top layer (Sunny)
             ClipPath(
               clipper: _DiagonalClipper(0.35),
-              child: Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_1_seedling.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+              child: Image.file(File(r'C:\Users\ericw\Documents\Every-grain\screenshots\screenshot_1_seedling.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             ),
             // Split Lines
             CustomPaint(
@@ -199,7 +207,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
 
         return Stack(
           children: [
-            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_3_local_variety.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File(r'C:\Users\ericw\Documents\Every-grain\screenshots\screenshot_3_local_variety.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(color: Colors.black.withOpacity(0.3)),
@@ -256,7 +264,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
 
         return Stack(
           children: [
-            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File(r'C:\Users\ericw\Documents\Every-grain\screenshots\screenshot_4_night_time.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(color: Colors.black.withOpacity(0.3)),
@@ -289,7 +297,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
         String harvestText = locale == 'en' ? "Harvest" : (locale == 'ja' ? "豊作" : "豐收");
         return Stack(
           children: [
-            Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_5_harvested_clean.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            Image.file(File(r'C:\Users\ericw\Documents\Every-grain\screenshots\screenshot_5_harvested_clean.png'), fit: BoxFit.cover, width: double.infinity, height: double.infinity),
             BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 3, sigmaY: 3),
               child: Container(color: Colors.black.withOpacity(0.2)),
@@ -334,7 +342,7 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
             child: ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               // Align to bottom center to show the actual rice plant instead of empty sky
-              child: Image.file(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/$bg'), fit: BoxFit.cover, width: double.infinity, alignment: Alignment.bottomCenter),
+              child: Image.file(File('C:\\Users\\ericw\\Documents\\Every-grain\\screenshots\\$bg'), fit: BoxFit.cover, width: double.infinity, alignment: Alignment.bottomCenter),
             ),
           ),
           Padding(
@@ -360,78 +368,87 @@ class _AsoGeneratorScreenState extends State<AsoGeneratorScreen> {
     
     // 如果是 5，代表要產生 1024x500 的 Google Play 主題圖片 (Feature Graphic)
     if (_currentScreenIndex == 5) {
-      final featureText = config['featureGraphic'] as String;
-      // 在桌面預覽時等比例縮小 (1024/2 = 512, 500/2 = 250)，但導出時 pixelRatio 會放大回去
-      const double fgWidth = 1024 / 2;
-      const double fgHeight = 500 / 2;
-      
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Rice Journey Ultimate ASO Generator'),
-          actions: [
-            if (!_isGenerating)
-              IconButton(icon: const Icon(Icons.play_arrow), onPressed: _generateAllImages),
-          ],
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(_status, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
-              Expanded(
-                child: Center(
-                  child: RepaintBoundary(
-                    key: _globalKey,
+  final featureText = config['featureGraphic'] as String;
+  
+  // 目標輸出是 5244x2950，因為你在 _generateAllImages 設定 index 5 的 pixelRatio 是 2.0
+  // 所以邏輯畫布大小必須先除以 2.0
+  const double fgWidth = 5244 / 2; 
+  const double fgHeight = 2950 / 2; 
+  
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Rice Journey Ultimate ASO Generator'),
+      actions: [
+        if (!_isGenerating)
+          IconButton(icon: const Icon(Icons.play_arrow), onPressed: _generateAllImages),
+      ],
+    ),
+    body: Center(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(_status, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ),
+          Expanded(
+            // 關鍵修正：加上雙向滾動條，打破螢幕尺寸限制！
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: RepaintBoundary(
+                  key: _globalKey,
+                  child: Container(
+                    width: fgWidth,
+                    height: fgHeight,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      image: DecorationImage(
+                        image: FileImage(File('screenshots/screenshot_3_local_variety.png')),
+                        fit: BoxFit.cover,
+                        alignment: const Alignment(0, 0.6), 
+                      ),
+                    ),
                     child: Container(
-                      width: fgWidth,
-                      height: fgHeight,
-                        decoration: BoxDecoration(
-                        color: Colors.black,
-                        image: DecorationImage(
-                          image: FileImage(File('/Users/giyoshimiken/Documents/Every-grain/screenshots/screenshot_3_local_variety.png')),
-                          fit: BoxFit.cover,
-                          alignment: const Alignment(0, 0.6), // Avoid bottom navigation bar
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [Colors.black.withOpacity(0.8), Colors.transparent],
                         ),
                       ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [Colors.black.withOpacity(0.8), Colors.transparent],
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(40),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          featureText,
-                          style: TextStyle(
-                            fontFamily: fontFamily,
-                            fontSize: 28, // Scaled for the /2 preview box
-                            height: 1.5,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            shadows: const [Shadow(color: Colors.black, blurRadius: 10)],
-                          ),
+                      padding: const EdgeInsets.all(40),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        featureText,
+                        style: TextStyle(
+                          fontFamily: fontFamily,
+                          // 字體也需要依照畫布比例放大
+                          fontSize: 100, 
+                          height: 1.5,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          shadows: const [Shadow(color: Colors.black, blurRadius: 10)],
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      );
-    }
+        ],
+      ),
+    ),
+  );
+}
+   
 
     // 原本的 5 張 ASO 截圖排版
     final screenData = config['screens'][_currentScreenIndex];
     final bool isIOS = _targetPlatform == 'iOS';
-    final double targetWidth = isIOS ? (1284 / 3) : (1080 / 3);
-    final double targetHeight = isIOS ? (2778 / 3) : (1920 / 3);
+    final double targetWidth = isIOS ? (1206 / 3) : (1080 / 3);
+    final double targetHeight = isIOS ? (2622 / 3) : (1920 / 3);
     
     // Dynamic layout parameters based on platform
     final double phoneTop = isIOS ? 180 : 130;
