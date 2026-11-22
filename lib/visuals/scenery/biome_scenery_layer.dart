@@ -8,7 +8,7 @@ import '../../models/field_state.dart';
 /// 12 種涵蓋北中南東不同地形的實景風格。
 ///
 /// 地景：分層山脈（背光面、溪谷紋、稜線受光、樹冠起伏、山腳霧化）、
-/// 透視棋盤水田（秧苗、金黃稻穗、映天光的水田）、立體梯田、
+/// 透視棋盤水田（秧苗、金黃稻穗、映天光的水田）、沿等高線的水梯田與茶園、
 /// 辮狀礫石河床、河口紅樹林與灘地、海面波光。
 ///
 /// 台灣意象：高鐵高架、台北 101 天際線、貓空纜車、阿里山森林鐵路、
@@ -83,15 +83,28 @@ class _Slot {
   const _Slot(this.fx, this.fy, this.scale, this.pool);
 }
 
+/// 山丘：用比例座標描述，梯田與茶園沿它的等高線展開
+class _Mound {
+  final double cx; // 山頂 x（寬度比例）
+  final double peak; // 山頂 y（高度比例）
+  final double halfW; // 半寬（寬度比例）
+  final double base; // 山腳 y（高度比例）
+  const _Mound(this.cx, this.peak, this.halfW, this.base);
+}
+
+enum _HillStyle { paddy, tea, pineapple }
+
 class _SceneLayout {
   final List<_Placement> placements;
   final bool road; // 有道路 → 自行車騎士
   final bool pineappleHills; // 中部丘陵：鳳梨田 or 茶園
+  final bool hsr; // 平原：是否有高鐵
 
   const _SceneLayout({
     required this.placements,
     this.road = false,
     this.pineappleHills = false,
+    this.hsr = false,
   });
 
   bool get hasDynamic =>
@@ -106,10 +119,12 @@ class _SceneLayout {
     var slots = const <_Slot>[];
     var road = false;
     var pineappleHills = false;
+    var hsr = false;
 
     switch (v) {
       case LandscapeVariant.centralPlains:
         road = true;
+        hsr = rng.nextDouble() < 0.5;
         slots = const [
           _Slot(0.14, 0.665, 0.9, [
             _Decor.sanheyuan,
@@ -137,6 +152,7 @@ class _SceneLayout {
         ];
       case LandscapeVariant.southPlains:
         road = true;
+        hsr = rng.nextDouble() < 0.25;
         slots = const [
           _Slot(0.16, 0.67, 1.0, [_Decor.temple]),
           _Slot(0.84, 0.67, 0.85, [
@@ -275,6 +291,7 @@ class _SceneLayout {
       placements: placements,
       road: road,
       pineappleHills: pineappleHills,
+      hsr: hsr,
     );
   }
 }
@@ -446,6 +463,7 @@ class _Cyclist {
   final Color helmet;
   final Color jersey;
   final double pedal;
+  final double opacity;
 
   const _Cyclist({
     required this.pos,
@@ -454,6 +472,7 @@ class _Cyclist {
     required this.helmet,
     required this.jersey,
     required this.pedal,
+    this.opacity = 1,
   });
 }
 
@@ -508,11 +527,11 @@ class _SceneryPainter extends CustomPainter {
   Offset _quad(Offset a, Offset c, Offset b, double t) =>
       a * ((1 - t) * (1 - t)) + c * (2 * (1 - t) * t) + b * (t * t);
 
-  // 河道（中部溪谷）
+  // 河道（中部溪谷）：從地平線往下流出，再往左下展開
   static const _riverCtrl = [
-    Offset(0.5, 0.675),
-    Offset(0.68, 0.75),
-    Offset(0.32, 0.83),
+    Offset(0.56, 0.69),
+    Offset(0.62, 0.77),
+    Offset(0.3, 0.84),
     Offset(-0.1, 0.93),
   ];
 
@@ -552,6 +571,11 @@ class _SceneryPainter extends CustomPainter {
 
   // 高鐵
   double _hsrDeckY(Size s) => s.height * 0.618;
+  static const double _hsrGroundFrac = 0.672;
+
+  // 電線桿與騎士的起點：在高架落地線之前，避免出現在橋墩後方
+  static const double _poleT0 = 0.12;
+  static const double _cyclistT0 = 0.09;
 
   // 平原透視（棋盤田、水塘、光電板、蚵架、金針花、道路共用）
   static const double _plainsTop = 0.64;
@@ -581,7 +605,7 @@ class _SceneryPainter extends CustomPainter {
 
   // 鄉間道路：由中間偏右的地平線往右下延伸，避開畫面中央的稻株
   double _roadCx(double t) => 0.64 + 0.22 * t;
-  double _roadHalf(double t) => 0.02 + 0.09 * t;
+  double _roadHalf(double t) => 0.006 + 0.104 * t;
   double _roadY(double t) => _plainsTop + (1 - _plainsTop) * t;
 
   // 溼地水塘（基準座標），solar = 漁電共生，否則蚵架
@@ -653,6 +677,9 @@ class _SceneryPainter extends CustomPainter {
     switch (variant) {
       case LandscapeVariant.eastRiftValley:
       case LandscapeVariant.centralValley:
+        // 遠方山稜：填補兩側稜線交會處的缺口
+        _drawMountain(canvas, size, p, p.farMountain, 0.28, h * 0.5, h * 0.52,
+            30, 6, 1.0, rng);
         _drawMountain(canvas, size, p, p.farMountain, 0.5, h * 0.3, h * 0.7,
             50, 6, 1.5, rng);
         _drawMistBand(canvas, size, h * 0.52, 46, p, 0.16);
@@ -665,6 +692,9 @@ class _SceneryPainter extends CustomPainter {
         _drawMountain(canvas, size, p, p.farMountain, 0.4, h * 0.35, h * 0.65,
             45, 6, 1.2, rng);
         _drawMistBand(canvas, size, h * 0.5, 50, p, 0.18);
+        _drawRollingHills(
+            canvas, size, p, p.farMountain, 0.55, h * 0.56, 50, rng,
+            forested: true);
         _drawMountain(canvas, size, p, p.nearMountain, 0.65, h * 0.2, h * 0.8,
             60, 6, 1.4, rng,
             forested: true);
@@ -700,7 +730,7 @@ class _SceneryPainter extends CustomPainter {
           // 清水斷崖意象：只佔左半，直落海面
           _drawMountain(canvas, size, p, p.nearMountain, 0.78, h * 0.34,
               h * 0.575, 30, 5, 1.2, rng,
-              forested: true, xEndFrac: 0.55, bottomY: h * 0.6);
+              forested: true, xEndFrac: 0.55, bottomY: h * 0.582);
           _drawMistBand(canvas, size, h * 0.47, 30, p, 0.14);
         }
       case LandscapeVariant.northEstuary:
@@ -726,19 +756,19 @@ class _SceneryPainter extends CustomPainter {
         _drawPineapplePerspective(
             canvas, size, p, rng, -0.55 * w, 0.28 * w, h * 0.695, h * 0.8);
       case LandscapeVariant.northHills:
-        _drawTerracedFields(canvas, size, p, rng);
-        _drawTeaRows(canvas, size, p, rng);
+        _drawHillMounds(canvas, size, p, rng, _HillStyle.tea);
       case LandscapeVariant.centralHills:
-        _drawTerracedFields(canvas, size, p, rng);
         if (layout.pineappleHills) {
+          _drawHillMounds(canvas, size, p, rng,
+            layout.pineappleHills ? _HillStyle.pineapple : _HillStyle.tea);
           _drawPineappleField(canvas, Rect.fromLTRB(0, h * 0.73, w, h), rng,
               soil: false, waveAmp: 26);
         } else {
-          _drawTeaRows(canvas, size, p, rng);
+          _drawHillMounds(canvas, size, p, rng, _HillStyle.tea);
         }
       case LandscapeVariant.northTerraces:
       case LandscapeVariant.eastFoothills:
-        _drawTerracedFields(canvas, size, p, rng, flooded: true);
+        _drawHillMounds(canvas, size, p, rng, _HillStyle.paddy);
       case LandscapeVariant.southWetlands:
         _drawPlainsFields(canvas, size, p, rng);
         _drawWetlandWater(canvas, size, p, rng);
@@ -753,64 +783,109 @@ class _SceneryPainter extends CustomPainter {
         _drawCoastBeach(canvas, size, p);
     }
 
-    // 3. 地形專屬的固定元素
+    // 3 + 4. 直立物件（固定元素 + 聚落）：收集後依接地 y 由遠到近畫。
+    // 平面的東西（路面、軌道、花田）直接畫，墊在最底下。
+    final standing = <({double y, void Function() draw})>[];
+    void stand(double y, void Function() draw) =>
+        standing.add((y: y, draw: draw));
+
     switch (variant) {
       case LandscapeVariant.centralPlains:
-        _drawHSRViaduct(canvas, size, p);
-        _drawRoadAndPoles(canvas, size, p);
-        _drawTrees(canvas, size, p, rng,
-            count: 2, y: h * 0.7, spread: w * 0.18, x0: w * 0.8);
-        _drawBuffalo(canvas, p, Offset(w * 0.12, h * 0.78), 0.8);
+        _drawRoadSurface(canvas, size, p);
+        stand(h * _roadY(_poleT0), () => _drawPoles(canvas, size, p));
+        if (layout.hsr) {
+          stand(h * _hsrGroundFrac, () => _drawHSRViaduct(canvas, size, p));
+        }
+        stand(
+            h * 0.7,
+            () => _drawTrees(canvas, size, p, rng,
+                count: 2,
+                y: h * 0.7,
+                spread: w * 0.14,
+                x0: w * 0.86,
+                scale: _decorScale(0.7)));
+        stand(h * 0.78,
+            () => _drawBuffalo(canvas, p, Offset(w * 0.12, h * 0.78), 0.8));
       case LandscapeVariant.southPlains:
-        _drawHSRViaduct(canvas, size, p);
-        _drawRoadAndPoles(canvas, size, p);
+        _drawRoadSurface(canvas, size, p);
+        stand(h * _roadY(_poleT0), () => _drawPoles(canvas, size, p));
+        if (layout.hsr) {
+          stand(h * _hsrGroundFrac, () => _drawHSRViaduct(canvas, size, p));
+        }
       case LandscapeVariant.eastRiftValley:
         _drawDaylilyPatch(canvas, size, p, rng);
-        _drawRoadAndPoles(canvas, size, p);
+        _drawRoadSurface(canvas, size, p);
+        stand(h * _roadY(_poleT0), () => _drawPoles(canvas, size, p));
       case LandscapeVariant.northHills:
-        _drawBamboo(canvas, p, rng, Offset(w * 0.85, h * 0.68), 0.8);
-        _drawGondolaLine(canvas, size, p);
+        stand(h * 0.652, () => _drawGondolaLine(canvas, size, p));
+        stand(h * 0.68,
+            () => _drawBamboo(canvas, p, rng, Offset(w * 0.85, h * 0.68), 0.8));
       case LandscapeVariant.centralHills:
-        _drawBamboo(canvas, p, rng, Offset(w * 0.12, h * 0.68), 0.8);
+        stand(h * 0.68,
+            () => _drawBamboo(canvas, p, rng, Offset(w * 0.12, h * 0.68), 0.8));
       case LandscapeVariant.northTerraces:
-        _drawSilvergrassCluster(canvas, p, rng, Offset(w * 0.8, h * 0.78), 1.0);
-        _drawTrees(canvas, size, p, rng, count: 4, y: h * 0.7, spread: w);
+        stand(h * 0.7,
+            () => _drawTrees(canvas, size, p, rng, count: 4, y: h * 0.7, spread: w));
+        stand(
+            h * 0.78,
+            () => _drawSilvergrassCluster(
+                canvas, p, rng, Offset(w * 0.8, h * 0.78), 1.0));
       case LandscapeVariant.eastFoothills:
-        _drawSilvergrassCluster(canvas, p, rng, Offset(w * 0.2, h * 0.8), 1.1);
-        _drawTrees(canvas, size, p, rng, count: 5, y: h * 0.7, spread: w);
+        stand(h * 0.7,
+            () => _drawTrees(canvas, size, p, rng, count: 5, y: h * 0.7, spread: w));
+        stand(
+            h * 0.8,
+            () => _drawSilvergrassCluster(
+                canvas, p, rng, Offset(w * 0.2, h * 0.8), 1.1));
       case LandscapeVariant.centralValley:
         _drawRailwayTrack(canvas, size, p);
-        _drawTrees(canvas, size, p, rng,
-            count: 3, y: h * 0.76, spread: w * 0.4, x0: w * 0.58);
+        stand(
+            h * 0.76,
+            () => _drawTrees(canvas, size, p, rng,
+                count: 3, y: h * 0.76, spread: w * 0.4, x0: w * 0.58));
       case LandscapeVariant.eastCoast:
-        _drawPalmTrees(canvas, p, rng,
-            count: 2, y: h * 0.72, spread: w * 0.3);
+        stand(
+            h * 0.72,
+            () => _drawPalmTrees(canvas, p, rng,
+                count: 2, y: h * 0.72, spread: w * 0.3));
       case LandscapeVariant.southCoast:
-        _drawPalmTrees(canvas, p, rng,
-            count: 3, y: h * 0.62, spread: w * 0.45);
-        _drawLighthouse(canvas, size, p);
+        stand(h * 0.545, () => _drawLighthouse(canvas, size, p));
+        stand(
+            h * 0.62,
+            () => _drawPalmTrees(canvas, p, rng,
+                count: 3, y: h * 0.62, spread: w * 0.45));
       case LandscapeVariant.northEstuary:
-        _drawWindTurbinePylons(canvas, size, p);
-        _drawSilvergrassCluster(canvas, p, rng, Offset(w * 0.15, h * 0.82), 1.0);
+        stand(h * 0.62, () => _drawWindTurbinePylons(canvas, size, p));
+        stand(
+            h * 0.82,
+            () => _drawSilvergrassCluster(
+                canvas, p, rng, Offset(w * 0.15, h * 0.82), 1.0));
       case LandscapeVariant.southWetlands:
-        _drawOysterRacks(canvas, size, p, rng);
+        stand(h * 0.65,
+            () => _drawTrees(canvas, size, p, rng,
+                count: 3, y: h * 0.65, spread: w * 0.8));
+        stand(h * 0.665, () => _drawOysterRacks(canvas, size, p, rng));
+        // 白鷺鷥位置先算好，排序後才不會吃到不同的亂數
         for (int i = 0; i < 2; i++) {
-          _drawEgretStanding(
-              canvas,
-              p,
-              Offset(w * (0.2 + rng.nextDouble() * 0.3),
-                  h * (0.76 + rng.nextDouble() * 0.1)),
-              0.7 + rng.nextDouble() * 0.5);
+          final pos = Offset(w * (0.2 + rng.nextDouble() * 0.3),
+              h * (0.76 + rng.nextDouble() * 0.1));
+          final sc = 0.7 + rng.nextDouble() * 0.5;
+          stand(pos.dy + 9 * sc, () => _drawEgretStanding(canvas, p, pos, sc));
         }
-        _drawTrees(canvas, size, p, rng,
-            count: 3, y: h * 0.65, spread: w * 0.8);
     }
 
-    // 4. 聚落點綴：遠的先畫
-    final sorted = [...layout.placements]
-      ..sort((a, b) => a.fy.compareTo(b.fy));
-    for (final pl in sorted) {
-      _drawDecor(canvas, size, p, rng, pl);
+    for (final pl in layout.placements) {
+      stand(h * pl.fy, () => _drawDecor(canvas, size, p, rng, pl));
+    }
+
+    // 同一 y 時保留加入順序，確保同一 seed 每次畫出來一樣
+    final order = List<int>.generate(standing.length, (i) => i)
+      ..sort((a, b) {
+        final c = standing[a].y.compareTo(standing[b].y);
+        return c != 0 ? c : a.compareTo(b);
+      });
+    for (final i in order) {
+      standing[i].draw();
     }
   }
 
@@ -854,8 +929,7 @@ class _SceneryPainter extends CustomPainter {
       _drawBalloons(canvas, size, p, anim);
     }
 
-    if (variant == LandscapeVariant.centralPlains ||
-        variant == LandscapeVariant.southPlains) {
+    if (layout.hsr) {
       _drawHSRTrain(canvas, size, p, anim);
     }
 
@@ -1238,7 +1312,362 @@ class _SceneryPainter extends CustomPainter {
   }
 
   // ===========================================================================
-  // 地形：田、梯田、河、河口、海岸
+  // 丘陵：沿等高線展開的山丘（水梯田、茶園）
+  // ===========================================================================
+
+  static const double _capF = 0.05; // 山頂樹林帶的厚度
+
+  /// 每個變體兩座山丘：先畫的在後面
+  List<_Mound> _moundsFor(LandscapeVariant v) {
+    switch (v) {
+      case LandscapeVariant.northTerraces:
+        return const [
+          _Mound(0.22, 0.615, 0.8, 0.76),
+          _Mound(0.8, 0.655, 0.75, 0.84),
+        ];
+      case LandscapeVariant.eastFoothills:
+        return const [
+          _Mound(0.75, 0.62, 0.8, 0.76),
+          _Mound(0.2, 0.66, 0.7, 0.84),
+        ];
+      case LandscapeVariant.northHills:
+        return const [
+          _Mound(0.3, 0.64, 0.75, 0.76),
+          _Mound(0.85, 0.67, 0.7, 0.86),
+        ];
+      case LandscapeVariant.centralHills:
+        return const [
+          _Mound(0.7, 0.635, 0.8, 0.76),
+          _Mound(0.15, 0.665, 0.7, 0.86),
+        ];
+      default:
+        return const [];
+    }
+  }
+
+  /// 稜線：圓頂山形，半寬以外接回山腳高度
+  double _ridgeY(_Mound m, Size s, double x) {
+    final u = (x / s.width - m.cx) / m.halfW;
+    final bell =
+        u.abs() >= 1 ? 0.0 : pow(0.5 * (1 + cos(pi * u)), 0.7).toDouble();
+    return s.height * (m.base - (m.base - m.peak) * bell);
+  }
+
+  /// 等高線：f = 0 是稜線、f = 1 是畫面底；越往下越平、間距越大
+  double _contourY(_Mound m, Size s, double x, double f) {
+    final r = _ridgeY(m, s, x);
+    return r + (s.height * 1.02 - r) * f;
+  }
+
+  List<double> _moundXs(Size s, [int n = 96]) =>
+      [for (int i = 0; i <= n; i++) -0.04 * s.width + i * 1.08 * s.width / n];
+
+  /// 兩條等高線之間的帶狀區域
+  Path _contourBand(_Mound m, Size s, List<double> xs, double f0, double f1) {
+    final path = Path()..moveTo(xs.first, _contourY(m, s, xs.first, f0));
+    for (final x in xs.skip(1)) {
+      path.lineTo(x, _contourY(m, s, x, f0));
+    }
+    for (final x in xs.reversed) {
+      path.lineTo(x, _contourY(m, s, x, f1));
+    }
+    return path..close();
+  }
+
+  Path _contourLine(_Mound m, Size s, List<double> xs, double f) {
+    final path = Path()..moveTo(xs.first, _contourY(m, s, xs.first, f));
+    for (final x in xs.skip(1)) {
+      path.lineTo(x, _contourY(m, s, x, f));
+    }
+    return path;
+  }
+
+  void _drawHillMounds(Canvas canvas, Size size, _SceneryPalette p, Random rng,
+      _HillStyle style) {
+    final mounds = _moundsFor(variant);
+    for (int i = 0; i < mounds.length; i++) {
+      final m = mounds[i];
+      final haze = i < mounds.length - 1 ? 0.22 : 0.0; // 後面的山丘偏淡
+      if (i > 0) {
+        _drawMistBand(canvas, size, size.height * (m.peak + 0.015), 22, p, 0.12);
+      }
+      switch (style) {
+        case _HillStyle.tea:
+          _drawTeaMound(canvas, size, p, rng, m, haze);
+        case _HillStyle.paddy:
+          _drawPaddyMound(canvas, size, p, rng, m, haze, flooded: true);
+        case _HillStyle.pineapple:
+          _drawPineappleMound(canvas, size, p, rng, m, haze);
+      }
+    }
+  }
+  /// 鳳梨田：紅土坡上，沿等高線一行行的鳳梨；行距越近越寬、植株越大
+  void _drawPineappleMound(Canvas canvas, Size size, _SceneryPalette p,
+      Random rng, _Mound m, double haze) {
+    final w = size.width;
+    Color hz(Color c) => Color.lerp(c, p.haze, haze)!;
+    final soil = Color.lerp(p.darkLand, _tone(const Color(0xFF9B5A3A)), 0.5)!;
+    _drawMoundBase(canvas, size, p, rng, m, haze, soil);
+
+    final leafA = Path(), leafB = Path(), fruits = Path(), crowns = Path();
+    const rows = 14;
+    for (int k = 0; k < rows; k++) {
+      final f = _capF + 0.02 +
+          (1 - _capF) * pow((k + 0.5) / rows, 1.4).toDouble();
+      final fNext = _capF + 0.02 +
+          (1 - _capF) * pow((k + 1.5) / rows, 1.4).toDouble();
+      double x = -10 + rng.nextDouble() * 8;
+      while (x < w + 10) {
+        final y = _contourY(m, size, x, f);
+        final gap = _contourY(m, size, x, fNext) - y;
+        final s = (gap / 12).clamp(0.25, 1.6).toDouble();
+        for (int j = 0; j < 5; j++) {
+          final ang =
+              -pi / 2 + (j - 2) * 0.45 + (rng.nextDouble() - 0.5) * 0.15;
+          final len = (6.5 - (j - 2).abs() * 1.0 + rng.nextDouble() * 2) * s;
+          (j.isEven ? leafA : leafB)
+            ..moveTo(x, y)
+            ..lineTo(x + cos(ang) * len, y + sin(ang) * len);
+        }
+        if (s > 0.5 && rng.nextDouble() < 0.35) {
+          fruits.addOval(Rect.fromCenter(
+              center: Offset(x, y - 4.2 * s), width: 3.2 * s, height: 4.4 * s));
+          crowns
+            ..moveTo(x, y - 6.4 * s)
+            ..lineTo(x - 1.2 * s, y - 8.6 * s)
+            ..moveTo(x, y - 6.4 * s)
+            ..lineTo(x + 1.2 * s, y - 8.6 * s)
+            ..moveTo(x, y - 6.4 * s)
+            ..lineTo(x, y - 9.0 * s);
+        }
+        x += max(3.0, 11 * s);
+      }
+    }
+
+    Paint stroke(Color c, double width) => Paint()
+      ..color = hz(_tone(c))
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = width
+      ..strokeCap = StrokeCap.round;
+    canvas.drawPath(leafB, stroke(const Color(0xFF4F6E4A), 1.0));
+    canvas.drawPath(leafA, stroke(const Color(0xFF7A9A6A), 1.0));
+    canvas.drawPath(fruits, Paint()..color = hz(_tone(const Color(0xFFD9A43A))));
+    canvas.drawPath(crowns, stroke(const Color(0xFF7A9A6A), 0.8));
+  }
+
+  /// 山體與山頂樹林
+  void _drawMoundBase(Canvas canvas, Size size, _SceneryPalette p, Random rng,
+      _Mound m, double haze, Color ground) {
+    final h = size.height;
+    final xs = _moundXs(size);
+    Color hz(Color c) => Color.lerp(c, p.haze, haze)!;
+
+    canvas.drawPath(
+        _contourBand(m, size, xs, 0, 1),
+        Paint()
+          ..shader = ui.Gradient.linear(Offset(0, h * m.peak), Offset(0, h), [
+            hz(Color.lerp(ground, p.haze, 0.15)!),
+            hz(Color.lerp(ground, p.darkLand, 0.4)!),
+          ]));
+
+    final crown = Paint()..color = hz(Color.lerp(p.tree, p.land, 0.1)!);
+    final crownLight = Paint()
+      ..color = hz(Color.lerp(p.tree, p.light, 0.2)!)
+          .withValues(alpha: isNight ? 0.15 : 0.4);
+    // 山頂樹林：只畫在真正隆起的山體上，山腳平地不畫
+    final capXs = xs
+        .where((x) => ((x / size.width - m.cx) / m.halfW).abs() < 0.8)
+        .toList();
+    if (capXs.length >= 2) {
+      canvas.drawPath(_contourBand(m, size, capXs, 0, _capF), crown);
+      for (final x in capXs) {
+        final c = Offset(x + (rng.nextDouble() - 0.5) * 6,
+            _contourY(m, size, x, _capF * 0.3) - 1);
+        final r = 2.5 + rng.nextDouble() * 3.5;
+        canvas.drawCircle(c, r, crown);
+        canvas.drawCircle(c.translate(-r * 0.3, -r * 0.35), r * 0.45, crownLight);
+      }
+    }
+  }
+
+  bool _cellHasDecor(
+      _Mound m, Size size, double xa, double xb, double f0, double f1) {
+    for (final pl in layout.placements) {
+      final x = pl.fx * size.width;
+      if (x < xa || x > xb) continue;
+      final y = pl.fy * size.height;
+      if (y >= _contourY(m, size, x, f0) - 2 &&
+          y <= _contourY(m, size, x, f1) + 2) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// 水梯田：彎月形田塊、倒影拼布、土埂立面、秧苗
+  void _drawPaddyMound(Canvas canvas, Size size, _SceneryPalette p, Random rng,
+      _Mound m, double haze,
+      {required bool flooded}) {
+    final w = size.width;
+    Color hz(Color c) => Color.lerp(c, p.haze, haze)!;
+    _drawMoundBase(canvas, size, p, rng, m, haze, p.land);
+
+    final skyTint = isNight
+        ? const Color(0xFF2A4258)
+        : (isEvening ? const Color(0xFFD9A06B) : const Color(0xFFBCD8DD));
+    final bund = hz(Color.lerp(p.accent, p.light, 0.3)!);
+    final riserColor = hz(Color.lerp(p.darkLand, Colors.black, 0.2)!);
+    final allXs = _moundXs(size);
+    final step = w / 96;
+    const bands = 9;
+
+    for (int k = 0; k < bands; k++) {
+      final f0 = _capF + (1 - _capF) * pow(k / bands, 1.35).toDouble();
+      final f1 = _capF + (1 - _capF) * pow((k + 1) / bands, 1.35).toDouble();
+      final depth = (f0 + f1) / 2;
+
+      // 田埂分格
+      final cellN = 2 + rng.nextInt(3) + (depth > 0.4 ? 1 : 0);
+      final cuts = <double>[-0.04 * w];
+      for (int c = 1; c < cellN; c++) {
+        cuts.add(-0.04 * w +
+            1.08 * w * (c + (rng.nextDouble() - 0.5) * 0.6) / cellN);
+      }
+      cuts.add(1.04 * w);
+
+      for (int c = 0; c < cuts.length - 1; c++) {
+        final xa = cuts[c], xb = cuts[c + 1];
+        final n = max(2, ((xb - xa) / step).ceil());
+        final xs = [for (int i = 0; i <= n; i++) xa + (xb - xa) * i / n];
+        final cell = _contourBand(m, size, xs, f0, f1);
+        final midX = (xa + xb) / 2;
+        final y0 = _contourY(m, size, midX, f0);
+        final y1 = _contourY(m, size, midX, f1);
+        final roll = rng.nextDouble();
+        final wet =
+            flooded && roll < 0.8 && !_cellHasDecor(m, size, xa, xb, f0, f1);
+
+        if (wet) {
+          // 每塊田倒映的天光深淺不同 → 拼布感
+          final mirror = Color.lerp(skyTint, p.water, 0.15 + roll * 0.4)!;
+          canvas.drawPath(
+              cell,
+              Paint()
+                ..shader = ui.Gradient.linear(Offset(0, y0), Offset(0, y1), [
+                  hz(mirror).withValues(alpha: isNight ? 0.6 : 0.95),
+                  hz(Color.lerp(p.water, p.land, 0.35)!)
+                      .withValues(alpha: 0.95),
+                ]));
+          if (depth > 0.2) {
+            final dots = Path();
+            final gap = 3 + 6 * depth;
+            final r = 0.4 + 1.1 * depth;
+            for (final g in [0.3, 0.55, 0.8]) {
+              final ff = f0 + (f1 - f0) * g;
+              for (double x = xa + gap / 2; x < xb; x += gap) {
+                dots.addOval(Rect.fromCircle(
+                    center: Offset(x, _contourY(m, size, x, ff)), radius: r));
+              }
+            }
+            canvas.drawPath(
+                dots,
+                Paint()
+                  ..color = hz(Color.lerp(p.land, p.accent, 0.4)!)
+                      .withValues(alpha: isNight ? 0.3 : 0.7));
+          }
+        } else {
+          final green = Color.lerp(p.land, p.accent, 0.2 + roll * 0.4)!;
+          canvas.drawPath(
+              cell,
+              Paint()
+                ..shader = ui.Gradient.linear(Offset(0, y0), Offset(0, y1), [
+                  hz(green),
+                  hz(Color.lerp(green, p.darkLand, 0.3)!),
+                ]));
+        }
+      }
+
+      // 上一階的土埂立面
+      canvas.drawPath(_contourBand(m, size, allXs, f0, f0 + (f1 - f0) * 0.18),
+          Paint()..color = riserColor.withValues(alpha: 0.55));
+      // 田埂頂（長草的受光邊）
+      canvas.drawPath(
+          _contourLine(m, size, allXs, f0),
+          Paint()
+            ..color = bund.withValues(alpha: isNight ? 0.15 : 0.6)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 0.6 + 2.0 * depth);
+      // 分格田埂
+      final div = Paint()
+        ..color = bund.withValues(alpha: isNight ? 0.12 : 0.5)
+        ..strokeWidth = 0.5 + 1.4 * depth
+        ..strokeCap = StrokeCap.round;
+      for (int c = 1; c < cuts.length - 1; c++) {
+        final x = cuts[c];
+        canvas.drawLine(Offset(x, _contourY(m, size, x, f0)),
+            Offset(x, _contourY(m, size, x, f1)), div);
+      }
+    }
+  }
+
+  /// 茶園：沿等高線的圓頂樹籬、嫩芽受光、行間土徑
+  void _drawTeaMound(Canvas canvas, Size size, _SceneryPalette p, Random rng,
+      _Mound m, double haze) {
+    Color hz(Color c) => Color.lerp(c, p.haze, haze)!;
+    final soil = Color.lerp(p.darkLand, _tone(const Color(0xFF6B5A3E)), 0.35)!;
+    _drawMoundBase(canvas, size, p, rng, m, haze, soil);
+
+    final xs = _moundXs(size, 192);
+    final body = Paint()..color = hz(Color.lerp(p.tree, p.land, 0.35)!);
+    final shade = Paint()
+      ..color =
+          hz(Color.lerp(p.tree, Colors.black, 0.25)!).withValues(alpha: 0.6);
+    final sprout = Paint()
+      ..color = hz(Color.lerp(
+              p.accent, const Color(0xFFD8E27A), isNight ? 0.1 : 0.45)!)
+          .withValues(alpha: isNight ? 0.2 : 0.55);
+    const rows = 22;
+    final phase = rng.nextDouble() * pi;
+
+    for (int k = 0; k < rows; k++) {
+      final f0 = _capF + 0.01 + (1 - _capF) * pow(k / rows, 1.45).toDouble();
+      final f1 =
+          _capF + 0.01 + (1 - _capF) * pow((k + 1) / rows, 1.45).toDouble();
+      final df = f1 - f0;
+
+      // 樹籬：上緣在近處加圓弧起伏，像一叢叢修剪過的茶樹
+      Path hedge(double fTop, double fBot, {bool bumpy = false}) {
+        final path = Path();
+        for (int i = 0; i < xs.length; i++) {
+          final x = xs[i];
+          final yTop = _contourY(m, size, x, fTop);
+          var y = yTop;
+          if (bumpy) {
+            final rowW = _contourY(m, size, x, fBot) - yTop;
+            if (rowW > 3) {
+              y -= sin(x / (rowW * 1.2) + phase + k).abs() * rowW * 0.2;
+            }
+          }
+          if (i == 0) {
+            path.moveTo(x, y);
+          } else {
+            path.lineTo(x, y);
+          }
+        }
+        for (final x in xs.reversed) {
+          path.lineTo(x, _contourY(m, size, x, fBot));
+        }
+        return path..close();
+      }
+
+      canvas.drawPath(hedge(f0 + df * 0.62, f0 + df * 0.78), shade);
+      canvas.drawPath(hedge(f0, f0 + df * 0.66, bumpy: true), body);
+      canvas.drawPath(hedge(f0, f0 + df * 0.22, bumpy: true), sprout);
+    }
+  }
+
+  // ===========================================================================
+  // 地形：田、河、河口、海岸
   // ===========================================================================
 
   /// 透視棋盤水田：嫩綠秧苗、金黃稻穗、映天光的水田、深綠田
@@ -1340,134 +1769,6 @@ class _SceneryPainter extends CustomPainter {
     for (int j = 0; j <= cols; j++) {
       canvas.drawLine(
           Offset(xAt(colX[j], top), top), Offset(xAt(colX[j], h), h), ridge);
-    }
-  }
-
-  /// 立體梯田：每階有受光田埂、立面陰影；flooded 時呈現映天光的水梯田
-  void _drawTerracedFields(
-      Canvas canvas, Size size, _SceneryPalette p, Random rng,
-      {bool flooded = false}) {
-    final w = size.width, h = size.height;
-    const bands = 8;
-    const n = 24;
-    final curves = <List<Offset>>[];
-    for (int i = 0; i <= bands; i++) {
-      final per = i / bands;
-      final base = h * (0.62 + 0.42 * pow(per, 1.25));
-      final amp = 6 + 22 * per;
-      final phase = rng.nextDouble() * 0.6;
-      final tilt = 8 + 10 * per;
-      curves.add([
-        for (int m = 0; m <= n; m++)
-          Offset(w * m / n,
-              base + sin((m / n) * pi * 1.1 + phase) * amp - tilt * (m / n))
-      ]);
-    }
-
-    final land = Path()..moveTo(0, h);
-    for (final o in curves[0]) {
-      land.lineTo(o.dx, o.dy);
-    }
-    land
-      ..lineTo(w, h)
-      ..close();
-    canvas.drawPath(
-        land,
-        Paint()
-          ..shader = ui.Gradient.linear(Offset(0, h * 0.6), Offset(0, h), [
-            Color.lerp(p.land, p.haze, 0.2)!,
-            p.darkLand,
-          ]));
-
-    final skyTint = isNight
-        ? const Color(0xFF2A4258)
-        : (isEvening ? const Color(0xFFD9A06B) : const Color(0xFFBCD8DD));
-    final riserColor = Color.lerp(p.darkLand, Colors.black, 0.25)!;
-    final lipColor = Color.lerp(p.accent, p.light, 0.3)!;
-
-    for (int i = 0; i < bands; i++) {
-      final per = i / bands;
-      final upper = curves[i], lower = curves[i + 1];
-
-      final band = Path()..moveTo(upper.first.dx, upper.first.dy);
-      for (final o in upper.skip(1)) {
-        band.lineTo(o.dx, o.dy);
-      }
-      for (final o in lower.reversed) {
-        band.lineTo(o.dx, o.dy);
-      }
-      band.close();
-
-      final yTop = upper.map((o) => o.dy).reduce(min);
-      final yBot = lower.map((o) => o.dy).reduce(max);
-
-      if (flooded && (i.isEven || rng.nextDouble() < 0.3)) {
-        canvas.drawPath(
-            band,
-            Paint()
-              ..shader = ui.Gradient.linear(Offset(0, yTop), Offset(0, yBot), [
-                Color.lerp(skyTint, p.water, 0.3)!
-                    .withValues(alpha: isNight ? 0.5 : 0.85),
-                Color.lerp(p.water, p.land, 0.4)!.withValues(alpha: 0.85),
-              ]));
-      } else {
-        final c = i.isEven ? p.land : Color.lerp(p.land, p.accent, 0.25)!;
-        canvas.drawPath(
-            band,
-            Paint()
-              ..shader = ui.Gradient.linear(Offset(0, yTop), Offset(0, yBot), [
-                c.withValues(alpha: 0.9),
-                Color.lerp(c, p.darkLand, 0.35)!.withValues(alpha: 0.9),
-              ]));
-      }
-
-      final riser = 2 + 6 * per;
-      final shadow = Path()..moveTo(upper.first.dx, upper.first.dy);
-      for (final o in upper.skip(1)) {
-        shadow.lineTo(o.dx, o.dy);
-      }
-      for (final o in upper.reversed) {
-        shadow.lineTo(o.dx, o.dy + riser);
-      }
-      shadow.close();
-      canvas.drawPath(shadow, Paint()..color = riserColor.withValues(alpha: 0.45));
-
-      final lip = Path()..moveTo(upper.first.dx, upper.first.dy);
-      for (final o in upper.skip(1)) {
-        lip.lineTo(o.dx, o.dy);
-      }
-      canvas.drawPath(
-          lip,
-          Paint()
-            ..color = lipColor.withValues(alpha: isNight ? 0.12 : 0.4)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 1 + per * 1.5);
-    }
-  }
-
-  /// 茶園：沿坡等高線的一排排茶樹
-  void _drawTeaRows(Canvas canvas, Size size, _SceneryPalette p, Random rng) {
-    for (int r = 0; r < 6; r++) {
-      final baseY = size.height * (0.68 + r * 0.05);
-      final amp = 8.0 + r * 2.5;
-      final bushes = Path();
-      final shades = Path();
-      const n = 30;
-      final phase = rng.nextDouble() * pi;
-      final radius = 2.8 + r * 0.5;
-      for (int i = 0; i <= n; i++) {
-        final x = i * size.width / n;
-        final y = baseY + sin(x / size.width * pi * 1.2 + phase) * amp;
-        shades.addOval(
-            Rect.fromCircle(center: Offset(x, y + 1.5), radius: radius));
-        bushes.addOval(Rect.fromCircle(center: Offset(x, y), radius: radius));
-      }
-      canvas.drawPath(shades, Paint()..color = p.darkLand.withValues(alpha: 0.4));
-      canvas.drawPath(
-          bushes,
-          Paint()
-            ..color = Color.lerp(p.tree, p.land, 0.3)!
-                .withValues(alpha: isNight ? 0.5 : 0.8));
     }
   }
 
@@ -1664,17 +1965,15 @@ class _SceneryPainter extends CustomPainter {
     }
   }
 
-  /// 辮狀礫石河床：寬闊灰白卵石灘、數條交織水道、河岸植被
-  void _drawRiver(Canvas canvas, Size size, _SceneryPalette p, Random rng) {
+  /// 河床外框（河道本體、鐵橋位置共用）
+  ({Path bed, List<Offset> left, List<Offset> right}) _riverOutline(Size size) {
     const n = 40;
-    final h = size.height;
     final left = <Offset>[], right = <Offset>[];
     for (int i = 0; i <= n; i++) {
       final (pt, nrm, half) = _riverFrame(size, i / n);
       left.add(pt + nrm * half);
       right.add(pt - nrm * half);
     }
-
     final bed = Path()..moveTo(left.first.dx, left.first.dy);
     for (final o in left.skip(1)) {
       bed.lineTo(o.dx, o.dy);
@@ -1682,7 +1981,19 @@ class _SceneryPainter extends CustomPainter {
     for (final o in right.reversed) {
       bed.lineTo(o.dx, o.dy);
     }
-    bed.close();
+    return (bed: bed..close(), left: left, right: right);
+  }
+
+  /// 辮狀礫石河床：寬闊灰白卵石灘、數條交織水道、河岸植被
+  void _drawRiver(Canvas canvas, Size size, _SceneryPalette p, Random rng) {
+    const n = 40;
+    final h = size.height;
+    final outline = _riverOutline(size);
+    final bed = outline.bed, left = outline.left, right = outline.right;
+
+    // 河只畫在地平線以下
+    canvas.save();
+    canvas.clipRect(Rect.fromLTRB(0, h * 0.69, size.width, h));
 
     final gravel = _tone(const Color(0xFFBDB6A4));
     canvas.drawPath(
@@ -1761,6 +2072,8 @@ class _SceneryPainter extends CustomPainter {
       }
       canvas.drawPath(bp, bank);
     }
+
+    canvas.restore();
   }
 
   Path _estuaryWater(Size size) => Path()
@@ -1962,11 +2275,19 @@ class _SceneryPainter extends CustomPainter {
   void _drawHSRViaduct(Canvas canvas, Size size, _SceneryPalette p) {
     final w = size.width;
     final deckY = _hsrDeckY(size);
-    final groundY = size.height * 0.672;
+    final groundY = size.height * _hsrGroundFrac;
     final concrete = Color.lerp(_tone(const Color(0xFFD2CEC6)), p.haze, 0.25)!;
     final pierPaint = Paint()..color = Color.lerp(concrete, Colors.black, 0.12)!;
 
+    // 道路從高架下方穿過：落在路面上的橋墩不畫（拉大跨距讓路）
+    double? roadL, roadR;
+    if (layout.road) {
+      final t = (_hsrGroundFrac - _plainsTop) / (1 - _plainsTop);
+      roadL = w * (_roadCx(t) - _roadHalf(t)) - 4;
+      roadR = w * (_roadCx(t) + _roadHalf(t)) + 4;
+    }
     for (double x = 12; x < w; x += 34) {
+      if (roadL != null && x > roadL && x < roadR!) continue;
       canvas.drawRect(Rect.fromLTRB(x - 1.6, deckY + 4, x + 1.6, groundY), pierPaint);
     }
     canvas.drawRect(Rect.fromLTWH(0, deckY, w, 4), Paint()..color = concrete);
@@ -1983,8 +2304,8 @@ class _SceneryPainter extends CustomPainter {
     canvas.drawLine(Offset(0, deckY - 11), Offset(w, deckY - 11), mast);
   }
 
-  /// 鄉間道路與電線桿（電線桿在路右側）
-  void _drawRoadAndPoles(Canvas canvas, Size size, _SceneryPalette p) {
+  /// 鄉間道路：路面與標線（平面，最先畫）
+  void _drawRoadSurface(Canvas canvas, Size size, _SceneryPalette p) {
     final w = size.width, h = size.height;
     final roadColor = Color.lerp(p.darkLand, const Color(0xFF9A9388), 0.5)!;
     canvas.drawPath(
@@ -2012,7 +2333,11 @@ class _SceneryPainter extends CustomPainter {
         dash,
       );
     }
+  }
 
+  /// 電線桿與電線（在路右側，從高架前方開始立）
+  void _drawPoles(Canvas canvas, Size size, _SceneryPalette p) {
+    final w = size.width, h = size.height;
     final polePaint = Paint()
       ..color = p.infrastructure.withValues(alpha: 0.8)
       ..strokeWidth = 1.5;
@@ -2025,7 +2350,7 @@ class _SceneryPainter extends CustomPainter {
     const poleCount = 6;
     for (int i = 0; i < poleCount; i++) {
       final per = pow(i / (poleCount - 1), 1.5).toDouble();
-      final t = per * 0.9;
+      final t = _poleT0 + per * (0.9 - _poleT0);
       final x = w * (_roadCx(t) + _roadHalf(t) + 0.015);
       final y = h * _roadY(t);
       final ph = 10 + 40 * per;
@@ -2049,42 +2374,78 @@ class _SceneryPainter extends CustomPainter {
     }
   }
 
-  /// 鐵軌只畫在陸地上（海岸：沙灘內；山谷：河的右側）
-  Path? _railClip(Size size) {
-    if (variant == LandscapeVariant.centralValley) {
-      return Path()
-        ..addRect(Rect.fromLTWH(size.width * 0.56, 0, size.width, size.height));
-    }
-    return null;
-  }
-
+  /// 鐵軌：橫越全畫面，過河處架混凝土橋
   void _drawRailwayTrack(Canvas canvas, Size size, _SceneryPalette p) {
-    final clip = _railClip(size);
-    canvas.save();
-    if (clip != null) canvas.clipPath(clip);
-    _drawRailwayTrackUnclipped(canvas, size, p);
-    canvas.restore();
-  }
+    final w = size.width, h = size.height;
+    final y0 = h * 0.70;
+    double yAt(double x) => y0 + x / w * 10;
+    final bed = _riverOutline(size).bed;
 
-  void _drawRailwayTrackUnclipped(
-      Canvas canvas, Size size, _SceneryPalette p) {
-    final railPaint = Paint()
-      ..color = p.village.withValues(alpha: 0.5)
-      ..strokeWidth = 2.0;
-    final sleeperPaint = Paint()
-      ..color = p.roof.withValues(alpha: 0.7)
-      ..strokeWidth = 3.0;
-
-    final y = size.height * 0.70;
-    canvas.drawLine(Offset(0, y), Offset(size.width, y + 10), railPaint);
-    canvas.drawLine(Offset(0, y + 8), Offset(size.width, y + 18), railPaint);
-
-    for (int i = 0; i < 25; i++) {
-      final x = i * size.width / 24;
-      final yOffset = (x / size.width) * 10;
-      canvas.drawLine(Offset(x, y + yOffset - 2),
-          Offset(x + 2, y + yOffset + 18), sleeperPaint);
+    // 橋的範圍：鐵軌和河床重疊的那段
+    double? bx0, bx1;
+    for (double x = 0; x <= w; x += 2) {
+      if (bed.contains(Offset(x, yAt(x) + 3))) {
+        bx0 ??= x;
+        bx1 = x;
+      }
     }
+
+    // 道碴（河面上不鋪）
+    canvas.save();
+    if (bx0 != null) {
+      canvas.clipRect(Rect.fromLTRB(bx0 - 6, 0, bx1! + 6, h),
+          clipOp: ui.ClipOp.difference);
+    }
+    canvas.drawPath(
+        Path()
+          ..moveTo(0, yAt(0) - 3)
+          ..lineTo(w, yAt(w) - 3)
+          ..lineTo(w, yAt(w) + 9)
+          ..lineTo(0, yAt(0) + 9)
+          ..close(),
+        Paint()..color = _tone(const Color(0xFF8C857A)).withValues(alpha: 0.85));
+    canvas.restore();
+
+    // 橋：橋墩 + 橋面
+    if (bx0 != null) {
+      final a = bx0 - 6, b = bx1! + 6;
+      final concrete = _tone(const Color(0xFFB9B4AA));
+      final pier = Paint()..color = Color.lerp(concrete, Colors.black, 0.25)!;
+      for (double x = a + 8; x < b - 4; x += 22) {
+        canvas.drawRect(
+            Rect.fromLTRB(x - 1.5, yAt(x) + 8, x + 1.5, yAt(x) + 16), pier);
+      }
+      canvas.drawPath(
+          Path()
+            ..moveTo(a, yAt(a) - 2)
+            ..lineTo(b, yAt(b) - 2)
+            ..lineTo(b, yAt(b) + 9)
+            ..lineTo(a, yAt(a) + 9)
+            ..close(),
+          Paint()..color = concrete);
+      canvas.drawLine(
+          Offset(a, yAt(a) + 9),
+          Offset(b, yAt(b) + 9),
+          Paint()
+            ..color = Color.lerp(concrete, Colors.black, 0.35)!
+            ..strokeWidth = 1.2);
+    }
+
+    // 枕木
+    final sleeper = Paint()
+      ..color = _tone(const Color(0xFF5E4A38))
+      ..strokeWidth = 1.6;
+    for (double x = 0; x <= w; x += 5) {
+      final y = yAt(x);
+      canvas.drawLine(Offset(x, y - 1), Offset(x + 0.6, y + 7), sleeper);
+    }
+
+    // 鋼軌
+    final rail = Paint()
+      ..color = _tone(const Color(0xFFB8B4AC))
+      ..strokeWidth = 1.2;
+    canvas.drawLine(Offset(0, yAt(0)), Offset(w, yAt(w)), rail);
+    canvas.drawLine(Offset(0, yAt(0) + 6), Offset(w, yAt(w) + 6), rail);
   }
 
   /// 台北盆地天際線 + 101
@@ -2910,23 +3271,26 @@ class _SceneryPainter extends CustomPainter {
       {required int count,
       required double y,
       required double spread,
-      double x0 = 0}) {
+      double x0 = 0,
+      double scale = 1}) {
     final trunkPaint = Paint()
       ..color = p.village.withValues(alpha: 0.7)
-      ..strokeWidth = 2;
+      ..strokeWidth = 2 * scale;
     final crownPaint = Paint()..color = p.tree.withValues(alpha: 0.85);
     final crownLight = Paint()
-      ..color = Color.lerp(p.tree, p.light, 0.2)!.withValues(alpha: isNight ? 0.2 : 0.5);
+      ..color = Color.lerp(p.tree, p.light, 0.2)!
+          .withValues(alpha: isNight ? 0.2 : 0.5);
 
     for (int i = 0; i < count; i++) {
       final x = x0 + spread * (0.1 + rng.nextDouble() * 0.8);
-      final h = 15 + rng.nextDouble() * 20;
-      final r = 8 + rng.nextDouble() * 8;
+      final h = (15 + rng.nextDouble() * 20) * scale;
+      final r = (8 + rng.nextDouble() * 8) * scale;
       canvas.drawLine(Offset(x, y), Offset(x, y - h), trunkPaint);
       canvas.drawCircle(Offset(x, y - h), r, crownPaint);
-      canvas.drawCircle(Offset(x - r * 0.6, y - h + 4), r * 0.8, crownPaint);
-      canvas.drawCircle(Offset(x + r * 0.6, y - h + 4), r * 0.8, crownPaint);
-      canvas.drawCircle(Offset(x - r * 0.3, y - h - r * 0.3), r * 0.45, crownLight);
+      canvas.drawCircle(Offset(x - r * 0.6, y - h + 4 * scale), r * 0.8, crownPaint);
+      canvas.drawCircle(Offset(x + r * 0.6, y - h + 4 * scale), r * 0.8, crownPaint);
+      canvas.drawCircle(
+          Offset(x - r * 0.3, y - h - r * 0.3), r * 0.45, crownLight);
     }
   }
 
@@ -3151,29 +3515,26 @@ class _SceneryPainter extends CustomPainter {
     canvas.restore();
   }
 
-  /// 台鐵區間車
+  /// 台鐵區間車：縮到遠景比例，全寬行駛（含過橋）
   void _drawTrain(Canvas canvas, Size size, _SceneryPalette p, double anim) {
-    final trainX = -150 + anim * (size.width + 300);
-    final yOffset = (trainX / size.width) * 10;
-    final y = size.height * 0.70 + yOffset;
-
-    final clip = _railClip(size);
-    canvas.save();
-    if (clip != null) canvas.clipPath(clip);
-    _drawTrainBody(canvas, p, trainX, y);
-    canvas.restore();
+    const s = 0.6;
+    const len = 125 * s;
+    final trainX = -len + ((anim * 3) % 1.0) * (size.width + len * 2);
+    final y = size.height * 0.70 + (trainX + len / 2) / size.width * 10 + 6;
+    _drawTrainBody(canvas, p, trainX, y, s);
   }
 
   void _drawTrainBody(
-      Canvas canvas, _SceneryPalette p, double trainX, double y) {
+      Canvas canvas, _SceneryPalette p, double trainX, double y, double s) {
     canvas.drawRRect(
         RRect.fromRectAndRadius(
-            Rect.fromLTWH(trainX, y - 22, 125, 18), const Radius.circular(3)),
+            Rect.fromLTWH(trainX, y - 22 * s, 125 * s, 18 * s),
+            Radius.circular(3 * s)),
         Paint()
           ..color = (isNight ? const Color(0xFF9AA4AC) : const Color(0xFFE8ECEF))
               .withValues(alpha: isNight ? 0.55 : 0.92));
     canvas.drawRect(
-        Rect.fromLTWH(trainX, y - 9, 125, 3.5),
+        Rect.fromLTWH(trainX, y - 9 * s, 125 * s, 3.5 * s),
         Paint()
           ..color =
               const Color(0xFF2E5FA3).withValues(alpha: isNight ? 0.5 : 0.9));
@@ -3182,7 +3543,9 @@ class _SceneryPainter extends CustomPainter {
           ? p.light.withValues(alpha: 0.85)
           : const Color(0xFF3A4E5C).withValues(alpha: 0.6);
     for (int i = 0; i < 5; i++) {
-      canvas.drawRect(Rect.fromLTWH(trainX + 8 + i * 22, y - 18, 12, 7), winPaint);
+      canvas.drawRect(
+          Rect.fromLTWH(trainX + (8 + i * 22) * s, y - 18 * s, 12 * s, 7 * s),
+          winPaint);
     }
   }
 
@@ -3572,7 +3935,8 @@ class _SceneryPainter extends CustomPainter {
 
       final phase = (anim * speed + off) % 1.0;
       final u = pow(approach ? phase : 1 - phase, 1.6).toDouble();
-      final t = u * 1.04;
+      // 從高架落地線之前才出現，避免畫在橋墩前面
+      final t = _cyclistT0 + u * (1.04 - _cyclistT0);
       final y = size.height * _roadY(t);
       final cx = size.width * _roadCx(t);
       final half = size.width * _roadHalf(t);
@@ -3585,6 +3949,7 @@ class _SceneryPainter extends CustomPainter {
         helmet: helmet,
         jersey: jersey,
         pedal: anim * 2 * pi * 40 + i,
+        opacity: (u / 0.06).clamp(0.0, 1.0),
       ));
     }
 
@@ -3595,8 +3960,17 @@ class _SceneryPainter extends CustomPainter {
   }
 
   void _drawCyclist(Canvas canvas, _SceneryPalette p, _Cyclist c) {
+    if (c.opacity <= 0) return;
     final pos = c.pos;
     final s = c.scale;
+
+    final fading = c.opacity < 1;
+    if (fading) {
+      canvas.saveLayer(
+          Rect.fromLTRB(pos.dx - 8 * s, pos.dy - 22 * s, pos.dx + 8 * s,
+              pos.dy + 10 * s),
+          Paint()..color = Colors.white.withValues(alpha: c.opacity));
+    }
 
     if (isNight && c.approach) {
       canvas.drawPath(
@@ -3610,7 +3984,8 @@ class _SceneryPainter extends CustomPainter {
     }
 
     canvas.drawOval(
-        Rect.fromCenter(center: pos.translate(0, 0.5 * s), width: 7 * s, height: 1.6 * s),
+        Rect.fromCenter(
+            center: pos.translate(0, 0.5 * s), width: 7 * s, height: 1.6 * s),
         Paint()..color = Colors.black.withValues(alpha: 0.16));
     canvas.drawLine(
         pos.translate(0, -0.3 * s),
@@ -3626,8 +4001,10 @@ class _SceneryPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     final hip = pos.translate(0, -11 * s);
     final lift = sin(c.pedal) * 1.8 * s;
-    canvas.drawLine(hip.translate(-1.2 * s, 0), pos.translate(-1.6 * s, -4 * s - lift), legPaint);
-    canvas.drawLine(hip.translate(1.2 * s, 0), pos.translate(1.6 * s, -4 * s + lift), legPaint);
+    canvas.drawLine(hip.translate(-1.2 * s, 0),
+        pos.translate(-1.6 * s, -4 * s - lift), legPaint);
+    canvas.drawLine(hip.translate(1.2 * s, 0),
+        pos.translate(1.6 * s, -4 * s + lift), legPaint);
 
     final jersey = _tone(c.jersey);
     canvas.drawRRect(
@@ -3653,7 +4030,9 @@ class _SceneryPainter extends CustomPainter {
 
     canvas.drawOval(
         Rect.fromCenter(
-            center: Offset(pos.dx, pos.dy - 18.6 * s), width: 4.6 * s, height: 3.2 * s),
+            center: Offset(pos.dx, pos.dy - 18.6 * s),
+            width: 4.6 * s,
+            height: 3.2 * s),
         Paint()..color = _tone(c.helmet));
 
     if (c.approach) {
@@ -3672,6 +4051,8 @@ class _SceneryPainter extends CustomPainter {
       }
       canvas.drawCircle(tail, 0.8 * s, Paint()..color = const Color(0xFFE0302A));
     }
+
+    if (fading) canvas.restore();
   }
 
   @override
