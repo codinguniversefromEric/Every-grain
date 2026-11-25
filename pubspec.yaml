@@ -2,7 +2,7 @@ name: rice_journey
 description: "A Taiwanese rice field simulation with weather, ambient sound, and a farming journal."
 publish_to: 'none'
 
-version: 2.1.0+27
+version: 2.2.0+30
 
 environment:
   sdk: ^3.12.2
@@ -38,6 +38,7 @@ flutter:
   assets:
     - assets/
     - assets/audio/
+    - assets/scenery_references/
 
 flutter_launcher_icons:
   android: true

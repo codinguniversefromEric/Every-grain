@@ -42,7 +42,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  if (defaultTargetPlatform != TargetPlatform.iOS) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
 
   runApp(const RiceJourneyApp());
 }
@@ -399,6 +401,7 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                 child: RepaintBoundary(
                   child: BiomeSceneryLayer(
                     biome: state.currentBiome,
+                    interactive: !isTakingScreenshot,
                     dayPhase: state.dayPeriod,
                   ),
                 ),
@@ -410,9 +413,11 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                 left: 0,
                 right: 0,
                 child: RepaintBoundary(
-                  child: RicePlantLayer(
-                    growthStage: state.growthStage,
-                    variety: state.currentVariety,
+                  child: IgnorePointer(
+                    child: RicePlantLayer(
+                      growthStage: state.growthStage,
+                      variety: state.currentVariety,
+                    ),
                   ),
                 ),
               ),
@@ -464,14 +469,14 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                       state.growthStage == GrowthStage.heading ||
                       state.growthStage == GrowthStage.ripening))
                 const Positioned.fill(
-                  child: RepaintBoundary(child: DragonflyLayer()),
+                  child: IgnorePointer(child: RepaintBoundary(child: DragonflyLayer())),
                 ),
 
               // 6. Water Ripples (Flooded Paddy Stages)
               if (state.growthStage == GrowthStage.fallow ||
                   state.growthStage == GrowthStage.seedling)
                 const Positioned.fill(
-                  child: RepaintBoundary(child: WaterRippleLayer()),
+                  child: IgnorePointer(child: RepaintBoundary(child: WaterRippleLayer())),
                 ),
 
               // 6.5. Wind Gusts (Afternoon/Evening or Stormy)
@@ -479,8 +484,10 @@ class _RiceFieldScreenState extends State<RiceFieldScreen>
                   state.dayPeriod == DayPhase.evening ||
                   state.weatherCondition == WeatherCondition.stormy)
                 Positioned.fill(
-                  child: RepaintBoundary(
-                    child: WindGustLayer(weather: state.weatherCondition),
+                  child: IgnorePointer(
+                    child: RepaintBoundary(
+                      child: WindGustLayer(weather: state.weatherCondition),
+                    ),
                   ),
                 ),
 

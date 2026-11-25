@@ -478,7 +478,7 @@ class _DeveloperControlsBottomSheetState
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.landscape),
-              label: const Text('Scenery Preview (All 12 Variants)'),
+              label: const Text('Scenery Preview'),
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.push(
