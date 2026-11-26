@@ -66,8 +66,8 @@ class WeatherService {
           AppLogger.i('User in Taiwan, routing to CwaAdapter');
           try {
             newWeather = await _cwaAdapter.fetchWeather(position.latitude, position.longitude);
-          } catch (e) {
-            AppLogger.w('CWA API failed ($e), gracefully degrading to OpenMeteoAdapter');
+          } catch (_) {
+            AppLogger.w('CWA API failed, falling back to Open-Meteo');
             newWeather = await _openMeteoAdapter.fetchWeather(position.latitude, position.longitude);
           }
         } else {

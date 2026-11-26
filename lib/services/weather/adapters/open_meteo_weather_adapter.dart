@@ -6,9 +6,12 @@ import '../../../models/weather_metrics.dart';
 class OpenMeteoWeatherAdapter implements WeatherAdapter {
   @override
   Future<WeatherMetrics> fetchWeather(double latitude, double longitude) async {
-    final url = Uri.parse(
-      'https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&current=temperature_2m,relative_humidity_2m,precipitation,cloud_cover,wind_speed_10m,wind_direction_10m',
-    );
+    final url = Uri.https('api.open-meteo.com', '/v1/forecast', {
+      'latitude': latitude.toStringAsFixed(1),
+      'longitude': longitude.toStringAsFixed(1),
+      'current': 'temperature_2m,relative_humidity_2m,precipitation,'
+          'cloud_cover,wind_speed_10m,wind_direction_10m',
+    });
     final response = await http.get(url).timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 200) {
